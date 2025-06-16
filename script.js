@@ -44,10 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     btnCell.appendChild(btn);
 
-    const note = document.createElement('td');
-    note.textContent = casino.note || '';
-
-    row.append(name, btnCell, note);
+    row.append(name, btnCell);
     list.appendChild(row);
 
     const clicks = parseInt(localStorage.getItem(casino.name + '_clicks') || '0');
