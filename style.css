@@ -169,8 +169,12 @@ tr.collected {
     text-shadow: none;
 }
 
+a:link {
+    color: black; /* Non-visited link */
+}
+
 a:visited {
-    color: #bbbbbb;
+    color: green; /* Visited link */
 }
 
 @media (max-width: 768px) {
