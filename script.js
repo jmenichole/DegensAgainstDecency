@@ -44,7 +44,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     btnCell.appendChild(btn);
 
-    row.append(name, btnCell);
+    const note = document.createElement('td');
+    note.textContent = ''; // Added back the note section without any text
+
+    row.append(name, btnCell, note);
     list.appendChild(row);
 
     const clicks = parseInt(localStorage.getItem(casino.name + '_clicks') || '0');

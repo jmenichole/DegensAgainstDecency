@@ -132,7 +132,7 @@ input[type="checkbox"] {
 
 .support-button {
     background: linear-gradient(90deg, #ffd700, #ffa500);
-    color: black;
+    color: #000; /* Changed to black for better contrast */
     font-size: 1.1rem;
     padding: 12px 20px;
     border-radius: 50px;
