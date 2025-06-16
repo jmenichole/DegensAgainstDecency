@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎰 CollectClock 💰</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <header>
+    <h1>CollectClock</h1>
+    <div id="user-info" style="display: none;">
+      <img id="user-avatar" class="avatar" alt="User Avatar" />
+      <div class="user-details">
+        <span id="username" class="username"></span>
+        <div class="streak-info">
+          <span>Streak: <span id="current-streak">0</span></span>
+          <span>Best: <span id="highest-streak">0</span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <h2>🎯 Top Collected Casino Today</h2>
+    <div id="top-casino"></div>
+
+    <h3>💎 Casino Bonus Links</h3>
+    <table class="tracker-table">
+      <thead>
+        <tr>
+          <th>Casino</th>
+          <th>Collect</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody id="casino-list"></tbody>
+    </table>
+  </main>
+
+  <footer>
+    <a href="https://ko-fi.com/jmenichole0" class="support-button">💝 Support CollectClock</a>
+  </footer>
+
+  <div id="gif-popup" style="display:none;" class="popup">
+    <img id="popup-gif" src="" alt="funny gif" style="max-width: 100%;" />
+    <p>You’re on a hot streak! 🔥 Keep it up!</p>
+  </div>
+
+  <div class="bottom-bar">
+    <a href="https://discord.com/widget?id=1329107627829104783&theme=dark" target="_blank">💬 Chat with us on Discord</a>
+  </div>
+</body>
+</html>
