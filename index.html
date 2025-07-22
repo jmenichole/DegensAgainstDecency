@@ -2,51 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎰 CollectClock 💰</title>
+  <title>Degens Against Decency</title>
   <link rel="stylesheet" href="style.css" />
-  <script defer src="script.js"></script>
 </head>
 <body>
-  <header>
-    <h1>CollectClock</h1>
-    <div id="user-info" style="display: none;">
-      <img id="user-avatar" class="avatar" alt="User Avatar" />
-      <div class="user-details">
-        <span id="username" class="username"></span>
-        <div class="streak-info">
-          <span>Streak: <span id="current-streak">0</span></span>
-          <span>Best: <span id="highest-streak">0</span></span>
-        </div>
-      </div>
+  <section class="header">
+    <h1>Degens Against Decency</h1>
+    <p>Help us build the most cooked af card game. Don’t get weird weird. Regular weird only.</p>
+  </section>
+
+  <section class="forms">
+    <div class="card-form">
+      <h2>Submit a Question</h2>
+      <textarea id="questionText" placeholder="Enter your question"></textarea>
+      <input id="questionUser" placeholder="Discord Username (optional)" />
+      <button onclick="submitCard('question')">Submit</button>
     </div>
-  </header>
 
-  <main>
-    <h3>💎 Casino Links</h3>
-    <table class="tracker-table">
-      <thead>
-        <tr>
-          <th>Casino</th>
-          <th>Collect</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="casino-list"></tbody>
-    </table>
-  </main>
+    <div class="card-form">
+      <h2>Submit an Answer</h2>
+      <textarea id="answerText" placeholder="Enter your answer"></textarea>
+      <input id="answerUser" placeholder="Discord Username (optional)" />
+      <button onclick="submitCard('answer')">Submit</button>
+    </div>
+  </section>
 
-  <footer>
-    <a href="https://ko-fi.com/jmenichole0" class="support-button">☕ Buy Me a Coffee</a>
-  </footer>
-
-  <div id="gif-popup" style="display:none;" class="popup">
-    <img id="popup-gif" src="" alt="funny gif" style="max-width: 100%;" />
-    <p>You’re on a hot streak! 🔥 Keep it up!</p>
-  </div>
-
-  <div class="bottom-bar">
-    <a href="https://discord.com/widget?id=1329107627829104783&theme=dark" target="_blank">💬 Chat with us on Discord</a>
-  </div>
+  <script src="script.js"></script>
 </body>
 </html>
