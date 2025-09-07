@@ -2,31 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Degens Against Decency</title>
-  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <section class="header">
-    <h1>Degens Against Decency</h1>
-    <p>Help us build the most cooked af card game. Don’t get weird weird. Regular weird only.</p>
-  </section>
-
-  <section class="forms">
-    <div class="card-form">
-      <h2>Submit a Question</h2>
-      <textarea id="questionText" placeholder="Enter your question"></textarea>
-      <input id="questionUser" placeholder="Discord Username (optional)" />
-      <button onclick="submitCard('question')">Submit</button>
-    </div>
-
-    <div class="card-form">
-      <h2>Submit an Answer</h2>
-      <textarea id="answerText" placeholder="Enter your answer"></textarea>
-      <input id="answerUser" placeholder="Discord Username (optional)" />
-      <button onclick="submitCard('answer')">Submit</button>
-    </div>
-  </section>
-
-  <script src="script.js"></script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
