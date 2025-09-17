@@ -24,7 +24,14 @@ class BaseGame {
       return { success: false, error: 'Game already started' };
     }
 
-    const user = { id: userId, socket };
+    // For now, create a simple user object. In a real implementation,
+    // you'd fetch user details from the session or database
+    const user = { 
+      id: userId, 
+      username: `Player_${userId.slice(-4)}`, 
+      socket 
+    };
+    
     this.players.push(user);
     this.scores.set(userId, 0);
 

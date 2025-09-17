@@ -71,6 +71,15 @@ app.get('/auth/logout', (req, res) => {
 app.get('/api/user', (req, res) => {
   if (req.isAuthenticated()) {
     res.json(req.user);
+  } else if (process.env.NODE_ENV === 'development') {
+    // Demo mode for development
+    res.json({
+      id: 'demo-user-123',
+      username: 'DemoPlayer',
+      discriminator: '0001',
+      avatar: null,
+      email: 'demo@example.com'
+    });
   } else {
     res.status(401).json({ error: 'Not authenticated' });
   }
@@ -81,12 +90,18 @@ app.get('/api/games', (req, res) => {
 });
 
 app.post('/api/games', (req, res) => {
-  if (!req.isAuthenticated()) {
+  if (!req.isAuthenticated() && process.env.NODE_ENV !== 'development') {
     return res.status(401).json({ error: 'Not authenticated' });
   }
   
+  const user = req.user || {
+    id: 'demo-user-123',
+    username: 'DemoPlayer',
+    discriminator: '0001'
+  };
+  
   const { gameType, isPrivate, maxPlayers } = req.body;
-  const game = gameManager.createGame(gameType, req.user, isPrivate, maxPlayers);
+  const game = gameManager.createGame(gameType, user, isPrivate, maxPlayers);
   res.json(game);
 });
 
@@ -96,14 +111,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/arena', (req, res) => {
-  if (!req.isAuthenticated()) {
+  if (!req.isAuthenticated() && process.env.NODE_ENV !== 'development') {
     return res.redirect('/');
   }
   res.sendFile(path.join(__dirname, 'public', 'arena.html'));
 });
 
 app.get('/game/:gameId', (req, res) => {
-  if (!req.isAuthenticated()) {
+  if (!req.isAuthenticated() && process.env.NODE_ENV !== 'development') {
     return res.redirect('/');
   }
   res.sendFile(path.join(__dirname, 'public', 'game.html'));
@@ -147,6 +162,17 @@ io.on('connection', (socket) => {
       } else {
         socket.emit('error', result.error);
       }
+    }
+  });
+
+  socket.on('chat-message', (data) => {
+    if (socket.gameId) {
+      // Broadcast chat message to all players in the game
+      io.to(socket.gameId).emit('chat-message', {
+        sender: data.sender,
+        text: data.message,
+        timestamp: new Date()
+      });
     }
   });
 
