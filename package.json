@@ -1,12 +1,23 @@
 {
-  "name": "degens-submission-form",
+  "name": "degens-against-decency-arena",
   "version": "1.0.0",
-  "description": "Form to submit questions/answers for Degens Against Decency",
+  "description": "Game arena for Degens Against Decency and other card games with Discord authentication",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "express-session": "^1.17.3",
+    "passport": "^0.6.0",
+    "passport-discord": "^0.1.4",
+    "dotenv": "^16.3.1",
+    "axios": "^1.5.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
