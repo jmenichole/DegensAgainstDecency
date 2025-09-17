@@ -148,10 +148,13 @@ Try the demo mode to explore the interface!
 
 // Initialize auth manager when page loads
 document.addEventListener('DOMContentLoaded', () => {
-  // Check if we're on GitHub Pages or have a server
-  const isGitHubPages = window.location.hostname.includes('github.io');
+  // Check if we're on GitHub Pages or localhost testing
+  const isGitHubPages = window.location.hostname.includes('github.io') ||
+                       window.location.hostname === 'localhost' ||
+                       window.location.hostname === '127.0.0.1' ||
+                       window.location.protocol === 'file:';
   
-  if (isGitHubPages || window.location.protocol === 'file:') {
+  if (isGitHubPages) {
     window.authManager = new StaticAuthManager();
   } else {
     // Try to load the original auth manager for server deployments

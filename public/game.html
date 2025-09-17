@@ -72,10 +72,11 @@
 
   <!-- Load scripts based on deployment type -->
   <script>
-    // Check if we're on GitHub Pages or local file
+    // Check if we're on GitHub Pages or local file or testing environment
     const isStaticDeployment = window.location.hostname.includes('github.io') || 
                               window.location.protocol === 'file:' ||
-                              (!window.location.port || window.location.port === '80' || window.location.port === '443');
+                              window.location.hostname === 'localhost' ||
+                              window.location.hostname === '127.0.0.1';
     
     if (isStaticDeployment) {
       // Static deployment - show demo mode
