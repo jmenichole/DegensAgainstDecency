@@ -71,7 +71,30 @@
     </div>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="scripts/arena.js"></script>
+  <!-- Load scripts based on deployment type -->
+  <script>
+    // Check if we're on GitHub Pages or local file or testing environment
+    const isStaticDeployment = window.location.hostname.includes('github.io') || 
+                              window.location.protocol === 'file:' ||
+                              window.location.hostname === 'localhost' ||
+                              window.location.hostname === '127.0.0.1';
+    
+    if (isStaticDeployment) {
+      // Static deployment - show demo mode
+      const script = document.createElement('script');
+      script.src = 'scripts/arena-static.js';
+      document.head.appendChild(script);
+    } else {
+      // Server deployment - load socket.io and full arena script
+      const socketScript = document.createElement('script');
+      socketScript.src = '/socket.io/socket.io.js';
+      socketScript.onload = () => {
+        const arenaScript = document.createElement('script');
+        arenaScript.src = 'scripts/arena.js';
+        document.head.appendChild(arenaScript);
+      };
+      document.head.appendChild(socketScript);
+    }
+  </script>
 </body>
 </html>

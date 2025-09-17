@@ -81,6 +81,25 @@
     </div>
   </section>
 
-  <script src="scripts/auth.js"></script>
+  <!-- Load appropriate auth script based on deployment -->
+  <script>
+    // Check if we're on GitHub Pages or local file or testing environment
+    const isStaticDeployment = window.location.hostname.includes('github.io') || 
+                              window.location.protocol === 'file:' ||
+                              window.location.hostname === 'localhost' ||
+                              window.location.hostname === '127.0.0.1';
+    
+    if (isStaticDeployment) {
+      // Load static-friendly auth script
+      const script = document.createElement('script');
+      script.src = 'scripts/auth-static.js';
+      document.head.appendChild(script);
+    } else {
+      // Load server-enabled auth script
+      const script = document.createElement('script');
+      script.src = 'scripts/auth.js';
+      document.head.appendChild(script);
+    }
+  </script>
 </body>
 </html>
