@@ -268,7 +268,7 @@ DISCORD_CALLBACK_URL=https://yourdomain.com/auth/discord/callback
 
 ## 🎉 Credits
 
-Built with ❤️ for the party game community. Special thanks to:
+Made by degens for degens ❤️ Special thanks to:
 - Discord for OAuth integration
 - OpenAI for AI content generation
 - Socket.IO for real-time communication
