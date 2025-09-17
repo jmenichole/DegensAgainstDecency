@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Game - Degens Against Decency</title>
-  <link rel="stylesheet" href="../styles/main.css" />
-  <link rel="stylesheet" href="../styles/game.css" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/game.css" />
 </head>
 <body>
   <div class="game-container">
@@ -70,7 +70,29 @@
     </div>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="../scripts/game.js"></script>
+  <!-- Load scripts based on deployment type -->
+  <script>
+    // Check if we're on GitHub Pages or local file
+    const isStaticDeployment = window.location.hostname.includes('github.io') || 
+                              window.location.protocol === 'file:' ||
+                              (!window.location.port || window.location.port === '80' || window.location.port === '443');
+    
+    if (isStaticDeployment) {
+      // Static deployment - show demo mode
+      const script = document.createElement('script');
+      script.src = 'scripts/game-static.js';
+      document.head.appendChild(script);
+    } else {
+      // Server deployment - load socket.io and full game script
+      const socketScript = document.createElement('script');
+      socketScript.src = '/socket.io/socket.io.js';
+      socketScript.onload = () => {
+        const gameScript = document.createElement('script');
+        gameScript.src = 'scripts/game.js';
+        document.head.appendChild(gameScript);
+      };
+      document.head.appendChild(socketScript);
+    }
+  </script>
 </body>
 </html>
