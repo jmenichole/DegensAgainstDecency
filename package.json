@@ -1,7 +1,7 @@
 {
   "name": "degens-against-decency-arena",
   "version": "1.0.0",
-  "description": "Game arena for Degens Against Decency and other card games with Discord authentication",
+  "description": "Ultimate multiplayer party game arena featuring Degens Against Decency, 2 Truths and a Lie, Poker, and more with Discord authentication and AI-powered content",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
