@@ -148,7 +148,7 @@ app.post('/api/games', (req, res) => {
 
 // Serve different pages
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('/arena', (req, res) => {
