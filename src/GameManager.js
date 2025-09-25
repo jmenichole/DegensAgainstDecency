@@ -14,10 +14,13 @@ class GameManager {
     };
   }
 
-  createGame(gameType, creator, isPrivate = false, maxPlayers = 8) {
+  createGame(gameType, creator, isPrivate = false, maxPlayers = 7) {
     if (!this.gameTypes[gameType]) {
       throw new Error('Invalid game type');
     }
+
+    // Enforce player limits: 3-7 players
+    maxPlayers = Math.max(3, Math.min(maxPlayers, 7));
 
     const gameId = uuidv4();
     const GameClass = this.gameTypes[gameType];
@@ -37,7 +40,8 @@ class GameManager {
       isPrivate,
       maxPlayers,
       currentPlayers: 1,
-      status: 'waiting'
+      status: 'waiting',
+      inviteLink: isPrivate ? `${process.env.BASE_URL || 'http://localhost:3000'}/game/${gameId}?invite=true` : null
     };
   }
 

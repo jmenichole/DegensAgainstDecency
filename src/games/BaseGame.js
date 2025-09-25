@@ -1,9 +1,9 @@
 class BaseGame {
-  constructor(id, creator, isPrivate = false, maxPlayers = 8) {
+  constructor(id, creator, isPrivate = false, maxPlayers = 7) {
     this.id = id;
     this.creator = creator;
     this.isPrivate = isPrivate;
-    this.maxPlayers = maxPlayers;
+    this.maxPlayers = Math.min(maxPlayers, 7); // Enforce maximum of 7 players
     this.players = [creator];
     this.status = 'waiting'; // waiting, playing, finished
     this.createdAt = new Date();
@@ -24,11 +24,16 @@ class BaseGame {
       return { success: false, error: 'Game already started' };
     }
 
+    // Generate userId if not provided (for socket connections without proper user setup)
+    if (!userId) {
+      userId = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    }
+
     // For now, create a simple user object. In a real implementation,
     // you'd fetch user details from the session or database
     const user = { 
       id: userId, 
-      username: `Player_${userId.slice(-4)}`, 
+      username: userId.startsWith('guest-') ? `Guest_${userId.slice(-6)}` : `Player_${userId.slice(-4)}`, 
       socket 
     };
     
@@ -48,8 +53,8 @@ class BaseGame {
   }
 
   startGame() {
-    if (this.players.length < 2) {
-      return { success: false, error: 'Need at least 2 players to start' };
+    if (this.players.length < 3) {
+      return { success: false, error: 'Need at least 3 players to start' };
     }
 
     this.status = 'playing';
