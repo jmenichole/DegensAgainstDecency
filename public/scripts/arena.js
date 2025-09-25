@@ -164,6 +164,20 @@ class ArenaManager {
 
       if (response.ok) {
         const game = await response.json();
+        
+        // If it's a private game, show the invite link
+        if (game.isPrivate && game.inviteLink) {
+          const shareInvite = confirm(`Private game created! Click OK to copy the invite link to share with friends.\n\nInvite Link: ${game.inviteLink}`);
+          if (shareInvite) {
+            navigator.clipboard.writeText(game.inviteLink).then(() => {
+              alert('Invite link copied to clipboard!');
+            }).catch(() => {
+              // Fallback if clipboard API fails
+              prompt('Copy this invite link:', game.inviteLink);
+            });
+          }
+        }
+        
         // Redirect to the new game
         window.location.href = `/game/${game.id}`;
       } else {

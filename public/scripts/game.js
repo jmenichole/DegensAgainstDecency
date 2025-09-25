@@ -257,7 +257,7 @@ class DegensGameRenderer extends BaseGameRenderer {
       gameContent.innerHTML = `
         <div class="waiting-area">
           <h2>Waiting for Players</h2>
-          <p>Need at least 2 players to start</p>
+          <p>Need at least 3 players to start</p>
           <p>Current players: ${gameState.players.length}/${gameState.maxPlayers}</p>
         </div>
       `;
@@ -370,7 +370,7 @@ class TwoTruthsGameRenderer extends BaseGameRenderer {
       gameContent.innerHTML = `
         <div class="waiting-area">
           <h2>Waiting for Players</h2>
-          <p>Need at least 2 players to start</p>
+          <p>Need at least 3 players to start</p>
         </div>
       `;
       
@@ -518,7 +518,7 @@ class PokerGameRenderer extends BaseGameRenderer {
       gameContent.innerHTML = `
         <div class="waiting-area">
           <h2>Waiting for Players</h2>
-          <p>Need at least 2 players to start</p>
+          <p>Need at least 3 players to start</p>
         </div>
       `;
       
