@@ -1,4 +1,16 @@
 /* Game Page Styles */
+:root {
+  /* Import the same brand colors */
+  --brand-green: #00ff41;
+  --brand-teal: #00ffff;
+  --brand-pink: #ff00ff;
+  --brand-yellow: #ffff00;
+  --brand-dark: #1a1a2e;
+  --brand-navy: #2d2d4a;
+  --brand-white: #ffffff;
+  --text-light: #b8b8b8;
+}
+
 .game-container {
   max-width: 1600px;
   margin: 0 auto;
@@ -22,11 +34,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 .game-info h1 {
-  color: #00ffff;
+  background: linear-gradient(45deg, var(--brand-teal), var(--brand-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 5px;
   font-size: 1.5rem;
 }
@@ -35,7 +51,7 @@
   display: flex;
   gap: 20px;
   font-size: 0.9rem;
-  color: #b8b8b8;
+  color: var(--text-light);
 }
 
 .player-info {
@@ -48,6 +64,8 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  border: 2px solid var(--brand-green);
+}
   border: 2px solid #ff00ff;
 }
 
