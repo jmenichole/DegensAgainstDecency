@@ -16,10 +16,15 @@ const PORT = process.env.PORT || 3000;
 // Import game modules
 const GameManager = require('./src/GameManager');
 const AICardGenerator = require('./src/AICardGenerator');
+const DiscordBot = require('./src/DiscordBot');
 
 // Initialize game systems
 const gameManager = new GameManager(io);
 const aiCardGenerator = new AICardGenerator();
+const discordBot = new DiscordBot(gameManager, io);
+
+// Connect Discord bot to game manager
+gameManager.setDiscordBot(discordBot);
 
 // Session configuration
 app.use(session({

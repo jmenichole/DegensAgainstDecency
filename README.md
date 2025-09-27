@@ -10,6 +10,12 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 - Avatar and username integration
 - Development mode for testing (bypass authentication)
 
+### 🤖 Discord Bot Integration
+- Create and join games directly from Discord
+- Slash commands for game management
+- Real-time game notifications via DM
+- Bridge between Discord and web interface
+
 ### 🎮 Multiple Game Types
 
 #### 1. Degens Against Decency
@@ -53,7 +59,7 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 
 ### Prerequisites
 - Node.js 16+
-- Discord Developer Application
+- Discord Developer Application (for OAuth and Bot)
 - OpenAI API Key (optional, fallback content available)
 
 ### Installation
@@ -81,6 +87,9 @@ DISCORD_CLIENT_ID=your_discord_client_id
 DISCORD_CLIENT_SECRET=your_discord_client_secret
 DISCORD_CALLBACK_URL=http://localhost:3000/auth/discord/callback
 
+# Discord Bot Configuration
+DISCORD_BOT_TOKEN=your_discord_bot_token
+
 # Session Configuration
 SESSION_SECRET=your_super_secret_session_key
 
@@ -103,17 +112,45 @@ npm start
 
 1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
 2. Create a New Application
-3. Go to OAuth2 → General
-4. Add redirect URI: `http://localhost:3000/auth/discord/callback`
-5. Copy Client ID and Client Secret to your `.env` file
+3. **OAuth2 Setup**:
+   - Go to OAuth2 → General
+   - Add redirect URI: `http://localhost:3000/auth/discord/callback`
+   - Copy Client ID and Client Secret to your `.env` file
+4. **Bot Setup**:
+   - Go to Bot section
+   - Create a Bot
+   - Copy Bot Token to your `.env` file as `DISCORD_BOT_TOKEN`
+   - Enable necessary bot permissions (Send Messages, Use Slash Commands)
+5. **Install Bot to Server**:
+   - Go to OAuth2 → URL Generator
+   - Select scopes: `bot`, `applications.commands`
+   - Select permissions: Send Messages, Use Slash Commands
+   - Use generated URL to add bot to your Discord server
 
 ## 🎮 How to Play
 
-### Starting a Game
+### Starting a Game (Web Interface)
 1. **Login**: Use Discord OAuth to authenticate
 2. **Arena**: Browse available games or create a new one
 3. **Configure**: Choose game type, max players, and privacy settings
 4. **Play**: Join games and enjoy real-time multiplayer action!
+
+### Starting a Game (Discord Bot)
+Use these slash commands in any Discord server where the bot is installed:
+
+- `/create-game` - Create a new game
+  - **type**: Choose game type (Degens Against Decency, 2 Truths and a Lie, Poker)
+  - **max-players**: Set maximum players (3-7, optional)
+  - **private**: Make game private (optional)
+
+- `/list-games` - View all available public games
+
+- `/join-game` - Join a game by ID
+  - **game-id**: The game ID to join
+
+- `/game-status` - Check your current game status
+
+**Note**: Discord bot users can play alongside web users in the same games!
 
 ### Game Types Guide
 

@@ -5,12 +5,41 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* Brand colors from the new logo design */
+  --brand-green: #00ff41;
+  --brand-teal: #00ffff;
+  --brand-pink: #ff00ff;
+  --brand-yellow: #ffff00;
+  --brand-dark: #1a1a2e;
+  --brand-navy: #2d2d4a;
+  --brand-white: #ffffff;
+  --text-light: #b8b8b8;
+}
+
 body {
-  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-  color: #fff;
+  background: linear-gradient(135deg, var(--brand-dark), #16213e, #0f3460);
+  color: var(--brand-white);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
   min-height: 100vh;
+  position: relative;
+}
+
+/* Add subtle animated background inspired by the second image */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(0, 255, 65, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .container {
@@ -19,28 +48,51 @@ body {
   padding: 0 20px;
 }
 
-/* Hero section */
+/* Hero section with enhanced branding */
 .hero {
   padding: 60px 20px;
   text-align: center;
-  background: radial-gradient(circle at center, rgba(255, 0, 255, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(0, 255, 65, 0.1) 0%, transparent 70%);
+  position: relative;
 }
 
 .hero h1 {
   font-size: 3.5rem;
   margin-bottom: 20px;
-  background: linear-gradient(45deg, #ff00ff, #00ffff);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  /* Recreate the logo styling - green with teal/pink glow */
+  background: linear-gradient(45deg, var(--brand-green), var(--brand-teal));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+  text-shadow: 
+    0 0 20px rgba(0, 255, 65, 0.5),
+    0 0 40px rgba(0, 255, 255, 0.3),
+    0 0 60px rgba(255, 0, 255, 0.2);
+  position: relative;
+}
+
+/* Add 3D effect like in the logo */
+.hero h1::after {
+  content: 'DEGENS AGAINST DECENCY';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  background: linear-gradient(45deg, var(--brand-pink), var(--brand-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  z-index: -1;
+  opacity: 0.7;
 }
 
 .tagline {
   font-size: 1.3rem;
   margin-bottom: 50px;
   opacity: 0.9;
-  color: #b8b8b8;
+  color: var(--text-light);
 }
 
 .hero-content {
@@ -52,11 +104,15 @@ body {
   align-items: center;
 }
 
-/* Games showcase */
+/* Games showcase with enhanced branding */
 .games-showcase h2 {
   font-size: 2rem;
   margin-bottom: 30px;
-  color: #00ffff;
+  background: linear-gradient(45deg, var(--brand-teal), var(--brand-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
 }
 
 .game-cards {
@@ -66,27 +122,50 @@ body {
 
 .game-card {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 65, 0.2);
   border-radius: 12px;
   padding: 25px;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.1), transparent);
+  transition: left 0.5s ease;
 }
 
 .game-card:hover {
   transform: translateY(-5px);
-  border-color: #ff00ff;
-  box-shadow: 0 10px 30px rgba(255, 0, 255, 0.2);
+  border-color: var(--brand-green);
+  box-shadow: 
+    0 10px 30px rgba(0, 255, 65, 0.2),
+    0 0 20px rgba(0, 255, 255, 0.1);
+}
+
+.game-card:hover::before {
+  left: 100%;
 }
 
 .game-card h3 {
-  color: #ff00ff;
+  background: linear-gradient(45deg, var(--brand-green), var(--brand-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 10px;
   font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .game-card p {
-  color: #b8b8b8;
+  color: var(--text-light);
   font-size: 0.95rem;
 }
 
@@ -114,7 +193,8 @@ body {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  border: 3px solid #ff00ff;
+  border: 3px solid var(--brand-green);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
 }
 
 .user-details {
@@ -124,11 +204,14 @@ body {
 .user-details h3 {
   font-size: 1.4rem;
   margin-bottom: 5px;
-  color: #00ffff;
+  background: linear-gradient(45deg, var(--brand-teal), var(--brand-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .user-details p {
-  color: #b8b8b8;
+  color: var(--text-light);
 }
 
 .login-prompt {
@@ -136,19 +219,22 @@ body {
   border-radius: 20px;
   padding: 40px;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 65, 0.2);
   backdrop-filter: blur(10px);
 }
 
 .login-prompt h2 {
   font-size: 1.8rem;
   margin-bottom: 15px;
-  color: #00ffff;
+  background: linear-gradient(45deg, var(--brand-teal), var(--brand-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .login-prompt p {
   margin-bottom: 30px;
-  color: #b8b8b8;
+  color: var(--text-light);
 }
 
 /* Buttons */
@@ -168,37 +254,59 @@ body {
 }
 
 .cta-button {
-  background: linear-gradient(45deg, #ff00ff, #ff6600);
-  color: white;
-  box-shadow: 0 5px 20px rgba(255, 0, 255, 0.3);
+  background: linear-gradient(45deg, var(--brand-green), var(--brand-teal));
+  color: var(--brand-dark);
+  font-weight: 700;
+  box-shadow: 0 5px 20px rgba(0, 255, 65, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
 }
 
 .cta-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 0, 255, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 
+    0 10px 30px rgba(0, 255, 65, 0.4),
+    0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.cta-button:hover::before {
+  left: 100%;
 }
 
 .discord-button {
-  background: #5865F2;
+  background: linear-gradient(45deg, #5865F2, var(--brand-teal));
   color: white;
   box-shadow: 0 5px 20px rgba(88, 101, 242, 0.3);
 }
 
 .discord-button:hover {
-  background: #4752C4;
+  background: linear-gradient(45deg, #4752C4, var(--brand-green));
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(88, 101, 242, 0.4);
 }
 
 .secondary-button {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 255, 65, 0.1);
+  color: var(--brand-green);
+  border: 1px solid rgba(0, 255, 65, 0.3);
 }
 
 .secondary-button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 255, 65, 0.2);
+  border-color: var(--brand-green);
   transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 255, 65, 0.2);
 }
 
 .discord-icon {
@@ -237,30 +345,61 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
   padding: 40px 30px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 65, 0.2);
   backdrop-filter: blur(10px);
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 255, 65, 0.05), rgba(0, 255, 255, 0.05));
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .feature:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px);
+  border-color: var(--brand-green);
+  box-shadow: 
+    0 15px 40px rgba(0, 255, 65, 0.2),
+    0 0 30px rgba(0, 255, 255, 0.1);
+}
+
+.feature:hover::before {
+  opacity: 1;
 }
 
 .feature-icon {
   font-size: 3rem;
   margin-bottom: 20px;
   display: block;
+  position: relative;
+  z-index: 1;
 }
 
 .feature h3 {
   font-size: 1.4rem;
   margin-bottom: 15px;
-  color: #ff00ff;
+  background: linear-gradient(45deg, var(--brand-green), var(--brand-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  z-index: 1;
 }
 
 .feature p {
-  color: #b8b8b8;
+  color: var(--text-light);
   line-height: 1.6;
+  position: relative;
+  z-index: 1;
 }
 
 /* Utilities */

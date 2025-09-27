@@ -7,11 +7,16 @@ class GameManager {
   constructor(io) {
     this.io = io;
     this.games = new Map();
+    this.discordBot = null; // Will be set by server.js
     this.gameTypes = {
       'degens-against-decency': DegensAgainstDecencyGame,
       '2-truths-and-a-lie': TwoTruthsAndALieGame,
       'poker': PokerGame
     };
+  }
+
+  setDiscordBot(discordBot) {
+    this.discordBot = discordBot;
   }
 
   createGame(gameType, creator, isPrivate = false, maxPlayers = 7) {
@@ -104,6 +109,27 @@ class GameManager {
     }
 
     const result = game.handleAction(userId, action);
+    
+    // Send Discord notifications for game events
+    if (result.success && this.discordBot) {
+      if (action.type === 'start-game') {
+        this.discordBot.notifyGameStart(gameId, game);
+      } else if (result.gameEnded) {
+        // Find winner based on game type
+        let winner = null;
+        if (game.scores && game.scores.size > 0) {
+          const maxScore = Math.max(...game.scores.values());
+          for (const [playerId, score] of game.scores) {
+            if (score === maxScore) {
+              winner = game.players.find(p => p.id === playerId);
+              break;
+            }
+          }
+        }
+        this.discordBot.notifyGameEnd(gameId, game, winner);
+      }
+    }
+    
     if (result.success) {
       return { success: true, game: game.getGameState() };
     }
