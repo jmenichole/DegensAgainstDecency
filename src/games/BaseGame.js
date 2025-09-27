@@ -24,22 +24,34 @@ class BaseGame {
       return { success: false, error: 'Game already started' };
     }
 
-    // Generate userId if not provided (for socket connections without proper user setup)
-    if (!userId) {
-      userId = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Handle different types of users
+    let user;
+    
+    if (typeof userId === 'object') {
+      // Discord user object passed directly
+      user = { 
+        ...userId,
+        socketId: socket ? socket.id : null
+      };
+    } else if (!userId) {
+      // Generate userId if not provided (for socket connections without proper user setup)
+      const guestId = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      user = { 
+        id: guestId, 
+        username: `Guest_${guestId.slice(-6)}`,
+        socketId: socket ? socket.id : null
+      };
+    } else {
+      // Regular userId string
+      user = { 
+        id: userId, 
+        username: userId.startsWith('guest-') ? `Guest_${userId.slice(-6)}` : `Player_${userId.slice(-4)}`,
+        socketId: socket ? socket.id : null
+      };
     }
-
-    // For now, create a simple user object. In a real implementation,
-    // you'd fetch user details from the session or database
-    // NOTE: Don't store socket directly to avoid circular references
-    const user = { 
-      id: userId, 
-      username: userId.startsWith('guest-') ? `Guest_${userId.slice(-6)}` : `Player_${userId.slice(-4)}`,
-      socketId: socket.id  // Store socket ID instead of socket object
-    };
     
     this.players.push(user);
-    this.scores.set(userId, 0);
+    this.scores.set(user.id, 0);
 
     return { success: true };
   }
