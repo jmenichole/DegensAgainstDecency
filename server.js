@@ -17,14 +17,17 @@ const PORT = process.env.PORT || 3000;
 const GameManager = require('./src/GameManager');
 const AICardGenerator = require('./src/AICardGenerator');
 const DiscordBot = require('./src/DiscordBot');
+const DemoBot = require('./src/DemoBot');
 
 // Initialize game systems
 const gameManager = new GameManager(io);
 const aiCardGenerator = new AICardGenerator();
 const discordBot = new DiscordBot(gameManager, io);
+const demoBot = new DemoBot(gameManager, io);
 
-// Connect Discord bot to game manager
+// Connect bots to game manager
 gameManager.setDiscordBot(discordBot);
+gameManager.setDemoBot(demoBot);
 
 // Session configuration
 app.use(session({
