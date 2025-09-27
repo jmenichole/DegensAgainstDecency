@@ -3,84 +3,208 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Degens Against Decency - Game Arena</title>
+  <title>Degens Against Decency - The Ultimate Party Game Platform</title>
   <link rel="stylesheet" href="styles/main.css" />
 </head>
 <body>
-  <section class="hero">
-    <h1>🎮 Degens Against Decency</h1>
-    <p class="tagline">The ultimate party game arena where chaos meets comedy</p>
-    
-    <div class="hero-content">
-      <div class="games-showcase">
-        <h2>Available Games</h2>
-        <div class="game-cards">
-          <div class="game-card">
-            <h3>Degens Against Decency</h3>
-            <p>Cards Against Humanity for the internet generation</p>
-          </div>
-          <div class="game-card">
-            <h3>2 Truths and a Lie</h3>
-            <p>Classic deception game with scoring system</p>
-          </div>
-          <div class="game-card">
-            <h3>Poker (5-Card Stud)</h3>
-            <p>Show your poker face in this classic card game</p>
-          </div>
-        </div>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <img src="logo.png" alt="Degens Against Decency Logo" />
       </div>
-      
-      <div class="auth-section">
-        <div id="user-info" class="user-info hidden">
-          <div class="user-avatar">
-            <img id="user-avatar" src="" alt="User Avatar" />
-          </div>
-          <div class="user-details">
-            <h3 id="user-name">Loading...</h3>
-            <p>Ready to play!</p>
-          </div>
-          <button id="enter-arena" class="cta-button">Enter Game Arena</button>
-          <button id="logout" class="secondary-button">Logout</button>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#games">Games</a>
+        <a href="#features">Features</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-banner">
+      <img src="banner.png" alt="Cyberpunk Banner" class="banner-bg" />
+    </div>
+    <div class="hero-content-wrapper">
+      <div class="hero-logo">
+        <img src="logo.png" alt="Degens Against Decency" />
+      </div>
+      <h1>The Ultimate Party Game Platform</h1>
+      <p class="tagline">Where chaos meets comedy in the digital age</p>
+      <div class="hero-cta">
+        <a href="#about" class="cta-button">Learn More</a>
+        <a href="arena.html" class="secondary-button">Enter Arena</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about">
+    <div class="container">
+      <h2>What is Degens Against Decency?</h2>
+      <div class="about-content">
+        <div class="about-text">
+          <p>Degens Against Decency is a revolutionary party game platform that brings the irreverent humor of Cards Against Humanity into the digital age. Built for the internet generation, our platform combines AI-generated content with multiplayer mayhem to create unforgettable gaming experiences.</p>
+          <p>Whether you're hosting a virtual party, breaking the ice with new friends, or just looking for some chaotic fun, our collection of games delivers laughs, surprises, and plenty of questionable content.</p>
         </div>
-        
-        <div id="login-prompt" class="login-prompt">
-          <h2>Join the Arena</h2>
-          <p>Connect with Discord to play with friends!</p>
-          <button id="discord-login" class="discord-button">
-            <svg class="discord-icon" viewBox="0 0 24 24" width="20" height="20">
-              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" fill="currentColor"/>
-            </svg>
-            Login with Discord
-          </button>
-          <p class="privacy-note">We only access your username and avatar</p>
+        <div class="about-stats">
+          <div class="stat">
+            <h3>1000+</h3>
+            <p>AI-Generated Cards</p>
+          </div>
+          <div class="stat">
+            <h3>Multiple</h3>
+            <p>Game Modes</p>
+          </div>
+          <div class="stat">
+            <h3>Real-time</h3>
+            <p>Multiplayer Action</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="features">
+  <!-- Games Section -->
+  <section id="games" class="games">
     <div class="container">
-      <h2>Why Play Here?</h2>
+      <h2>Available Games</h2>
+      <div class="game-cards">
+        <div class="game-card">
+          <div class="game-icon">🃏</div>
+          <h3>Degens Against Decency</h3>
+          <p>Our flagship game - Cards Against Humanity for the internet generation. AI-powered prompts and responses ensure fresh, hilarious content every round.</p>
+          <ul>
+            <li>AI-generated content</li>
+            <li>3-10 players</li>
+            <li>Custom card packs</li>
+          </ul>
+        </div>
+        <div class="game-card">
+          <div class="game-icon">🎭</div>
+          <h3>2 Truths and a Lie</h3>
+          <p>Classic deception game with a modern twist. Test your ability to deceive friends and spot their lies with our advanced scoring system.</p>
+          <ul>
+            <li>Scoring system</li>
+            <li>3-8 players</li>
+            <li>Lie detection metrics</li>
+          </ul>
+        </div>
+        <div class="game-card">
+          <div class="game-icon">♠️</div>
+          <h3>Poker (5-Card Stud)</h3>
+          <p>Show your poker face in this classic card game. Perfect for when you want to take a break from the chaos and test your strategic skills.</p>
+          <ul>
+            <li>Classic rules</li>
+            <li>2-6 players</li>
+            <li>Real-time betting</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="container">
+      <h2>Why Choose Our Platform?</h2>
       <div class="features-grid">
         <div class="feature">
           <div class="feature-icon">🤖</div>
           <h3>AI-Generated Content</h3>
-          <p>Fresh, dynamic cards and prompts generated on-demand</p>
+          <p>Our advanced AI continuously creates fresh, hilarious, and contextually relevant content. No more stale card combinations - every game feels new and exciting.</p>
         </div>
         <div class="feature">
           <div class="feature-icon">👥</div>
-          <h3>Multiplayer Fun</h3>
-          <p>Play with friends or join public games with others</p>
+          <h3>Seamless Multiplayer</h3>
+          <p>Connect with friends instantly through Discord integration. Create private rooms or join public games with players from around the world.</p>
         </div>
         <div class="feature">
           <div class="feature-icon">🎯</div>
-          <h3>Multiple Games</h3>
-          <p>Switch between different party games in one place</p>
+          <h3>Multiple Game Modes</h3>
+          <p>Switch seamlessly between different party games in one platform. From card games to deception games to poker - we've got your entertainment covered.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <h3>Real-time Gameplay</h3>
+          <p>Experience lightning-fast real-time gameplay with instant updates, live chat, and synchronized game states across all players.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🛡️</div>
+          <h3>Privacy Focused</h3>
+          <p>We only access your Discord username and avatar. No data harvesting, no invasive permissions - just pure gaming fun.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🌐</div>
+          <h3>Cross-Platform</h3>
+          <p>Play on any device with a web browser. Mobile, tablet, desktop - the chaos travels with you wherever you go.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <script src="scripts/auth.js"></script>
+  <!-- Getting Started Section -->
+  <section class="getting-started">
+    <div class="container">
+      <h2>Ready to Join the Chaos?</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Connect Discord</h3>
+          <p>Link your Discord account for seamless multiplayer experience</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Enter the Arena</h3>
+          <p>Browse available games or create your own private room</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Start Playing</h3>
+          <p>Gather your friends and let the inappropriate hilarity begin</p>
+        </div>
+      </div>
+      <div class="cta-section">
+        <a href="arena.html" class="cta-button">Enter Game Arena</a>
+        <p class="disclaimer">Must be 18+ to play. Content may be inappropriate for sensitive audiences.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="contact">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <img src="logo.png" alt="Degens Against Decency" />
+          <p>Made by degens, for degens ❤️</p>
+        </div>
+        <div class="footer-links">
+          <div>
+            <h4>Platform</h4>
+            <ul>
+              <li><a href="arena.html">Game Arena</a></li>
+              <li><a href="#games">Available Games</a></li>
+              <li><a href="#features">Features</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Community</h4>
+            <ul>
+              <li><a href="#">Discord Server</a></li>
+              <li><a href="#">GitHub</a></li>
+              <li><a href="#">Feedback</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Degens Against Decency. All rights reserved.</p>
+        <p>This project is not affiliated with Cards Against Humanity LLC.</p>
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>
