@@ -29,22 +29,26 @@ app.use(session({
   cookie: { secure: false } // Set to true in production with HTTPS
 }));
 
-// Passport configuration
-passport.use(new DiscordStrategy({
-  clientID: process.env.DISCORD_CLIENT_ID,
-  clientSecret: process.env.DISCORD_CLIENT_SECRET,
-  callbackURL: process.env.DISCORD_CALLBACK_URL,
-  scope: ['identify', 'email']
-}, async (accessToken, refreshToken, profile, done) => {
-  const user = {
-    id: profile.id,
-    username: profile.username,
-    discriminator: profile.discriminator,
-    avatar: profile.avatar,
-    email: profile.email
-  };
-  return done(null, user);
-}));
+// Passport configuration - only if Discord credentials are provided
+if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
+  passport.use(new DiscordStrategy({
+    clientID: process.env.DISCORD_CLIENT_ID,
+    clientSecret: process.env.DISCORD_CLIENT_SECRET,
+    callbackURL: process.env.DISCORD_CALLBACK_URL,
+    scope: ['identify', 'email']
+  }, async (accessToken, refreshToken, profile, done) => {
+    const user = {
+      id: profile.id,
+      username: profile.username,
+      discriminator: profile.discriminator,
+      avatar: profile.avatar,
+      email: profile.email
+    };
+    return done(null, user);
+  }));
+} else {
+  console.log('⚠️  Discord OAuth not configured - running in development mode with guest users');
+}
 
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user, done) => done(null, user));
@@ -54,12 +58,22 @@ app.use(passport.session());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Authentication routes
-app.get('/auth/discord', passport.authenticate('discord'));
-app.get('/auth/discord/callback', 
-  passport.authenticate('discord', { failureRedirect: '/' }),
-  (req, res) => res.redirect('/arena')
-);
+// Authentication routes - only if Discord is configured
+if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
+  app.get('/auth/discord', passport.authenticate('discord'));
+  app.get('/auth/discord/callback', 
+    passport.authenticate('discord', { failureRedirect: '/' }),
+    (req, res) => res.redirect('/arena')
+  );
+} else {
+  // Fallback routes for development without Discord
+  app.get('/auth/discord', (req, res) => {
+    res.status(501).json({ error: 'Discord authentication not configured' });
+  });
+  app.get('/auth/discord/callback', (req, res) => {
+    res.redirect('/arena');
+  });
+}
 
 app.get('/auth/logout', (req, res) => {
   req.logout(() => {

@@ -31,10 +31,11 @@ class BaseGame {
 
     // For now, create a simple user object. In a real implementation,
     // you'd fetch user details from the session or database
+    // NOTE: Don't store socket directly to avoid circular references
     const user = { 
       id: userId, 
-      username: userId.startsWith('guest-') ? `Guest_${userId.slice(-6)}` : `Player_${userId.slice(-4)}`, 
-      socket 
+      username: userId.startsWith('guest-') ? `Guest_${userId.slice(-6)}` : `Player_${userId.slice(-4)}`,
+      socketId: socket.id  // Store socket ID instead of socket object
     };
     
     this.players.push(user);
@@ -53,8 +54,10 @@ class BaseGame {
   }
 
   startGame() {
-    if (this.players.length < 3) {
-      return { success: false, error: 'Need at least 3 players to start' };
+    // Allow 2 players in development mode for testing
+    const minPlayers = process.env.NODE_ENV === 'development' ? 2 : 3;
+    if (this.players.length < minPlayers) {
+      return { success: false, error: `Need at least ${minPlayers} players to start` };
     }
 
     this.status = 'playing';
