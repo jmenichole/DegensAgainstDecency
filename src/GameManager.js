@@ -8,6 +8,7 @@ class GameManager {
     this.io = io;
     this.games = new Map();
     this.discordBot = null; // Will be set by server.js
+    this.demoBot = null; // Will be set by server.js
     this.gameTypes = {
       'degens-against-decency': DegensAgainstDecencyGame,
       '2-truths-and-a-lie': TwoTruthsAndALieGame,
@@ -17,6 +18,10 @@ class GameManager {
 
   setDiscordBot(discordBot) {
     this.discordBot = discordBot;
+  }
+
+  setDemoBot(demoBot) {
+    this.demoBot = demoBot;
   }
 
   createGame(gameType, creator, isPrivate = false, maxPlayers = 7) {
@@ -36,6 +41,14 @@ class GameManager {
     // Notify lobby of new public game
     if (!isPrivate) {
       this.io.to('lobby').emit('lobby-games', this.getPublicGames());
+    }
+
+    // Start demo mode in development environment
+    if (process.env.NODE_ENV === 'development' && this.demoBot) {
+      console.log(`🎮 Starting demo mode for new game ${gameId}`);
+      setTimeout(() => {
+        this.demoBot.startDemo(gameId);
+      }, 2000); // Small delay to allow creator to join
     }
 
     return {

@@ -239,6 +239,37 @@ class BaseGameRenderer {
     gameContent.innerHTML = '';
     gameActions.innerHTML = '';
   }
+
+  addDemoIndicator(gameState) {
+    // Check if this is a demo game (has demo bots)
+    const hasDemoBots = gameState.players.some(p => p.username.startsWith('DemoBot_'));
+    
+    if (hasDemoBots) {
+      const gameContent = document.getElementById('game-content');
+      const demoIndicator = `
+        <div class="demo-indicator" style="
+          background: linear-gradient(135deg, #ff6b35, #f7931e);
+          color: white;
+          padding: 10px 20px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          text-align: center;
+          font-weight: bold;
+          box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+          animation: pulse 2s infinite;
+        ">
+          🎮 LIVE DEMO MODE - Watch AI bots play automatically!
+        </div>
+        <style>
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+          }
+        </style>
+      `;
+      gameContent.innerHTML = demoIndicator + gameContent.innerHTML;
+    }
+  }
 }
 
 // Degens Against Decency renderer
@@ -269,6 +300,9 @@ class DegensGameRenderer extends BaseGameRenderer {
           </button>
         `;
       }
+      
+      // Add demo indicator
+      this.addDemoIndicator(gameState);
       return;
     }
 
@@ -290,6 +324,9 @@ class DegensGameRenderer extends BaseGameRenderer {
     } else {
       this.renderPlayerView(gameState);
     }
+    
+    // Add demo indicator for playing state
+    this.addDemoIndicator(gameState);
   }
 
   renderCardCzarView(gameState) {
@@ -381,6 +418,9 @@ class TwoTruthsGameRenderer extends BaseGameRenderer {
           </button>
         `;
       }
+      
+      // Add demo indicator
+      this.addDemoIndicator(gameState);
       return;
     }
 
@@ -401,6 +441,9 @@ class TwoTruthsGameRenderer extends BaseGameRenderer {
     } else {
       this.renderOtherPlayerView(gameState);
     }
+    
+    // Add demo indicator for playing state
+    this.addDemoIndicator(gameState);
   }
 
   renderCurrentPlayerView(gameState) {
@@ -529,6 +572,9 @@ class PokerGameRenderer extends BaseGameRenderer {
           </button>
         `;
       }
+      
+      // Add demo indicator
+      this.addDemoIndicator(gameState);
       return;
     }
 
@@ -583,6 +629,9 @@ class PokerGameRenderer extends BaseGameRenderer {
         </div>
       `;
     }
+    
+    // Add demo indicator for playing state
+    this.addDemoIndicator(gameState);
   }
 
   getSuitSymbol(suit) {
