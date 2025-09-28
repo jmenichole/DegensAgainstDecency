@@ -14,7 +14,7 @@
   --brand-dark: #1a1a2e;
   --brand-navy: #2d2d4a;
   --brand-white: #ffffff;
-  --text-light: #b8b8b8;
+  --text-light: #d0d0d0;
 }
 
 body {
@@ -503,7 +503,7 @@ body::before {
 }
 
 .game-players {
-  color: #b8b8b8;
+  color: #d0d0d0;
   font-size: 0.9rem;
 }
 
@@ -600,8 +600,9 @@ body::before {
 .loading {
   text-align: center;
   padding: 40px;
-  color: #b8b8b8;
+  color: #e0e0e0;
   font-style: italic;
+  font-size: 1.1rem;
 }
 
 /* Game item status indicators */
@@ -643,6 +644,6 @@ body::before {
 }
 
 .game-status.full {
-  background: rgba(255, 255, 255, 0.1);
-  color: #999;
+  background: rgba(255, 255, 255, 0.15);
+  color: #cccccc;
 }
