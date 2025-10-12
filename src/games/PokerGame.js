@@ -1,3 +1,11 @@
+/**
+ * Poker Game - 5-Card Stud poker implementation
+ * 
+ * Copyright (c) 2024 Degens Against Decency
+ * Licensed under the MIT License
+ * See LICENSE file in the project root for full license information.
+ */
+
 const BaseGame = require('./BaseGame');
 
 class PokerGame extends BaseGame {

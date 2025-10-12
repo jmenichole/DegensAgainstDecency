@@ -1,4 +1,11 @@
-// Static demo version for GitHub Pages
+/**
+ * Static demo version for GitHub Pages
+ * 
+ * Copyright (c) 2024 Degens Against Decency
+ * Licensed under the MIT License
+ * See LICENSE file in the project root for full license information.
+ */
+
 class ArenaDemo {
   constructor() {
     this.user = {

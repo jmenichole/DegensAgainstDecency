@@ -1,3 +1,11 @@
+/**
+ * Game Manager - Central game management system
+ * 
+ * Copyright (c) 2024 Degens Against Decency
+ * Licensed under the MIT License
+ * See LICENSE file in the project root for full license information.
+ */
+
 const { v4: uuidv4 } = require('uuid');
 const DegensAgainstDecencyGame = require('./games/DegensAgainstDecencyGame');
 const TwoTruthsAndALieGame = require('./games/TwoTruthsAndALieGame');

@@ -1,4 +1,11 @@
-/* Game Page Styles */
+/**
+ * Game Page Styles
+ * 
+ * Copyright (c) 2024 Degens Against Decency
+ * Licensed under the MIT License
+ * See LICENSE file in the project root for full license information.
+ */
+
 .game-container {
   max-width: 1600px;
   margin: 0 auto;

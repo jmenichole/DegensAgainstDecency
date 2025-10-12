@@ -1,4 +1,11 @@
-// Arena management and game lobby
+/**
+ * Arena management and game lobby
+ * 
+ * Copyright (c) 2024 Degens Against Decency
+ * Licensed under the MIT License
+ * See LICENSE file in the project root for full license information.
+ */
+
 class ArenaManager {
   constructor() {
     this.socket = null;

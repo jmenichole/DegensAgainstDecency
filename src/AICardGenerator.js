@@ -1,3 +1,11 @@
+/**
+ * AI Card Generator - Dynamic content generation using OpenAI
+ * 
+ * Copyright (c) 2024 Degens Against Decency
+ * Licensed under the MIT License
+ * See LICENSE file in the project root for full license information.
+ */
+
 const axios = require('axios');
 
 class AICardGenerator {
