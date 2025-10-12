@@ -1,4 +1,11 @@
-// Game management and real-time gameplay
+/**
+ * Game management and real-time gameplay
+ * 
+ * Copyright (c) 2024 Degens Against Decency
+ * Licensed under the MIT License
+ * See LICENSE file in the project root for full license information.
+ */
+
 class GameManager {
   constructor() {
     this.socket = null;

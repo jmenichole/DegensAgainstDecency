@@ -1,3 +1,11 @@
+/**
+ * Discord Bot - Discord integration for game management
+ * 
+ * Copyright (c) 2024 Degens Against Decency
+ * Licensed under the MIT License
+ * See LICENSE file in the project root for full license information.
+ */
+
 const { Client, GatewayIntentBits, Collection, SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 class DiscordBot {

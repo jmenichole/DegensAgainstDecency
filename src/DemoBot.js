@@ -1,3 +1,11 @@
+/**
+ * Demo Bot - Automated bot players for demo mode
+ * 
+ * Copyright (c) 2024 Degens Against Decency
+ * Licensed under the MIT License
+ * See LICENSE file in the project root for full license information.
+ */
+
 class DemoBot {
   constructor(gameManager, io) {
     this.gameManager = gameManager;

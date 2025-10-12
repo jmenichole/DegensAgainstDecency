@@ -1,3 +1,11 @@
+/**
+ * Card submission script
+ * 
+ * Copyright (c) 2024 Degens Against Decency
+ * Licensed under the MIT License
+ * See LICENSE file in the project root for full license information.
+ */
+
 function submitCard(type) {
   const text = document.getElementById(`${type}Text`).value;
   const user = document.getElementById(`${type}User`).value;

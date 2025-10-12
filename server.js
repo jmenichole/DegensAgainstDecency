@@ -1,3 +1,11 @@
+/**
+ * Degens Against Decency - Game Arena Server
+ * 
+ * Copyright (c) 2024 Degens Against Decency
+ * Licensed under the MIT License
+ * See LICENSE file in the project root for full license information.
+ */
+
 require('dotenv').config();
 const express = require('express');
 const http = require('http');

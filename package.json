@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Game arena for Degens Against Decency and other card games with Discord authentication",
   "main": "server.js",
+  "license": "MIT",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"

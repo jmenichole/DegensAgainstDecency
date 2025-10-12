@@ -1,3 +1,11 @@
+/**
+ * Base Game - Base class for all game types
+ * 
+ * Copyright (c) 2024 Degens Against Decency
+ * Licensed under the MIT License
+ * See LICENSE file in the project root for full license information.
+ */
+
 class BaseGame {
   constructor(id, creator, isPrivate = false, maxPlayers = 7) {
     this.id = id;
