@@ -121,7 +121,7 @@ app.get('/api/user', (req, res) => {
       });
     } else {
       // For non-authenticated users, create a guest user
-      const guestId = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const guestId = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
       res.json({
         id: guestId,
         username: `Guest_${guestId.slice(-6)}`,
@@ -181,7 +181,7 @@ app.post('/api/games', (req, res) => {
           discriminator: '0001'
         };
       } else {
-        const guestId = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const guestId = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
         user = {
           id: guestId,
           username: `Guest_${guestId.slice(-6)}`,
