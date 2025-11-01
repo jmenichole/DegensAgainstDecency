@@ -33,16 +33,25 @@ class GameManager {
         this.user = await response.json();
         this.updateUserDisplay();
       } else {
+        const errorData = await response.json().catch(() => ({ error: 'Authentication failed' }));
+        console.error('Failed to load user:', errorData);
+        alert(`Authentication error: ${errorData.message || errorData.error || 'Please login to continue'}`);
         window.location.href = '/';
       }
     } catch (error) {
       console.error('Failed to load user:', error);
+      alert('Network error: Unable to connect to server. Please check your connection.');
       window.location.href = '/';
     }
   }
 
   setupSocket() {
-    this.socket = io();
+    this.socket = io({
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5
+    });
 
     this.socket.on('connect', () => {
       console.log('Connected to server');
@@ -59,11 +68,41 @@ class GameManager {
     });
 
     this.socket.on('error', (error) => {
-      alert(`Error: ${error}`);
+      console.error('Game error:', error);
+      alert(`Game error: ${error || 'An unexpected error occurred'}`);
     });
 
-    this.socket.on('disconnect', () => {
-      console.log('Disconnected from server');
+    this.socket.on('connect_error', (error) => {
+      console.error('Connection error:', error);
+      alert('Connection error: Unable to connect to game server. Please check your connection and try again.');
+    });
+
+    this.socket.on('disconnect', (reason) => {
+      console.log('Disconnected from server:', reason);
+      if (reason === 'io server disconnect') {
+        // Server disconnected, try to reconnect manually
+        this.socket.connect();
+      }
+      // Show user-friendly message
+      const statusElement = document.getElementById('connection-status');
+      if (statusElement) {
+        statusElement.textContent = 'Disconnected. Attempting to reconnect...';
+        statusElement.style.color = 'orange';
+      }
+    });
+
+    this.socket.on('reconnect', (attemptNumber) => {
+      console.log('Reconnected after', attemptNumber, 'attempts');
+      const statusElement = document.getElementById('connection-status');
+      if (statusElement) {
+        statusElement.textContent = 'Connected';
+        statusElement.style.color = 'green';
+      }
+    });
+
+    this.socket.on('reconnect_failed', () => {
+      console.error('Failed to reconnect');
+      alert('Failed to reconnect to server. Please refresh the page to continue.');
     });
   }
 
