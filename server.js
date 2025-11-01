@@ -78,13 +78,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
   app.get('/auth/discord', passport.authenticate('discord'));
   app.get('/auth/discord/callback', 
-    passport.authenticate('discord', { failureRedirect: '/' }),
+    passport.authenticate('discord', { failureRedirect: '/?error=auth_failed' }),
     (req, res) => res.redirect('/arena')
   );
 } else {
   // Fallback routes for development without Discord
   app.get('/auth/discord', (req, res) => {
-    res.status(501).json({ error: 'Discord authentication not configured' });
+    res.status(501).json({ 
+      error: 'Discord authentication not configured', 
+      message: 'Discord OAuth is not set up. You can still use the app as a guest user by visiting /arena directly.' 
+    });
   });
   app.get('/auth/discord/callback', (req, res) => {
     res.redirect('/arena');
@@ -92,87 +95,114 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
 }
 
 app.get('/auth/logout', (req, res) => {
-  req.logout(() => {
-    res.redirect('/');
-  });
+  try {
+    req.logout(() => {
+      res.redirect('/');
+    });
+  } catch (error) {
+    console.error('Error logging out:', error);
+    res.status(500).json({ error: 'Failed to logout', message: error.message });
+  }
 });
 
 // API routes
 app.get('/api/user', (req, res) => {
-  if (req.isAuthenticated()) {
-    res.json(req.user);
-  } else if (process.env.NODE_ENV === 'development') {
-    // Demo mode for development
-    res.json({
-      id: 'demo-user-123',
-      username: 'DemoPlayer',
-      discriminator: '0001',
-      avatar: null,
-      email: 'demo@example.com'
-    });
-  } else {
-    // For non-authenticated users, create a guest user
-    const guestId = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    res.json({
-      id: guestId,
-      username: `Guest_${guestId.slice(-6)}`,
-      discriminator: '0000',
-      avatar: null,
-      email: null,
-      isGuest: true
-    });
+  try {
+    if (req.isAuthenticated()) {
+      res.json(req.user);
+    } else if (process.env.NODE_ENV === 'development') {
+      // Demo mode for development
+      res.json({
+        id: 'demo-user-123',
+        username: 'DemoPlayer',
+        discriminator: '0001',
+        avatar: null,
+        email: 'demo@example.com'
+      });
+    } else {
+      // For non-authenticated users, create a guest user
+      const guestId = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+      res.json({
+        id: guestId,
+        username: `Guest_${guestId.slice(-6)}`,
+        discriminator: '0000',
+        avatar: null,
+        email: null,
+        isGuest: true
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ error: 'Failed to retrieve user information', message: error.message });
   }
 });
 
 app.get('/api/games', (req, res) => {
-  res.json(gameManager.getPublicGames());
+  try {
+    const games = gameManager.getPublicGames();
+    res.json(games || []);
+  } catch (error) {
+    console.error('Error fetching games:', error);
+    res.status(500).json({ error: 'Failed to retrieve games', message: error.message });
+  }
 });
 
 app.get('/api/games/:gameId', (req, res) => {
-  const game = gameManager.getGame(req.params.gameId);
-  const isInvite = req.query.invite === 'true';
-  
-  if (!game) {
-    return res.status(404).json({ error: 'Game not found' });
+  try {
+    const game = gameManager.getGame(req.params.gameId);
+    const isInvite = req.query.invite === 'true';
+    
+    if (!game) {
+      return res.status(404).json({ error: 'Game not found', message: 'The requested game does not exist or has ended' });
+    }
+    
+    // Allow access to private games via invite link
+    if (game.isPrivate && !isInvite && !req.isAuthenticated() && process.env.NODE_ENV !== 'development') {
+      return res.status(401).json({ error: 'Not authorized to view this private game', message: 'This is a private game. Use an invite link to join.' });
+    }
+    
+    res.json(game.getGameState());
+  } catch (error) {
+    console.error('Error fetching game:', error);
+    res.status(500).json({ error: 'Failed to retrieve game', message: error.message });
   }
-  
-  // Allow access to private games via invite link
-  if (game.isPrivate && !isInvite && !req.isAuthenticated() && process.env.NODE_ENV !== 'development') {
-    return res.status(401).json({ error: 'Not authorized to view this private game' });
-  }
-  
-  res.json(game.getGameState());
 });
 
 app.post('/api/games', (req, res) => {
-  let user = req.user;
-  
-  // If not authenticated, create a guest user
-  if (!user) {
-    if (process.env.NODE_ENV === 'development') {
-      user = {
-        id: 'demo-user-123',
-        username: 'DemoPlayer',
-        discriminator: '0001'
-      };
-    } else {
-      const guestId = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      user = {
-        id: guestId,
-        username: `Guest_${guestId.slice(-6)}`,
-        discriminator: '0000',
-        isGuest: true
-      };
-    }
-  }
-  
-  const { gameType, isPrivate, maxPlayers } = req.body;
-  
   try {
+    let user = req.user;
+    
+    // If not authenticated, create a guest user
+    if (!user) {
+      if (process.env.NODE_ENV === 'development') {
+        user = {
+          id: 'demo-user-123',
+          username: 'DemoPlayer',
+          discriminator: '0001'
+        };
+      } else {
+        const guestId = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+        user = {
+          id: guestId,
+          username: `Guest_${guestId.slice(-6)}`,
+          discriminator: '0000',
+          isGuest: true
+        };
+      }
+    }
+    
+    const { gameType, isPrivate, maxPlayers } = req.body;
+    
+    // Validate required fields
+    if (!gameType) {
+      return res.status(400).json({ error: 'Game type is required', message: 'Please select a game type' });
+    }
+    
     const game = gameManager.createGame(gameType, user, isPrivate, maxPlayers);
     res.json(game);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Error creating game:', error);
+    res.status(400).json({ error: 'Failed to create game', message: error.message });
   }
 });
 

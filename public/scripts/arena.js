@@ -27,12 +27,30 @@ class ArenaManager {
         this.user = await response.json();
         this.updateUserDisplay();
       } else {
-        // Redirect to login if not authenticated
-        window.location.href = '/';
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Failed to load user:', errorData);
+        alert(`Authentication error: ${errorData.message || errorData.error || 'Failed to authenticate. Please try again.'}`);
+        // Still allow guest access in production
+        if (response.status === 401 || response.status === 403) {
+          // Try to proceed as guest
+          this.user = {
+            id: `guest-${Date.now()}`,
+            username: 'Guest',
+            discriminator: '0000',
+            isGuest: true
+          };
+          this.updateUserDisplay();
+        } else {
+          window.location.href = '/';
+        }
       }
     } catch (error) {
       console.error('Failed to load user:', error);
-      window.location.href = '/';
+      alert(`Network error: Unable to connect to server. Please check your connection and try again.`);
+      // Redirect to home page after showing error
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 2000);
     }
   }
 
@@ -160,6 +178,12 @@ class ArenaManager {
       isPrivate: formData.get('isPrivate') === 'on'
     };
 
+    // Validate game type is selected
+    if (!gameData.gameType) {
+      alert('Please select a game type');
+      return;
+    }
+
     try {
       const response = await fetch('/api/games', {
         method: 'POST',
@@ -188,12 +212,12 @@ class ArenaManager {
         // Redirect to the new game
         window.location.href = `/game/${game.id}`;
       } else {
-        const error = await response.text();
-        alert(`Failed to create game: ${error}`);
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        alert(`Failed to create game: ${errorData.message || errorData.error || 'Please try again'}`);
       }
     } catch (error) {
       console.error('Failed to create game:', error);
-      alert('Failed to create game. Please try again.');
+      alert('Network error: Unable to create game. Please check your connection and try again.');
     }
   }
 
