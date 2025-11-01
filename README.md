@@ -368,6 +368,63 @@ DISCORD_CALLBACK_URL=https://yourdomain.com/auth/discord/callback
 
 ⚠️ **Session Storage** - For production at scale, use Redis for session storage instead of in-memory sessions
 
+## 🔧 Troubleshooting
+
+### Login/Signup Issues
+
+**Problem**: Can't login or signup  
+**Solutions**:
+1. **Check if Discord OAuth is configured**
+   - The app works in guest mode without Discord OAuth
+   - Visit `/arena` directly to use guest mode
+   - If Discord OAuth fails, check your environment variables
+
+2. **Verify Discord Application Setup**
+   - Ensure `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` are set
+   - Confirm redirect URI matches your deployment URL
+   - Check that your Discord app has the correct OAuth scopes
+
+3. **Session Secret**
+   - Make sure `SESSION_SECRET` is set in environment variables
+   - Generate a secure secret for production
+
+### API Errors
+
+**Problem**: "Failed to create game" or "Failed to retrieve games"  
+**Solutions**:
+1. Check browser console for specific error messages
+2. Verify the server is running (check Vercel logs or server logs)
+3. Ensure all required environment variables are set
+4. Try refreshing the page and clearing browser cache
+
+### Connection Issues
+
+**Problem**: "Unable to connect to server" or WebSocket failures  
+**Solutions**:
+1. **On Vercel**: WebSocket support is limited, consider alternative hosting
+2. **Check CORS**: Ensure your deployment allows WebSocket connections
+3. **Firewall**: Check if WebSocket ports are blocked
+4. **Browser Console**: Look for specific connection errors
+
+### Build/Deployment Issues
+
+**Problem**: Build fails or app doesn't start  
+**Solutions**:
+1. Run `npm install` to ensure dependencies are installed
+2. Run `npm run build` locally to test
+3. Check Node.js version (requires 16+)
+4. Review Vercel build logs for specific errors
+5. Ensure `vercel.json` is present in repository root
+
+### Guest Mode Not Working
+
+**Problem**: Can't access app without Discord login  
+**Solutions**:
+1. Navigate directly to `/arena` instead of home page
+2. Check that `NODE_ENV` is properly set
+3. Clear browser cookies and try again
+4. Check server logs for authentication errors
+
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -393,9 +450,10 @@ Made by degens for degens ❤️ Special thanks to:
 ## 🐛 Known Issues & Roadmap
 
 ### Known Issues
-- WebSocket reconnection needs improvement
+- WebSocket support on Vercel is limited (use Railway/Heroku for better real-time features)
 - Mobile UI could be optimized further
 - AI content rate limiting not implemented
+- In-memory session storage (use Redis for production scale)
 
 ### Roadmap
 - [ ] User statistics and game history
