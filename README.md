@@ -57,6 +57,10 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 
 ## 🚀 Getting Started
 
+### Try the Demo First!
+
+Want to see what the interface looks like? Check out our [**GitHub Pages Demo**](https://jmenichole.github.io/DegensAgainstDecency/) for a static preview. Note that the demo version doesn't support real multiplayer gameplay - for that, you'll need to run the full server.
+
 ### Prerequisites
 - Node.js 16+
 - Discord Developer Application (for OAuth and Bot)
@@ -277,7 +281,20 @@ Set `NODE_ENV=development` to enable:
 
 ## 🚀 Deployment
 
-### Quick Deploy to Vercel (Recommended)
+### GitHub Pages (Static Demo Only)
+
+For a quick static demo without backend functionality:
+
+1. Fork this repository
+2. Enable GitHub Pages in Settings → Pages
+3. Select "main" branch and "/ (root)" folder
+4. Visit `https://yourusername.github.io/DegensAgainstDecency/`
+
+**Note**: GitHub Pages only shows the UI demo. For real multiplayer games, deploy the full server below.
+
+See [GITHUB_PAGES.md](GITHUB_PAGES.md) for detailed instructions.
+
+### Quick Deploy to Vercel (Recommended for Full Features)
 
 The easiest way to deploy this app is using Vercel:
 
@@ -427,11 +444,18 @@ DISCORD_CALLBACK_URL=https://yourdomain.com/auth/discord/callback
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+We welcome contributions! Here's how to get started:
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/your-feature-name`
+3. **Make your changes**: Ensure code follows the existing style
+4. **Test locally**: Run `npm start` and test your changes
+5. **Update documentation**: If you add features, update the README
+6. **Submit a pull request**: Describe your changes clearly
+
+Please read our [**Contributing Guide**](CONTRIBUTING.md) for detailed guidelines and [**Code of Conduct**](CODE_OF_CONDUCT.md) for community standards.
+
+For security issues, see our [**Security Policy**](SECURITY.md).
 
 ## 📝 License
 
@@ -454,6 +478,7 @@ Made by degens for degens ❤️ Special thanks to:
 - Mobile UI could be optimized further
 - AI content rate limiting not implemented
 - In-memory session storage (use Redis for production scale)
+- `passport-discord` package is deprecated (still functional, but consider migrating to maintained alternatives like `discord-strategy` or `passport-discord-auth` in future updates)
 
 ### Roadmap
 - [ ] User statistics and game history
