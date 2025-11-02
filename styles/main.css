@@ -26,15 +26,21 @@
   --brand-white: #ffffff;
   --text-light: #b8b8b8;
   --text-muted: #666;
+  
+  /* Neon glow effects */
+  --logo-glow-base: drop-shadow(0 0 30px rgba(0, 255, 65, 0.8)) drop-shadow(0 0 60px rgba(0, 255, 255, 0.4));
+  --logo-glow-intense: drop-shadow(0 0 40px rgba(0, 255, 65, 1)) drop-shadow(0 0 80px rgba(0, 255, 255, 0.6));
+  --button-glow-base: 0 0 20px rgba(255, 0, 255, 0.6), 0 10px 30px rgba(255, 0, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4);
+  --button-glow-intense: 0 0 30px rgba(255, 0, 255, 0.8), 0 10px 30px rgba(255, 0, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Animations */
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.6), 0 10px 30px rgba(255, 0, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--button-glow-base);
   }
   50% {
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.8), 0 10px 30px rgba(255, 0, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--button-glow-intense);
   }
 }
 
@@ -167,16 +173,16 @@ body::before {
   width: 100%;
   height: auto;
   margin-bottom: 30px;
-  filter: drop-shadow(0 0 30px rgba(0, 255, 65, 0.8)) drop-shadow(0 0 60px rgba(0, 255, 255, 0.4));
+  filter: var(--logo-glow-base);
   animation: logo-glow 3s ease-in-out infinite;
 }
 
 @keyframes logo-glow {
   0%, 100% {
-    filter: drop-shadow(0 0 30px rgba(0, 255, 65, 0.8)) drop-shadow(0 0 60px rgba(0, 255, 255, 0.4));
+    filter: var(--logo-glow-base);
   }
   50% {
-    filter: drop-shadow(0 0 40px rgba(0, 255, 65, 1)) drop-shadow(0 0 80px rgba(0, 255, 255, 0.6));
+    filter: var(--logo-glow-intense);
   }
 }
 
@@ -570,14 +576,14 @@ body::before {
 .cta-button {
   background: linear-gradient(45deg, var(--brand-pink), var(--brand-purple));
   color: var(--brand-white);
-  box-shadow: 0 0 20px rgba(255, 0, 255, 0.6), 0 10px 30px rgba(255, 0, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--button-glow-base);
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
 .cta-button:hover {
   transform: translateY(-3px);
   box-shadow: 0 0 30px rgba(255, 0, 255, 0.8), 0 15px 40px rgba(255, 0, 255, 0.5), 0 8px 16px rgba(0, 0, 0, 0.4);
-  animation: none;
+  animation-play-state: paused;
 }
 
 .secondary-button {
