@@ -57,6 +57,10 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 
 ## 🚀 Getting Started
 
+### Try the Demo First!
+
+Want to see what the interface looks like? Check out our [**GitHub Pages Demo**](https://jmenichole.github.io/DegensAgainstDecency/) for a static preview. Note that the demo version doesn't support real multiplayer gameplay - for that, you'll need to run the full server.
+
 ### Prerequisites
 - Node.js 16+
 - Discord Developer Application (for OAuth and Bot)
@@ -454,6 +458,7 @@ Made by degens for degens ❤️ Special thanks to:
 - Mobile UI could be optimized further
 - AI content rate limiting not implemented
 - In-memory session storage (use Redis for production scale)
+- `passport-discord` package is deprecated (still functional, but consider migrating to maintained alternatives like `discord-strategy` or `passport-discord-auth` in future updates)
 
 ### Roadmap
 - [ ] User statistics and game history

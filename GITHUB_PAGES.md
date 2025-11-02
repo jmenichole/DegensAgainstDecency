@@ -15,24 +15,35 @@ The static demo (`arena-demo.html`) provides:
 ## 🚀 Quick GitHub Pages Setup
 
 1. **Fork this repository** to your GitHub account
-2. **Enable GitHub Pages** in repository settings:
+2. **Ensure `.nojekyll` file exists** in the root (already included in this repo)
+   - This file tells GitHub Pages to serve all files, including those in directories starting with underscores
+3. **Enable GitHub Pages** in repository settings:
    - Go to Settings → Pages
    - Set Source to "Deploy from a branch"
    - Select "main" branch and "/ (root)" folder
    - Click Save
-3. **Access your demo** at: `https://yourusername.github.io/DegensAgainstDecency/arena-demo.html`
+4. **Wait a few minutes** for GitHub to build and deploy your site
+5. **Access your demo** at: 
+   - Landing page: `https://yourusername.github.io/DegensAgainstDecency/`
+   - Demo arena: `https://yourusername.github.io/DegensAgainstDecency/arena-demo.html`
 
 ## 📁 Static Files Structure
 
 ```
+├── .nojekyll               # Ensures GitHub Pages serves all files
+├── index.html              # Landing page (links to arena-demo.html)
 ├── arena-demo.html          # Static demo arena page
+├── game.html               # Game interface (requires server for functionality)
 ├── scripts/
-│   └── arena-demo.js        # Demo functionality (no server required)
+│   ├── arena-demo.js        # Demo functionality (no server required)
+│   ├── arena.js            # Full arena functionality (requires server)
+│   ├── game.js             # Game client logic (requires server)
+│   └── auth.js             # Authentication handling (requires server)
 ├── styles/
 │   ├── main.css            # Main styles (with readability improvements)
 │   └── game.css            # Game-specific styles
-├── index.html              # Landing page
-└── assets/                 # Images and static resources
+├── logo.png                # Logo image
+└── banner.png              # Banner image
 ```
 
 ## ⚠️ Limitations of Static Hosting
