@@ -179,7 +179,7 @@ Have an idea? Open an issue with:
 
 ## 🔒 Security
 
-Found a security vulnerability? Please email directly instead of opening a public issue.
+Found a security vulnerability? Please report it via [GitHub Security Advisory](https://github.com/jmenichole/DegensAgainstDecency/security/advisories/new) instead of opening a public issue. See our [Security Policy](SECURITY.md) for details.
 
 ## 📄 License
 

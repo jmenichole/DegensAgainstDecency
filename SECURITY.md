@@ -72,7 +72,12 @@ We take the security of Degens Against Decency seriously. If you believe you hav
 ## Known Security Considerations
 
 ### 1. Deprecated Package
-The `passport-discord` package is deprecated but still functional. We're monitoring for maintained alternatives and will migrate when a suitable replacement is stable.
+The `passport-discord` package is deprecated but still functional. Consider these alternatives for future migrations:
+- **Direct Discord OAuth**: Implement OAuth flow directly using Discord's REST API
+- **passport-discord-auth**: Community-maintained fork (verify maintenance status)
+- **discord-strategy**: Alternative Discord strategy for Passport
+
+We recommend monitoring these packages for stability before migrating. The current implementation remains secure and functional.
 
 ### 2. In-Memory Sessions
 Default configuration uses in-memory sessions, which is not suitable for production at scale. Use Redis or another persistent session store for production deployments.
