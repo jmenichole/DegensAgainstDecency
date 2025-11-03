@@ -14,7 +14,7 @@ class TiltCheckIntegration {
   constructor() {
     this.enabled = process.env.TILTCHECK_ENABLED === 'true';
     this.apiKey = process.env.TILTCHECK_API_KEY;
-    this.apiUrl = process.env.TILTCHECK_API_URL || 'https://api.tiltcheck.it.com';
+    this.apiUrl = process.env.TILTCHECK_API_URL;
     this.activePlayers = new Map();
     
     if (this.enabled && !this.apiKey) {
@@ -25,6 +25,16 @@ class TiltCheckIntegration {
     if (this.enabled) {
       console.log('✅ TiltCheck integration enabled');
     }
+  }
+
+  /**
+   * Check if running in demo mode
+   * @returns {boolean} Is demo mode
+   */
+  isDemoMode() {
+    return process.env.NODE_ENV === 'development' || 
+           !this.apiKey || 
+           this.apiKey === 'demo';
   }
 
   /**
@@ -53,11 +63,7 @@ class TiltCheckIntegration {
       });
 
       // In demo mode, simulate tracking without API call
-      const isDemoMode = process.env.NODE_ENV === 'development' || 
-                         !this.apiKey || 
-                         this.apiKey === 'demo';
-      
-      if (isDemoMode) {
+      if (this.isDemoMode()) {
         console.log(`🎯 TiltCheck tracking player: ${playerId} (demo mode)`);
         return playerData;
       }
@@ -123,11 +129,7 @@ class TiltCheckIntegration {
       }
 
       // Demo mode - skip API call
-      const isDemoMode = process.env.NODE_ENV === 'development' || 
-                         !this.apiKey || 
-                         this.apiKey === 'demo';
-      
-      if (isDemoMode) {
+      if (this.isDemoMode()) {
         return { success: true, tiltCheck };
       }
 
@@ -257,11 +259,7 @@ class TiltCheckIntegration {
       if (playerSession) {
         this.activePlayers.delete(playerId);
         
-        const isDemoMode = process.env.NODE_ENV === 'development' || 
-                           !this.apiKey || 
-                           this.apiKey === 'demo';
-        
-        if (isDemoMode) {
+        if (this.isDemoMode()) {
           console.log(`🎯 TiltCheck stopped tracking player: ${playerId}`);
           return;
         }

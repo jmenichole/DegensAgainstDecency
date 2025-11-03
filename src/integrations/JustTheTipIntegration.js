@@ -13,7 +13,7 @@ const axios = require('axios');
 class JustTheTipIntegration {
   constructor() {
     this.enabled = process.env.JUSTTHETIP_ENABLED === 'true';
-    this.apiUrl = process.env.JUSTTHETIP_API_URL || 'https://api.justthetip.io';
+    this.apiUrl = process.env.JUSTTHETIP_API_URL;
     this.discordBotToken = process.env.JUSTTHETIP_BOT_TOKEN;
     this.registeredWallets = new Map();
     this.tipHistory = [];
@@ -26,6 +26,16 @@ class JustTheTipIntegration {
     if (this.enabled) {
       console.log('✅ JustTheTip integration enabled');
     }
+  }
+
+  /**
+   * Check if running in demo mode
+   * @returns {boolean} Is demo mode
+   */
+  isDemoMode() {
+    return process.env.NODE_ENV === 'development' || 
+           !this.discordBotToken || 
+           this.discordBotToken === 'demo';
   }
 
   /**
@@ -52,11 +62,7 @@ class JustTheTipIntegration {
       });
 
       // Demo mode - skip API call
-      const isDemoMode = process.env.NODE_ENV === 'development' || 
-                         !this.discordBotToken || 
-                         this.discordBotToken === 'demo';
-      
-      if (isDemoMode) {
+      if (this.isDemoMode()) {
         console.log(`💎 Registered wallet for user ${userId}: ${walletAddress} (demo mode)`);
         return {
           success: true,
@@ -144,11 +150,7 @@ class JustTheTipIntegration {
       this.tipHistory.push(tipData);
 
       // Demo mode - return mock transaction
-      const isDemoMode = process.env.NODE_ENV === 'development' || 
-                         !this.discordBotToken || 
-                         this.discordBotToken === 'demo';
-      
-      if (isDemoMode) {
+      if (this.isDemoMode()) {
         console.log(`💰 Tip created: ${amount} ${currency} from ${fromUserId} to ${toUserId} (demo mode)`);
         return {
           success: true,
@@ -205,11 +207,7 @@ class JustTheTipIntegration {
       }
 
       // Demo mode - return mock balance
-      const isDemoMode = process.env.NODE_ENV === 'development' || 
-                         !this.discordBotToken || 
-                         this.discordBotToken === 'demo';
-      
-      if (isDemoMode) {
+      if (this.isDemoMode()) {
         return {
           success: true,
           walletAddress: wallet.walletAddress,
@@ -280,9 +278,12 @@ class JustTheTipIntegration {
    * Validate Solana address format
    * @param {string} address - Address to validate
    * @returns {boolean} Is valid
+   * 
+   * Note: Solana addresses are Base58-encoded public keys (32 bytes).
+   * Valid characters: 1-9, A-H, J-N, P-Z, a-k, m-z (excludes 0, O, I, l)
+   * Length: 32-44 characters
    */
   isValidSolanaAddress(address) {
-    // Basic Solana address validation (32-44 base58 characters)
     return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
   }
 
@@ -324,11 +325,7 @@ class JustTheTipIntegration {
       };
 
       // Demo mode
-      const isDemoMode = process.env.NODE_ENV === 'development' || 
-                         !this.discordBotToken || 
-                         this.discordBotToken === 'demo';
-      
-      if (isDemoMode) {
+      if (this.isDemoMode()) {
         console.log(`🎁 Airdrop created: ${airdropData.totalAmount} ${currency} to ${recipients.length} recipients (demo mode)`);
         return {
           success: true,

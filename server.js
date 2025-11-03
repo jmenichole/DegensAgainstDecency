@@ -220,71 +220,71 @@ app.get('/api/integrations/health', (req, res) => {
   }
 });
 
-app.post('/api/integrations/tiltcheck/register', (req, res) => {
+app.post('/api/integrations/tiltcheck/register', async (req, res) => {
   try {
     const { playerId, options } = req.body;
     if (!integrationManager.tiltCheck.enabled) {
       return res.status(503).json({ error: 'TiltCheck integration not enabled' });
     }
-    integrationManager.tiltCheck.trackPlayer(playerId, options)
-      .then(result => res.json(result))
-      .catch(err => res.status(500).json({ error: err.message }));
+    const result = await integrationManager.tiltCheck.trackPlayer(playerId, options);
+    res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('TiltCheck registration error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.get('/api/integrations/tiltcheck/stats/:playerId', (req, res) => {
+app.get('/api/integrations/tiltcheck/stats/:playerId', async (req, res) => {
   try {
     if (!integrationManager.tiltCheck.enabled) {
       return res.status(503).json({ error: 'TiltCheck integration not enabled' });
     }
-    integrationManager.tiltCheck.getPlayerStats(req.params.playerId)
-      .then(stats => res.json(stats || { error: 'Player not found' }))
-      .catch(err => res.status(500).json({ error: err.message }));
+    const stats = await integrationManager.tiltCheck.getPlayerStats(req.params.playerId);
+    res.json(stats || { error: 'Player not found' });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('TiltCheck stats error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.post('/api/integrations/justthetip/register-wallet', (req, res) => {
+app.post('/api/integrations/justthetip/register-wallet', async (req, res) => {
   try {
     const { userId, walletAddress } = req.body;
     if (!integrationManager.justTheTip.enabled) {
       return res.status(503).json({ error: 'JustTheTip integration not enabled' });
     }
-    integrationManager.justTheTip.registerWallet(userId, walletAddress)
-      .then(result => res.json(result))
-      .catch(err => res.status(500).json({ error: err.message }));
+    const result = await integrationManager.justTheTip.registerWallet(userId, walletAddress);
+    res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('JustTheTip wallet registration error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.post('/api/integrations/justthetip/tip', (req, res) => {
+app.post('/api/integrations/justthetip/tip', async (req, res) => {
   try {
     const { fromUserId, toUserId, amount, currency, context } = req.body;
     if (!integrationManager.justTheTip.enabled) {
       return res.status(503).json({ error: 'JustTheTip integration not enabled' });
     }
-    integrationManager.justTheTip.createTip(fromUserId, toUserId, amount, currency, context)
-      .then(result => res.json(result))
-      .catch(err => res.status(500).json({ error: err.message }));
+    const result = await integrationManager.justTheTip.createTip(fromUserId, toUserId, amount, currency, context);
+    res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('JustTheTip tip creation error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.get('/api/integrations/justthetip/balance/:userId', (req, res) => {
+app.get('/api/integrations/justthetip/balance/:userId', async (req, res) => {
   try {
     if (!integrationManager.justTheTip.enabled) {
       return res.status(503).json({ error: 'JustTheTip integration not enabled' });
     }
-    integrationManager.justTheTip.getBalance(req.params.userId)
-      .then(balance => res.json(balance))
-      .catch(err => res.status(500).json({ error: err.message }));
+    const balance = await integrationManager.justTheTip.getBalance(req.params.userId);
+    res.json(balance);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('JustTheTip balance query error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
