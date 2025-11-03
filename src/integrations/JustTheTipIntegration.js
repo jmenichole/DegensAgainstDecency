@@ -221,9 +221,13 @@ class JustTheTipIntegration {
         };
       }
 
+      // Validate and sanitize userId to prevent request forgery
+      // Only allow alphanumeric, hyphens, and underscores
+      const sanitizedUserId = encodeURIComponent(userId.replace(/[^a-zA-Z0-9-_]/g, ''));
+      
       // Query balance from API
       const response = await axios.get(
-        `${this.apiUrl}/api/balance/${userId}`,
+        `${this.apiUrl}/api/balance/${sanitizedUserId}`,
         {
           headers: {
             'Authorization': `Bearer ${this.discordBotToken}`
