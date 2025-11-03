@@ -55,6 +55,13 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 - Smooth animations and transitions
 - Intuitive game controls and feedback
 
+### 🔌 Backend Integrations (Optional)
+- **TiltCheck** - Player behavior monitoring for responsible gaming
+- **JustTheTip** - Cryptocurrency tipping with Solana smart contracts
+- Non-custodial wallet support
+- Real-time balance queries and transaction tracking
+- See [INTEGRATIONS.md](INTEGRATIONS.md) for full details
+
 ## 🚀 Getting Started
 
 ### Try the Demo First!
