@@ -26,16 +26,19 @@ const GameManager = require('./src/GameManager');
 const AICardGenerator = require('./src/AICardGenerator');
 const DiscordBot = require('./src/DiscordBot');
 const DemoBot = require('./src/DemoBot');
+const IntegrationManager = require('./src/integrations/IntegrationManager');
 
 // Initialize game systems
 const gameManager = new GameManager(io);
 const aiCardGenerator = new AICardGenerator();
 const discordBot = new DiscordBot(gameManager, io);
 const demoBot = new DemoBot(gameManager, io);
+const integrationManager = new IntegrationManager();
 
 // Connect bots to game manager
 gameManager.setDiscordBot(discordBot);
 gameManager.setDemoBot(demoBot);
+gameManager.setIntegrationManager(integrationManager);
 
 // Session configuration
 app.use(session({
@@ -203,6 +206,85 @@ app.post('/api/games', (req, res) => {
   } catch (error) {
     console.error('Error creating game:', error);
     res.status(400).json({ error: 'Failed to create game', message: error.message });
+  }
+});
+
+// Integration API endpoints
+app.get('/api/integrations/health', (req, res) => {
+  try {
+    const health = integrationManager.getHealthStatus();
+    res.json(health);
+  } catch (error) {
+    console.error('Error fetching integration health:', error);
+    res.status(500).json({ error: 'Failed to retrieve integration health', message: error.message });
+  }
+});
+
+app.post('/api/integrations/tiltcheck/register', async (req, res) => {
+  try {
+    const { playerId, options } = req.body;
+    if (!integrationManager.tiltCheck.enabled) {
+      return res.status(503).json({ error: 'TiltCheck integration not enabled' });
+    }
+    const result = await integrationManager.tiltCheck.trackPlayer(playerId, options);
+    res.json(result);
+  } catch (error) {
+    console.error('TiltCheck registration error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/integrations/tiltcheck/stats/:playerId', async (req, res) => {
+  try {
+    if (!integrationManager.tiltCheck.enabled) {
+      return res.status(503).json({ error: 'TiltCheck integration not enabled' });
+    }
+    const stats = await integrationManager.tiltCheck.getPlayerStats(req.params.playerId);
+    res.json(stats || { error: 'Player not found' });
+  } catch (error) {
+    console.error('TiltCheck stats error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/integrations/justthetip/register-wallet', async (req, res) => {
+  try {
+    const { userId, walletAddress } = req.body;
+    if (!integrationManager.justTheTip.enabled) {
+      return res.status(503).json({ error: 'JustTheTip integration not enabled' });
+    }
+    const result = await integrationManager.justTheTip.registerWallet(userId, walletAddress);
+    res.json(result);
+  } catch (error) {
+    console.error('JustTheTip wallet registration error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/integrations/justthetip/tip', async (req, res) => {
+  try {
+    const { fromUserId, toUserId, amount, currency, context } = req.body;
+    if (!integrationManager.justTheTip.enabled) {
+      return res.status(503).json({ error: 'JustTheTip integration not enabled' });
+    }
+    const result = await integrationManager.justTheTip.createTip(fromUserId, toUserId, amount, currency, context);
+    res.json(result);
+  } catch (error) {
+    console.error('JustTheTip tip creation error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/integrations/justthetip/balance/:userId', async (req, res) => {
+  try {
+    if (!integrationManager.justTheTip.enabled) {
+      return res.status(503).json({ error: 'JustTheTip integration not enabled' });
+    }
+    const balance = await integrationManager.justTheTip.getBalance(req.params.userId);
+    res.json(balance);
+  } catch (error) {
+    console.error('JustTheTip balance query error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 

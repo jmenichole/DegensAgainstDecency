@@ -32,6 +32,10 @@ class GameManager {
     this.demoBot = demoBot;
   }
 
+  setIntegrationManager(integrationManager) {
+    this.integrationManager = integrationManager;
+  }
+
   createGame(gameType, creator, isPrivate = false, maxPlayers = 7) {
     if (!this.gameTypes[gameType]) {
       throw new Error('Invalid game type');
@@ -102,6 +106,15 @@ class GameManager {
     if (result.success) {
       // Update lobby with current games
       this.io.to('lobby').emit('lobby-games', this.getPublicGames());
+      
+      // Notify integration manager
+      if (this.integrationManager) {
+        this.integrationManager.onPlayerJoinGame(
+          { id: userId },
+          { gameId, gameType: game.gameType }
+        );
+      }
+      
       return { success: true, game: game.getGameState() };
     }
 
@@ -113,6 +126,11 @@ class GameManager {
     if (!game) return;
 
     game.removePlayer(userId);
+    
+    // Notify integration manager
+    if (this.integrationManager) {
+      this.integrationManager.onPlayerLeaveGame(userId);
+    }
     
     // If game is empty, remove it
     if (game.players.length === 0) {
@@ -130,6 +148,15 @@ class GameManager {
     }
 
     const result = game.handleAction(userId, action);
+    
+    // Notify integration manager of game actions
+    if (this.integrationManager && result.success) {
+      this.integrationManager.onGameAction(userId, {
+        type: action.type,
+        gameType: game.gameType,
+        ...action
+      });
+    }
     
     // Send Discord notifications for game events
     if (result.success && this.discordBot) {
