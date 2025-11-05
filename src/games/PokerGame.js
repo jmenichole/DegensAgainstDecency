@@ -44,7 +44,12 @@ class PokerGame extends BaseGame {
     this.deck = [];
     for (const suit of suits) {
       for (const rank of ranks) {
-        this.deck.push({ suit, rank, value: this.getCardValue(rank) });
+        this.deck.push({ 
+          suit, 
+          rank, 
+          value: this.getCardValue(rank),
+          id: `${rank}-${suit}`
+        });
       }
     }
   }
@@ -256,14 +261,162 @@ class PokerGame extends BaseGame {
   }
 
   evaluateHand(cards) {
-    // Simplified hand evaluation - just high card for now
-    // In a full implementation, you'd check for pairs, straights, flushes, etc.
-    const highCard = Math.max(...cards.map(card => card.value));
+    if (!cards || cards.length < 5) {
+      return { type: 'incomplete', value: 0, description: 'Incomplete hand' };
+    }
+
+    // Sort cards by value (descending)
+    const sorted = [...cards].sort((a, b) => b.value - a.value);
+    
+    // Check for flush
+    const isFlush = cards.every(card => card.suit === cards[0].suit);
+    
+    // Check for straight
+    const values = sorted.map(c => c.value);
+    const isStraight = this.checkStraight(values);
+    
+    // Special case: A-2-3-4-5 straight (wheel)
+    const isWheelStraight = values[0] === 14 && values[1] === 5 && values[2] === 4 && 
+                            values[3] === 3 && values[4] === 2;
+    
+    // Count ranks
+    const rankCounts = new Map();
+    for (const card of cards) {
+      rankCounts.set(card.value, (rankCounts.get(card.value) || 0) + 1);
+    }
+    
+    const counts = Array.from(rankCounts.values()).sort((a, b) => b - a);
+    const ranksWithCounts = Array.from(rankCounts.entries())
+      .sort((a, b) => b[1] - a[1] || b[0] - a[0]);
+    
+    // Straight Flush
+    if (isFlush && (isStraight || isWheelStraight)) {
+      const highValue = isWheelStraight ? 5 : sorted[0].value;
+      return {
+        type: 'straight-flush',
+        value: 8000000 + highValue,
+        description: `Straight flush, ${this.getCardName(highValue)} high`
+      };
+    }
+    
+    // Four of a Kind
+    if (counts[0] === 4) {
+      const quadValue = ranksWithCounts[0][0];
+      const kicker = ranksWithCounts[1][0];
+      return {
+        type: 'four-of-a-kind',
+        value: 7000000 + quadValue * 100 + kicker,
+        description: `Four ${this.getCardName(quadValue)}s`
+      };
+    }
+    
+    // Full House
+    if (counts[0] === 3 && counts[1] === 2) {
+      const tripValue = ranksWithCounts[0][0];
+      const pairValue = ranksWithCounts[1][0];
+      return {
+        type: 'full-house',
+        value: 6000000 + tripValue * 100 + pairValue,
+        description: `Full house, ${this.getCardName(tripValue)}s over ${this.getCardName(pairValue)}s`
+      };
+    }
+    
+    // Flush
+    if (isFlush) {
+      const value = sorted.reduce((sum, card, idx) => sum + card.value * Math.pow(100, 4 - idx), 5000000);
+      return {
+        type: 'flush',
+        value: value,
+        description: `Flush, ${this.getCardName(sorted[0].value)} high`
+      };
+    }
+    
+    // Straight
+    if (isStraight || isWheelStraight) {
+      const highValue = isWheelStraight ? 5 : sorted[0].value;
+      return {
+        type: 'straight',
+        value: 4000000 + highValue,
+        description: `Straight, ${this.getCardName(highValue)} high`
+      };
+    }
+    
+    // Three of a Kind
+    if (counts[0] === 3) {
+      const tripValue = ranksWithCounts[0][0];
+      const kickers = ranksWithCounts.slice(1).map(r => r[0]);
+      return {
+        type: 'three-of-a-kind',
+        value: 3000000 + tripValue * 10000 + kickers[0] * 100 + kickers[1],
+        description: `Three ${this.getCardName(tripValue)}s`
+      };
+    }
+    
+    // Two Pair
+    if (counts[0] === 2 && counts[1] === 2) {
+      const highPair = ranksWithCounts[0][0];
+      const lowPair = ranksWithCounts[1][0];
+      const kicker = ranksWithCounts[2][0];
+      return {
+        type: 'two-pair',
+        value: 2000000 + highPair * 10000 + lowPair * 100 + kicker,
+        description: `Two pair, ${this.getCardName(highPair)}s and ${this.getCardName(lowPair)}s`
+      };
+    }
+    
+    // One Pair
+    if (counts[0] === 2) {
+      const pairValue = ranksWithCounts[0][0];
+      const kickers = ranksWithCounts.slice(1).map(r => r[0]);
+      return {
+        type: 'pair',
+        value: 1000000 + pairValue * 10000 + kickers[0] * 100 + kickers[1],
+        description: `Pair of ${this.getCardName(pairValue)}s`
+      };
+    }
+    
+    // High Card
+    const value = sorted.reduce((sum, card, idx) => sum + card.value * Math.pow(100, 4 - idx), 0);
     return {
       type: 'high-card',
-      value: highCard,
-      description: `High card ${cards.find(c => c.value === highCard).rank}`
+      value: value,
+      description: `High card ${this.getCardName(sorted[0].value)}`
     };
+  }
+
+  checkStraight(values) {
+    for (let i = 0; i < values.length - 1; i++) {
+      if (values[i] - values[i + 1] !== 1) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  getCardName(value) {
+    // Reverse mapping of card values to names
+    const names = {
+      14: 'Ace',
+      13: 'King',
+      12: 'Queen',
+      11: 'Jack',
+      10: 'Ten',
+      9: 'Nine',
+      8: 'Eight',
+      7: 'Seven',
+      6: 'Six',
+      5: 'Five',
+      4: 'Four',
+      3: 'Three',
+      2: 'Two'
+    };
+    return names[value] || value.toString();
+  }
+
+  // Static method for hand evaluation to avoid instantiation
+  static evaluateHandStatic(cards) {
+    const tempGame = new PokerGame('temp', { id: 'temp', username: 'temp' }, false, 2);
+    return tempGame.evaluateHand(cards);
   }
 
   endHand(winnerId, handRankings = null) {
