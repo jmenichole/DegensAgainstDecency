@@ -394,10 +394,29 @@ class PokerGame extends BaseGame {
   }
 
   getCardName(value) {
-    const names = { 14: 'Ace', 13: 'King', 12: 'Queen', 11: 'Jack', 10: 'Ten', 
-                    9: 'Nine', 8: 'Eight', 7: 'Seven', 6: 'Six', 5: 'Five',
-                    4: 'Four', 3: 'Three', 2: 'Two' };
+    // Reverse mapping of card values to names
+    const names = {
+      14: 'Ace',
+      13: 'King',
+      12: 'Queen',
+      11: 'Jack',
+      10: 'Ten',
+      9: 'Nine',
+      8: 'Eight',
+      7: 'Seven',
+      6: 'Six',
+      5: 'Five',
+      4: 'Four',
+      3: 'Three',
+      2: 'Two'
+    };
     return names[value] || value.toString();
+  }
+
+  // Static method for hand evaluation to avoid instantiation
+  static evaluateHandStatic(cards) {
+    const tempGame = new PokerGame('temp', { id: 'temp', username: 'temp' }, false, 2);
+    return tempGame.evaluateHand(cards);
   }
 
   endHand(winnerId, handRankings = null) {

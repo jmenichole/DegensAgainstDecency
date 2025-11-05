@@ -829,7 +829,11 @@ class DiscordBot {
   }
 
   getPokerCardValue(rank) {
-    const values = { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14 };
+    // Use same mapping as PokerGame for consistency
+    const values = {
+      '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9,
+      '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
+    };
     return values[rank] || 0;
   }
 
@@ -1443,10 +1447,9 @@ class DiscordBot {
   }
 
   evaluatePokerHand(cards) {
-    // Use the comprehensive evaluation from PokerGame
+    // Use static method from PokerGame to avoid unnecessary instantiation
     const PokerGame = require('./games/PokerGame');
-    const tempGame = new PokerGame('temp', {}, false, 2);
-    return tempGame.evaluateHand(cards);
+    return PokerGame.evaluateHandStatic(cards);
   }
 
   async endPokerHand(game, winnerId, handRankings = null) {
