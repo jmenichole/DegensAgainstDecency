@@ -634,31 +634,208 @@ class DiscordBot {
   async startDegensDiscordGame(game) {
     const channel = await this.client.channels.fetch(game.channelId);
     
-    const embed = new EmbedBuilder()
+    // Initialize game state
+    const AICardGenerator = require('./AICardGenerator');
+    const aiCardGenerator = new AICardGenerator();
+    
+    try {
+      // Generate cards
+      const cards = await aiCardGenerator.generateDegensCards(50);
+      game.questionCards = cards.filter(card => card.type === 'question');
+      game.answerCards = cards.filter(card => card.type === 'answer');
+      
+      // Use fallback cards if not enough
+      if (game.questionCards.length < 10) {
+        const fallbackCards = aiCardGenerator.getFallbackDegensCards();
+        game.questionCards.push(...fallbackCards.filter(card => card.type === 'question'));
+        game.answerCards.push(...fallbackCards.filter(card => card.type === 'answer'));
+      }
+    } catch (error) {
+      console.error('Error generating cards:', error);
+      const fallbackCards = aiCardGenerator.getFallbackDegensCards();
+      game.questionCards = fallbackCards.filter(card => card.type === 'question');
+      game.answerCards = fallbackCards.filter(card => card.type === 'answer');
+    }
+    
+    // Shuffle cards
+    game.answerCards = game.answerCards.sort(() => Math.random() - 0.5);
+    game.questionCards = game.questionCards.sort(() => Math.random() - 0.5);
+    
+    // Deal hands via DM (7 cards per player)
+    game.playerHands = new Map();
+    game.submissions = new Map();
+    game.cardsPerHand = 7;
+    game.maxRounds = 10;
+    game.currentRound = 1;
+    
+    for (const player of game.players) {
+      const hand = [];
+      for (let i = 0; i < game.cardsPerHand; i++) {
+        if (game.answerCards.length > 0) {
+          hand.push(game.answerCards.pop());
+        }
+      }
+      game.playerHands.set(player.id, hand);
+      
+      // Send hand to player via DM
+      try {
+        const user = await this.client.users.fetch(player.id);
+        const handEmbed = new EmbedBuilder()
+          .setColor(0xFF6B6B)
+          .setTitle('🎴 Your Hand')
+          .setDescription('Here are your answer cards. Keep them secret!')
+          .addFields(
+            hand.map((card, idx) => ({
+              name: `Card ${idx + 1}`,
+              value: card.text || `Card ID: ${card.id}`,
+              inline: false
+            }))
+          );
+        
+        await user.send({ embeds: [handEmbed] });
+      } catch (error) {
+        console.error(`Failed to send hand to player ${player.id}:`, error);
+      }
+    }
+    
+    // Select Card Czar (first player)
+    game.cardCzarIndex = 0;
+    game.cardCzar = game.players[game.cardCzarIndex];
+    
+    // Draw first question
+    game.currentQuestion = game.questionCards.pop();
+    
+    // Announce game start in channel
+    const gameEmbed = new EmbedBuilder()
       .setColor(0xFF6B6B)
-      .setTitle('🔥 Degens Against Decency')
-      .setDescription('This game works best in the web interface due to card management complexity.')
+      .setTitle('🔥 Degens Against Decency - Round 1')
+      .setDescription(`**Card Czar:** ${game.cardCzar.username}`)
       .addFields(
-        { name: '🌐 Play in Web Arena', value: `For the full experience, please use:\n${process.env.DOMAIN || 'http://localhost:3000'}/game/create`, inline: false },
-        { name: '🎮 Discord Alternative', value: 'We recommend "2 Truths and a Lie" for Discord play!', inline: false }
+        { name: '❓ Question', value: game.currentQuestion.text || 'Loading...', inline: false },
+        { name: '📋 Instructions', value: 'Players: Check your DMs for your hand. Reply to this message with the number of the card you want to play (1-7).\n\nCard Czar: Wait for submissions, then pick the best answer!', inline: false },
+        { name: '⏰ Time Limit', value: '2 minutes to submit', inline: true },
+        { name: '🎯 Round', value: `${game.currentRound} of ${game.maxRounds}`, inline: true }
       );
-
-    await channel.send({ embeds: [embed] });
+    
+    await channel.send({ embeds: [gameEmbed] });
+    
+    // Store game state
+    game.waitingFor = 'submissions';
+    game.submissionTimeout = setTimeout(() => {
+      this.handleDegensTimeout(game);
+    }, 120000); // 2 minute timeout
   }
 
   async startPokerDiscordGame(game) {
     const channel = await this.client.channels.fetch(game.channelId);
     
-    const embed = new EmbedBuilder()
+    // Initialize poker game
+    game.deck = this.createPokerDeck();
+    game.deck = game.deck.sort(() => Math.random() - 0.5); // Shuffle
+    game.playerHands = new Map();
+    game.playerBets = new Map();
+    game.currentBet = 0;
+    game.pot = 0;
+    game.dealerIndex = 0;
+    game.bettingRound = 1;
+    game.maxBettingRounds = 4;
+    game.smallBlind = 5;
+    game.bigBlind = 10;
+    game.foldedPlayers = new Set();
+    
+    // Post blinds
+    if (game.players.length >= 2) {
+      const smallBlindIndex = (game.dealerIndex + 1) % game.players.length;
+      const bigBlindIndex = (game.dealerIndex + 2) % game.players.length;
+      
+      game.playerBets.set(game.players[smallBlindIndex].id, game.smallBlind);
+      game.playerBets.set(game.players[bigBlindIndex].id, game.bigBlind);
+      game.currentBet = game.bigBlind;
+      game.pot = game.smallBlind + game.bigBlind;
+    }
+    
+    // Deal initial 2 cards to each player via DM
+    for (const player of game.players) {
+      const hand = [];
+      for (let i = 0; i < 2; i++) {
+        if (game.deck.length > 0) {
+          hand.push(game.deck.pop());
+        }
+      }
+      game.playerHands.set(player.id, hand);
+      
+      // Send hand to player via DM
+      try {
+        const user = await this.client.users.fetch(player.id);
+        const handEmbed = new EmbedBuilder()
+          .setColor(0xFFD700)
+          .setTitle('🃏 Your Poker Hand')
+          .setDescription('Keep these cards secret!')
+          .addFields(
+            hand.map(card => ({
+              name: `${this.getCardEmoji(card.suit)} ${card.rank}`,
+              value: `${card.suit} ${card.rank}`,
+              inline: true
+            }))
+          );
+        
+        await user.send({ embeds: [handEmbed] });
+      } catch (error) {
+        console.error(`Failed to send hand to player ${player.id}:`, error);
+      }
+    }
+    
+    // Set current player (after big blind)
+    const startIndex = (game.dealerIndex + 3) % game.players.length;
+    game.currentPlayerIndex = startIndex;
+    game.currentPlayer = game.players[startIndex];
+    
+    // Announce game start in channel
+    const gameEmbed = new EmbedBuilder()
       .setColor(0xFFD700)
-      .setTitle('♠️ Poker Game')
-      .setDescription('Poker requires complex hand management and is best played in the web interface.')
+      .setTitle('♠️ Poker - 5-Card Stud')
+      .setDescription('Game has started! Check your DMs for your cards.')
       .addFields(
-        { name: '🌐 Play in Web Arena', value: `For the full poker experience:\n${process.env.DOMAIN || 'http://localhost:3000'}/game/create`, inline: false },
-        { name: '🎮 Discord Alternative', value: 'Try "2 Truths and a Lie" for native Discord gameplay!', inline: false }
+        { name: '💰 Pot', value: `${game.pot} chips`, inline: true },
+        { name: '📊 Current Bet', value: `${game.currentBet} chips`, inline: true },
+        { name: '🎲 Betting Round', value: `${game.bettingRound} of ${game.maxBettingRounds}`, inline: true },
+        { name: '👤 Current Player', value: `<@${game.currentPlayer.id}>'s turn`, inline: false },
+        { name: '🎯 Actions', value: 'Reply with: `fold`, `call`, `check`, or `raise <amount>`', inline: false }
       );
+    
+    await channel.send({ embeds: [gameEmbed] });
+    await channel.send(`<@${game.currentPlayer.id}>, it's your turn!`);
+    
+    game.waitingFor = 'poker-action';
+  }
 
-    await channel.send({ embeds: [embed] });
+  createPokerDeck() {
+    const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+    const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    const deck = [];
+    
+    for (const suit of suits) {
+      for (const rank of ranks) {
+        deck.push({ 
+          suit, 
+          rank, 
+          value: this.getPokerCardValue(rank),
+          id: `${rank}-${suit}`
+        });
+      }
+    }
+    
+    return deck;
+  }
+
+  getPokerCardValue(rank) {
+    const values = { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14 };
+    return values[rank] || 0;
+  }
+
+  getCardEmoji(suit) {
+    const emojis = { 'hearts': '♥️', 'diamonds': '♦️', 'clubs': '♣️', 'spades': '♠️' };
+    return emojis[suit] || '🃏';
   }
 
   async handleDiscordGameTimeout(game) {
@@ -739,6 +916,10 @@ class DiscordBot {
     // Handle game-specific interactions
     if (game.type === '2-truths-and-a-lie') {
       await this.handle2TruthsMessage(game, message, userId);
+    } else if (game.type === 'degens-against-decency') {
+      await this.handleDegensMessage(game, message, userId);
+    } else if (game.type === 'poker') {
+      await this.handlePokerMessage(game, message, userId);
     }
   }
 
@@ -864,6 +1045,436 @@ class DiscordBot {
         await message.reply({ embeds: [helpEmbed] });
       }
     }
+  }
+
+  async handleDegensMessage(game, message, userId) {
+    const content = message.content.trim().toLowerCase();
+    
+    if (game.waitingFor === 'submissions') {
+      // Check if player is card czar
+      if (userId === game.cardCzar.id) {
+        await message.reply('You are the Card Czar! Wait for others to submit their cards.');
+        return;
+      }
+      
+      // Check if already submitted
+      if (game.submissions.has(userId)) {
+        await message.reply('You have already submitted a card this round!');
+        return;
+      }
+      
+      // Parse card number (1-7)
+      const cardNum = parseInt(content);
+      if (isNaN(cardNum) || cardNum < 1 || cardNum > game.cardsPerHand) {
+        await message.reply(`Please reply with a number between 1 and ${game.cardsPerHand} to select your card.`);
+        return;
+      }
+      
+      // Get player's hand
+      const playerHand = game.playerHands.get(userId);
+      if (!playerHand || cardNum > playerHand.length) {
+        await message.reply('Invalid card selection!');
+        return;
+      }
+      
+      // Submit the card
+      const cardIndex = cardNum - 1;
+      const submittedCard = playerHand.splice(cardIndex, 1)[0];
+      game.submissions.set(userId, submittedCard);
+      
+      await message.react('✅');
+      
+      // Draw a new card
+      if (game.answerCards.length > 0) {
+        const newCard = game.answerCards.pop();
+        playerHand.push(newCard);
+        
+        // Update player's hand via DM
+        try {
+          const user = await this.client.users.fetch(userId);
+          await user.send(`**New card:** ${newCard.text || `Card ID: ${newCard.id}`}`);
+        } catch (error) {
+          console.error('Failed to send new card:', error);
+        }
+      }
+      
+      // Check if all players submitted
+      const nonCzarPlayers = game.players.filter(p => p.id !== game.cardCzar.id);
+      if (game.submissions.size === nonCzarPlayers.length) {
+        clearTimeout(game.submissionTimeout);
+        await this.showDegensSubmissions(game);
+      }
+    } else if (game.waitingFor === 'judging') {
+      // Only card czar can judge
+      if (userId !== game.cardCzar.id) {
+        return;
+      }
+      
+      const choice = parseInt(content);
+      if (isNaN(choice) || choice < 1 || choice > game.submissions.size) {
+        await message.reply(`Please choose a number between 1 and ${game.submissions.size}`);
+        return;
+      }
+      
+      // Get the winner
+      const submissions = Array.from(game.submissions.entries());
+      const [winnerId, winningCard] = submissions[choice - 1];
+      
+      // Award point
+      if (!game.scores) {
+        game.scores = new Map();
+        game.players.forEach(p => game.scores.set(p.id, 0));
+      }
+      const currentScore = game.scores.get(winnerId) || 0;
+      game.scores.set(winnerId, currentScore + 1);
+      
+      const winner = game.players.find(p => p.id === winnerId);
+      
+      const resultsEmbed = new EmbedBuilder()
+        .setColor(0x00FF00)
+        .setTitle('🏆 Round Winner!')
+        .setDescription(`**${winner.username}** wins this round!`)
+        .addFields(
+          { name: 'Winning Card', value: winningCard.text || 'Card', inline: false }
+        );
+      
+      await message.channel.send({ embeds: [resultsEmbed] });
+      
+      // Move to next round
+      await this.nextDegensRound(game);
+    }
+  }
+
+  async showDegensSubmissions(game) {
+    const channel = await this.client.channels.fetch(game.channelId);
+    
+    // Shuffle submissions for anonymity
+    const submissions = Array.from(game.submissions.entries());
+    const shuffled = submissions.sort(() => Math.random() - 0.5);
+    
+    const submissionsEmbed = new EmbedBuilder()
+      .setColor(0xFF6B6B)
+      .setTitle('📬 All Submissions In!')
+      .setDescription(`**Question:** ${game.currentQuestion.text}\n\n**Card Czar ${game.cardCzar.username}**, pick the best answer by replying with the number!`)
+      .addFields(
+        shuffled.map((entry, idx) => ({
+          name: `${idx + 1}. `,
+          value: entry[1].text || `Card ${entry[1].id}`,
+          inline: false
+        }))
+      );
+    
+    await channel.send({ embeds: [submissionsEmbed] });
+    game.waitingFor = 'judging';
+  }
+
+  async handleDegensTimeout(game) {
+    const channel = await this.client.channels.fetch(game.channelId);
+    
+    if (game.submissions.size === 0) {
+      const embed = new EmbedBuilder()
+        .setColor(0xFF0000)
+        .setTitle('⏰ Round Timeout')
+        .setDescription('No submissions received. Moving to next round...');
+      
+      await channel.send({ embeds: [embed] });
+      await this.nextDegensRound(game);
+    } else {
+      // Show submissions even if not everyone submitted
+      await this.showDegensSubmissions(game);
+    }
+  }
+
+  async nextDegensRound(game) {
+    game.currentRound++;
+    
+    if (game.currentRound > game.maxRounds) {
+      return this.endDegensGame(game);
+    }
+    
+    // Select next card czar
+    game.cardCzarIndex = (game.cardCzarIndex + 1) % game.players.length;
+    game.cardCzar = game.players[game.cardCzarIndex];
+    
+    // Draw new question
+    if (game.questionCards.length > 0) {
+      game.currentQuestion = game.questionCards.pop();
+    }
+    
+    // Clear submissions
+    game.submissions.clear();
+    
+    // Announce new round
+    const channel = await this.client.channels.fetch(game.channelId);
+    const roundEmbed = new EmbedBuilder()
+      .setColor(0xFF6B6B)
+      .setTitle(`🔥 Round ${game.currentRound}`)
+      .setDescription(`**Card Czar:** ${game.cardCzar.username}`)
+      .addFields(
+        { name: '❓ Question', value: game.currentQuestion.text || 'Loading...', inline: false },
+        { name: '📋 Instructions', value: 'Reply with your card number (1-7)', inline: false }
+      );
+    
+    await channel.send({ embeds: [roundEmbed] });
+    
+    game.waitingFor = 'submissions';
+    game.submissionTimeout = setTimeout(() => {
+      this.handleDegensTimeout(game);
+    }, 120000);
+  }
+
+  async endDegensGame(game) {
+    const channel = await this.client.channels.fetch(game.channelId);
+    
+    // Calculate final scores
+    const sortedScores = Array.from(game.scores.entries())
+      .sort(([,a], [,b]) => b - a);
+    
+    const winner = game.players.find(p => p.id === sortedScores[0][0]);
+    
+    const embed = new EmbedBuilder()
+      .setColor(0xFFD700)
+      .setTitle('🏆 Game Complete!')
+      .setDescription(`Congratulations ${winner.username}!`)
+      .addFields({
+        name: '📊 Final Scores',
+        value: sortedScores.map(([playerId, score], index) => {
+          const player = game.players.find(p => p.id === playerId);
+          const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '👤';
+          return `${medal} ${player.username}: ${score} points`;
+        }).join('\n'),
+        inline: false
+      });
+    
+    await channel.send({ embeds: [embed] });
+    
+    game.status = 'finished';
+    setTimeout(() => {
+      this.discordGames.delete(game.id);
+    }, 300000);
+  }
+
+  async handlePokerMessage(game, message, userId) {
+    const content = message.content.trim().toLowerCase();
+    
+    if (game.waitingFor !== 'poker-action') return;
+    
+    // Check if it's current player's turn
+    if (userId !== game.currentPlayer.id) {
+      return;
+    }
+    
+    const channel = await this.client.channels.fetch(game.channelId);
+    
+    // Parse action
+    if (content === 'fold') {
+      game.foldedPlayers.add(userId);
+      await message.react('🚫');
+      
+      // Check if only one player remains
+      const activePlayers = game.players.filter(p => !game.foldedPlayers.has(p.id));
+      if (activePlayers.length === 1) {
+        return this.endPokerHand(game, activePlayers[0].id);
+      }
+      
+      this.nextPokerPlayer(game);
+    } else if (content === 'call') {
+      const currentPlayerBet = game.playerBets.get(userId) || 0;
+      const callAmount = game.currentBet - currentPlayerBet;
+      
+      game.playerBets.set(userId, game.currentBet);
+      game.pot += callAmount;
+      
+      await message.react('💰');
+      await channel.send(`${game.currentPlayer.username} calls ${callAmount} chips. Pot: ${game.pot}`);
+      
+      this.nextPokerPlayer(game);
+    } else if (content === 'check') {
+      const currentPlayerBet = game.playerBets.get(userId) || 0;
+      if (currentPlayerBet < game.currentBet) {
+        await message.reply('Cannot check! You must call or fold.');
+        return;
+      }
+      
+      await message.react('✅');
+      this.nextPokerPlayer(game);
+    } else if (content.startsWith('raise ')) {
+      const raiseAmount = parseInt(content.split(' ')[1]);
+      if (isNaN(raiseAmount) || raiseAmount <= 0) {
+        await message.reply('Invalid raise amount! Use: `raise <amount>`');
+        return;
+      }
+      
+      const currentPlayerBet = game.playerBets.get(userId) || 0;
+      const totalAmount = game.currentBet + raiseAmount;
+      const actualRaise = totalAmount - currentPlayerBet;
+      
+      game.playerBets.set(userId, totalAmount);
+      game.pot += actualRaise;
+      game.currentBet = totalAmount;
+      
+      await message.react('📈');
+      await channel.send(`${game.currentPlayer.username} raises to ${totalAmount} chips! Pot: ${game.pot}`);
+      
+      this.nextPokerPlayer(game);
+    } else {
+      await message.reply('Valid actions: `fold`, `call`, `check`, or `raise <amount>`');
+    }
+  }
+
+  nextPokerPlayer(game) {
+    // Find next active player
+    let nextIndex = (game.currentPlayerIndex + 1) % game.players.length;
+    
+    while (game.foldedPlayers.has(game.players[nextIndex].id)) {
+      nextIndex = (nextIndex + 1) % game.players.length;
+    }
+    
+    game.currentPlayerIndex = nextIndex;
+    game.currentPlayer = game.players[nextIndex];
+    
+    // Check if betting round is complete
+    if (this.isPokerBettingRoundComplete(game)) {
+      this.nextPokerBettingRound(game);
+    } else {
+      this.announcePokerTurn(game);
+    }
+  }
+
+  isPokerBettingRoundComplete(game) {
+    const activePlayers = game.players.filter(p => !game.foldedPlayers.has(p.id));
+    return activePlayers.every(player => {
+      const playerBet = game.playerBets.get(player.id) || 0;
+      return playerBet === game.currentBet;
+    });
+  }
+
+  async nextPokerBettingRound(game) {
+    game.bettingRound++;
+    
+    if (game.bettingRound > game.maxBettingRounds) {
+      return this.pokerShowdown(game);
+    }
+    
+    // Deal additional cards
+    if (game.bettingRound <= 4) {
+      for (const player of game.players) {
+        if (!game.foldedPlayers.has(player.id) && game.deck.length > 0) {
+          const hand = game.playerHands.get(player.id);
+          const newCard = game.deck.pop();
+          hand.push(newCard);
+          
+          // Send card to player via DM
+          try {
+            const user = await this.client.users.fetch(player.id);
+            await user.send(`**New card:** ${this.getCardEmoji(newCard.suit)} ${newCard.rank}`);
+          } catch (error) {
+            console.error('Failed to send card:', error);
+          }
+        }
+      }
+    }
+    
+    // Reset for next betting round
+    game.currentBet = 0;
+    game.playerBets.clear();
+    
+    // Set current player to first after dealer
+    let index = (game.dealerIndex + 1) % game.players.length;
+    while (game.foldedPlayers.has(game.players[index].id)) {
+      index = (index + 1) % game.players.length;
+    }
+    game.currentPlayerIndex = index;
+    game.currentPlayer = game.players[index];
+    
+    const channel = await this.client.channels.fetch(game.channelId);
+    const roundEmbed = new EmbedBuilder()
+      .setColor(0xFFD700)
+      .setTitle(`♠️ Betting Round ${game.bettingRound}`)
+      .setDescription('New cards dealt! Check your DMs.')
+      .addFields(
+        { name: '💰 Pot', value: `${game.pot} chips`, inline: true }
+      );
+    
+    await channel.send({ embeds: [roundEmbed] });
+    this.announcePokerTurn(game);
+  }
+
+  async announcePokerTurn(game) {
+    const channel = await this.client.channels.fetch(game.channelId);
+    await channel.send(`<@${game.currentPlayer.id}>, it's your turn! (fold/call/check/raise <amount>)`);
+  }
+
+  async pokerShowdown(game) {
+    const channel = await this.client.channels.fetch(game.channelId);
+    const activePlayers = game.players.filter(p => !game.foldedPlayers.has(p.id));
+    
+    // Evaluate hands
+    const handRankings = activePlayers.map(player => {
+      const hand = game.playerHands.get(player.id);
+      return {
+        playerId: player.id,
+        player: player,
+        hand: hand,
+        ranking: this.evaluatePokerHand(hand)
+      };
+    });
+    
+    // Sort by ranking
+    handRankings.sort((a, b) => b.ranking.value - a.ranking.value);
+    const winner = handRankings[0];
+    
+    // Show all hands
+    const handsEmbed = new EmbedBuilder()
+      .setColor(0xFFD700)
+      .setTitle('🃏 Showdown!')
+      .setDescription('All hands revealed!')
+      .addFields(
+        handRankings.map(ranking => ({
+          name: `${ranking.player.username}`,
+          value: `${ranking.hand.map(c => `${this.getCardEmoji(c.suit)}${c.rank}`).join(' ')}\n**${ranking.ranking.description}**`,
+          inline: false
+        }))
+      );
+    
+    await channel.send({ embeds: [handsEmbed] });
+    
+    await this.endPokerHand(game, winner.playerId, handRankings);
+  }
+
+  evaluatePokerHand(cards) {
+    // Use the comprehensive evaluation from PokerGame
+    const PokerGame = require('./games/PokerGame');
+    const tempGame = new PokerGame('temp', {}, false, 2);
+    return tempGame.evaluateHand(cards);
+  }
+
+  async endPokerHand(game, winnerId, handRankings = null) {
+    const channel = await this.client.channels.fetch(game.channelId);
+    const winner = game.players.find(p => p.id === winnerId);
+    
+    if (!game.scores) {
+      game.scores = new Map();
+      game.players.forEach(p => game.scores.set(p.id, 0));
+    }
+    
+    const currentScore = game.scores.get(winnerId) || 0;
+    game.scores.set(winnerId, currentScore + game.pot);
+    
+    const winEmbed = new EmbedBuilder()
+      .setColor(0x00FF00)
+      .setTitle('🏆 Hand Winner!')
+      .setDescription(`**${winner.username}** wins the pot!`)
+      .addFields(
+        { name: '💰 Pot Won', value: `${game.pot} chips`, inline: true }
+      );
+    
+    await channel.send({ embeds: [winEmbed] });
+    
+    game.status = 'finished';
+    setTimeout(() => {
+      this.discordGames.delete(game.id);
+    }, 300000);
   }
 
   async handleVotingTimeout(game) {
