@@ -44,7 +44,12 @@ class PokerGame extends BaseGame {
     this.deck = [];
     for (const suit of suits) {
       for (const rank of ranks) {
-        this.deck.push({ suit, rank, value: this.getCardValue(rank) });
+        this.deck.push({ 
+          suit, 
+          rank, 
+          value: this.getCardValue(rank),
+          id: `${rank}-${suit}`
+        });
       }
     }
   }

@@ -24,10 +24,6 @@ class BaseGame {
       return { success: false, error: 'Game is full' };
     }
 
-    if (this.players.find(p => p.id === userId)) {
-      return { success: false, error: 'Player already in game' };
-    }
-
     if (this.status !== 'waiting') {
       return { success: false, error: 'Game already started' };
     }
@@ -37,6 +33,10 @@ class BaseGame {
     
     if (typeof userId === 'object') {
       // Discord user object passed directly
+      // Check for duplicate by ID
+      if (this.players.find(p => p.id === userId.id)) {
+        return { success: false, error: 'Player already in game' };
+      }
       user = { 
         ...userId,
         socketId: socket ? socket.id : null
@@ -51,6 +51,10 @@ class BaseGame {
       };
     } else {
       // Regular userId string
+      // Check for duplicate by ID
+      if (this.players.find(p => p.id === userId)) {
+        return { success: false, error: 'Player already in game' };
+      }
       user = { 
         id: userId, 
         username: userId.startsWith('guest-') ? `Guest_${userId.slice(-6)}` : `Player_${userId.slice(-4)}`,
