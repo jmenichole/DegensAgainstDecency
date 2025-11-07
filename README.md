@@ -2,6 +2,18 @@
 
 A comprehensive multiplayer party game platform featuring Discord authentication, AI-generated content, and real-time gameplay across multiple game types.
 
+## 📋 Quick Links
+
+**Looking for deployment requirements?**
+- 🌐 **[Website Deployment Requirements](WEBSITE_REQUIREMENTS.md)** - Complete guide for deploying on a website (Vercel, Railway, VPS, etc.)
+- 🎮 **[Discord Activity Requirements](DISCORD_ACTIVITY_REQUIREMENTS.md)** - Guide for Discord Activity implementation (future enhancement)
+
+**Other Documentation:**
+- 📖 [Integration Guide](INTEGRATIONS.md) - TiltCheck and JustTheTip integration details
+- 🚀 [Deployment with Integrations](DEPLOYMENT_INTEGRATIONS.md) - Deploy with optional integrations
+- 📱 [Discord Activities Analysis](DISCORD_ACTIVITIES.md) - Why Discord Activities aren't currently implemented
+- 📄 [GitHub Pages Setup](GITHUB_PAGES.md) - Static demo deployment
+
 ## 🎯 Features
 
 ### 🔐 Discord OAuth Authentication
@@ -63,6 +75,9 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 - See [INTEGRATIONS.md](INTEGRATIONS.md) for full details
 
 ## 🚀 Getting Started
+
+> **📋 For comprehensive deployment requirements, see [WEBSITE_REQUIREMENTS.md](WEBSITE_REQUIREMENTS.md)**  
+> This section provides a quick start guide. For detailed requirements, configuration options, and troubleshooting, refer to the complete requirements documentation.
 
 ### Try the Demo First!
 
