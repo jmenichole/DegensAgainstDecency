@@ -5,6 +5,7 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 ## 📋 Quick Links
 
 **Looking for deployment requirements?**
+- ⚡ **[Requirements Summary](REQUIREMENTS_SUMMARY.md)** - Quick reference guide (start here!)
 - 🌐 **[Website Deployment Requirements](WEBSITE_REQUIREMENTS.md)** - Complete guide for deploying on a website (Vercel, Railway, VPS, etc.)
 - 🎮 **[Discord Activity Requirements](DISCORD_ACTIVITY_REQUIREMENTS.md)** - Guide for Discord Activity implementation (future enhancement)
 
