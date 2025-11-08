@@ -1532,3 +1532,150 @@ body::before {
 .friend-item.online .friend-status {
   color: var(--status-online);
 }
+
+/* Additional Mobile Responsiveness for New Components */
+@media (max-width: 768px) {
+  .tab-navigation {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tab-button {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
+  .round-timer {
+    min-width: 100px;
+    padding: 15px;
+  }
+
+  .timer-value {
+    font-size: 1.5rem;
+  }
+
+  .game-code {
+    font-size: 1rem;
+    letter-spacing: 1px;
+    padding: 8px 16px;
+  }
+
+  .search-bar {
+    max-width: 100%;
+  }
+
+  .search-bar input {
+    padding: 10px 40px 10px 15px;
+    font-size: 0.9rem;
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+
+  .message-bubble {
+    max-width: 90%;
+    padding: 10px 14px;
+  }
+
+  .stats-card {
+    padding: 15px;
+  }
+
+  .stats-card .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .friend-item {
+    padding: 10px;
+  }
+
+  .friend-item .friend-avatar {
+    width: 35px;
+    height: 35px;
+  }
+
+  .player-count {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .level-badge {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .arena-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .lobby {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .round-timer {
+    min-width: 80px;
+    padding: 12px;
+  }
+
+  .timer-value {
+    font-size: 1.2rem;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .emoji-reactions {
+    flex-wrap: wrap;
+  }
+
+  .emoji-reaction {
+    font-size: 1rem;
+    padding: 3px 6px;
+  }
+
+  .progress-bar-container {
+    height: 6px;
+  }
+
+  .avatar-glow::before {
+    filter: blur(8px);
+  }
+}
+
+/* Touch Target Optimization */
+@media (hover: none) and (pointer: coarse) {
+  .tab-button,
+  .game-item,
+  .answer-card,
+  .submission-card,
+  .friend-item,
+  button,
+  .cta-button,
+  .secondary-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .emoji-reaction {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .nav-links a {
+    padding: 10px;
+  }
+}

@@ -317,8 +317,8 @@
 }
 
 .statement-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(0, 255, 255, 0.3);
   border-radius: 12px;
   padding: 20px;
   cursor: pointer;
@@ -329,25 +329,28 @@
 }
 
 .statement-item:hover {
-  border-color: #00ffff;
+  border-color: var(--brand-teal);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
 }
 
 .statement-item.selected {
-  border-color: #ff00ff;
-  background: rgba(255, 0, 255, 0.1);
+  border-color: var(--brand-green);
+  background: rgba(180, 255, 57, 0.1);
+  box-shadow: 0 0 20px rgba(180, 255, 57, 0.3);
 }
 
 .statement-number {
-  background: #ff00ff;
-  color: white;
+  background: var(--brand-teal);
+  color: var(--brand-dark);
   border-radius: 50%;
   width: 30px;
   height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: 700;
   flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
 
 /* Poker */
