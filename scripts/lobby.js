@@ -57,16 +57,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const chatMessages = document.querySelector('.chat-messages');
         const newMessage = document.createElement('div');
         newMessage.className = 'chat-message';
-        newMessage.innerHTML = `
-          <img src="https://via.placeholder.com/28x28/B4FF39/000000?text=Y" alt="You" class="msg-avatar" />
-          <div class="msg-content">
-            <div class="msg-header">
-              <span class="msg-author">You</span>
-              <span class="msg-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-            </div>
-            <div class="msg-text">${message}</div>
-          </div>
-        `;
+        
+        // Create elements safely to prevent XSS
+        const avatar = document.createElement('img');
+        avatar.src = 'https://via.placeholder.com/28x28/B4FF39/000000?text=Y';
+        avatar.alt = 'You';
+        avatar.className = 'msg-avatar';
+        
+        const msgContent = document.createElement('div');
+        msgContent.className = 'msg-content';
+        
+        const msgHeader = document.createElement('div');
+        msgHeader.className = 'msg-header';
+        
+        const msgAuthor = document.createElement('span');
+        msgAuthor.className = 'msg-author';
+        msgAuthor.textContent = 'You';
+        
+        const msgTime = document.createElement('span');
+        msgTime.className = 'msg-time';
+        msgTime.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        const msgText = document.createElement('div');
+        msgText.className = 'msg-text';
+        msgText.textContent = message; // Use textContent to prevent XSS
+        
+        msgHeader.appendChild(msgAuthor);
+        msgHeader.appendChild(msgTime);
+        msgContent.appendChild(msgHeader);
+        msgContent.appendChild(msgText);
+        newMessage.appendChild(avatar);
+        newMessage.appendChild(msgContent);
+        
         chatMessages.appendChild(newMessage);
         chatMessages.scrollTop = chatMessages.scrollHeight;
         chatInput.value = '';
