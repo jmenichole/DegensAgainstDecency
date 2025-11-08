@@ -144,7 +144,7 @@ DISCORD_BOT_TOKEN=your_discord_bot_token
 **Requirements:**
 - OpenAI API account (paid service)
 - OpenAI API Key
-- `axios` (^1.5.0) - Already included for API calls
+- `axios` (^1.13.2) - Already included for API calls
 
 **Environment Variables:**
 ```env

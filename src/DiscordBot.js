@@ -43,7 +43,7 @@ class DiscordBot {
     // Create Game Command
     const createGameCommand = new SlashCommandBuilder()
       .setName('create-game')
-      .setDescription('Create a new game')
+      .setDescription('Create a new Discord game')
       .addStringOption(option =>
         option.setName('type')
           .setDescription('Game type')
@@ -52,15 +52,6 @@ class DiscordBot {
             { name: 'Degens Against Decency', value: 'degens-against-decency' },
             { name: '2 Truths and a Lie', value: '2-truths-and-a-lie' },
             { name: 'Poker', value: 'poker' }
-          )
-      )
-      .addStringOption(option =>
-        option.setName('platform')
-          .setDescription('Where to play the game')
-          .setRequired(true)
-          .addChoices(
-            { name: '🎮 Play in Discord Server', value: 'discord' },
-            { name: '🌐 Play in Web Arena', value: 'web' }
           )
       )
       .addIntegerOption(option =>
@@ -77,7 +68,7 @@ class DiscordBot {
     // List Games Command
     const listGamesCommand = new SlashCommandBuilder()
       .setName('list-games')
-      .setDescription('List available public games');
+      .setDescription('List available public Discord games');
 
     // Join Game Command
     const joinGameCommand = new SlashCommandBuilder()
@@ -89,23 +80,13 @@ class DiscordBot {
           .setRequired(true)
       );
 
-    // Join Discord Game Command
-    const joinDiscordGameCommand = new SlashCommandBuilder()
-      .setName('join-discord-game')
-      .setDescription('Join a Discord-based game by ID')
+    // Start Game Command
+    const startGameCommand = new SlashCommandBuilder()
+      .setName('start-game')
+      .setDescription('Start a game')
       .addStringOption(option =>
         option.setName('game-id')
-          .setDescription('Discord game ID to join')
-          .setRequired(true)
-      );
-
-    // Start Discord Game Command
-    const startDiscordGameCommand = new SlashCommandBuilder()
-      .setName('start-discord-game')
-      .setDescription('Start a Discord-based game')
-      .addStringOption(option =>
-        option.setName('game-id')
-          .setDescription('Discord game ID to start')
+          .setDescription('Game ID to start')
           .setRequired(true)
       );
 
@@ -129,14 +110,9 @@ class DiscordBot {
       execute: this.handleJoinGame.bind(this)
     });
 
-    this.commands.set('start-discord-game', {
-      data: startDiscordGameCommand,
-      execute: this.handleStartDiscordGame.bind(this)
-    });
-
-    this.commands.set('join-discord-game', {
-      data: joinDiscordGameCommand,
-      execute: this.handleJoinDiscordGame.bind(this)
+    this.commands.set('start-game', {
+      data: startGameCommand,
+      execute: this.handleStartGame.bind(this)
     });
 
     this.commands.set('game-status', {
@@ -216,7 +192,6 @@ class DiscordBot {
   // Command Handlers
   async handleCreateGame(interaction) {
     const gameType = interaction.options.getString('type');
-    const platform = interaction.options.getString('platform');
     const maxPlayers = interaction.options.getInteger('max-players') || 7;
     const isPrivate = interaction.options.getBoolean('private') || false;
 
@@ -230,40 +205,14 @@ class DiscordBot {
     };
 
     try {
-      if (platform === 'discord') {
-        // Create Discord-native game
-        return await this.createDiscordGame(interaction, gameType, discordUser, maxPlayers, isPrivate);
-      } else {
-        // Create web-based game (existing functionality)
-        return await this.createWebGame(interaction, gameType, discordUser, maxPlayers, isPrivate);
-      }
+      // Create Discord-native game only
+      return await this.createDiscordGame(interaction, gameType, discordUser, maxPlayers, isPrivate);
     } catch (error) {
       await interaction.reply({ 
         content: `❌ Failed to create game: ${error.message}`, 
         ephemeral: true 
       });
     }
-  }
-
-  async createWebGame(interaction, gameType, discordUser, maxPlayers, isPrivate) {
-    const game = this.gameManager.createGame(gameType, discordUser, isPrivate, maxPlayers);
-    
-    const embed = new EmbedBuilder()
-      .setColor(0x00AE86)
-      .setTitle('🌐 Web Game Created!')
-      .setDescription(`Your ${this.formatGameType(gameType)} game has been created in the web arena!`)
-      .addFields(
-        { name: 'Game ID', value: game.id, inline: true },
-        { name: 'Max Players', value: maxPlayers.toString(), inline: true },
-        { name: 'Private', value: isPrivate ? 'Yes' : 'No', inline: true },
-        { name: 'Web Interface', value: `${process.env.DOMAIN || 'http://localhost:3000'}/game/${game.id}` }
-      )
-      .setTimestamp();
-
-    await interaction.reply({ embeds: [embed] });
-
-    // Notify web users in lobby
-    this.io.to('lobby').emit('lobby-games', this.gameManager.getPublicGames());
   }
 
   async createDiscordGame(interaction, gameType, discordUser, maxPlayers, isPrivate) {
@@ -292,14 +241,14 @@ class DiscordBot {
 
     const embed = new EmbedBuilder()
       .setColor(0x5865F2)
-      .setTitle('🎮 Discord Game Created!')
-      .setDescription(`${this.formatGameType(gameType)} game is ready to play in this Discord server!`)
+      .setTitle('🎮 Game Created!')
+      .setDescription(`${this.formatGameType(gameType)} game is ready to play!`)
       .addFields(
         { name: 'Game ID', value: gameId, inline: true },
         { name: 'Players', value: `1/${maxPlayers}`, inline: true },
         { name: 'Status', value: '⏳ Waiting for players', inline: true }
       )
-      .setFooter({ text: 'Other players can join with /join-discord-game' })
+      .setFooter({ text: 'Other players can join with /join-game' })
       .setTimestamp();
 
     await interaction.reply({ embeds: [embed] });
@@ -308,9 +257,9 @@ class DiscordBot {
     const instructionsEmbed = new EmbedBuilder()
       .setColor(0x57F287)
       .setTitle('🎯 How to Join')
-      .setDescription('Players can join this Discord game using:')
+      .setDescription('Players can join this game using:')
       .addFields(
-        { name: 'Command', value: `/join-discord-game ${gameId}`, inline: false },
+        { name: 'Command', value: `/join-game ${gameId}`, inline: false },
         { name: 'Or React', value: 'React with 🎮 to join!', inline: false }
       );
 
@@ -328,10 +277,9 @@ class DiscordBot {
   }
 
   async handleListGames(interaction) {
-    const publicGames = this.gameManager.getPublicGames();
     const discordGames = this.discordGames ? Array.from(this.discordGames.values()).filter(g => !g.isPrivate && g.status !== 'finished') : [];
     
-    if (publicGames.length === 0 && discordGames.length === 0) {
+    if (discordGames.length === 0) {
       await interaction.reply({ 
         content: '📭 No public games available. Create one with `/create-game`!',
         ephemeral: true
@@ -344,31 +292,17 @@ class DiscordBot {
       .setTitle('🎮 Available Public Games')
       .setTimestamp();
 
-    // Add web games
-    if (publicGames.length > 0) {
-      embed.addFields({
-        name: '🌐 Web Arena Games',
-        value: publicGames.slice(0, 5).map(game => 
-          `**${this.formatGameType(game.type)}**\nID: ${game.id}\nPlayers: ${game.currentPlayers}/${game.maxPlayers}\nStatus: ${this.formatStatus(game.status)}\nCreator: ${game.creator}`
-        ).join('\n\n'),
-        inline: false
-      });
-    }
-
     // Add Discord games
-    if (discordGames.length > 0) {
-      embed.addFields({
-        name: '🎮 Discord Server Games',
-        value: discordGames.slice(0, 5).map(game => 
-          `**${this.formatGameType(game.type)}**\nID: ${game.id}\nPlayers: ${game.players.length}/${game.maxPlayers}\nStatus: ${this.formatStatus(game.status)}\nCreator: ${game.creator.username}`
-        ).join('\n\n'),
-        inline: false
-      });
-    }
+    embed.addFields({
+      name: '🎮 Games',
+      value: discordGames.slice(0, 10).map(game => 
+        `**${this.formatGameType(game.type)}**\nID: ${game.id}\nPlayers: ${game.players.length}/${game.maxPlayers}\nStatus: ${this.formatStatus(game.status)}\nCreator: ${game.creator.username}`
+      ).join('\n\n'),
+      inline: false
+    });
 
-    const totalGames = publicGames.length + discordGames.length;
-    if (totalGames > 10) {
-      embed.setFooter({ text: `Showing first 10 of ${totalGames} games` });
+    if (discordGames.length > 10) {
+      embed.setFooter({ text: `Showing first 10 of ${discordGames.length} games` });
     }
 
     await interaction.reply({ embeds: [embed] });
@@ -377,58 +311,9 @@ class DiscordBot {
   async handleJoinGame(interaction) {
     const gameId = interaction.options.getString('game-id');
     
-    // Create Discord user object  
-    const discordUser = {
-      id: interaction.user.id,
-      username: interaction.user.username,
-      discriminator: interaction.user.discriminator || '0000',
-      avatar: interaction.user.avatar,
-      isDiscordBot: true
-    };
-
-    const game = this.gameManager.getGame(gameId);
-    if (!game) {
-      await interaction.reply({ 
-        content: '❌ Game not found! Use `/list-games` to see available games.',
-        ephemeral: true 
-      });
-      return;
-    }
-
-    const result = game.addPlayer(discordUser.id, null); // No socket for Discord users
-    
-    if (result.success) {
-      const embed = new EmbedBuilder()
-        .setColor(0x00AE86)
-        .setTitle('✅ Joined Game!')
-        .setDescription(`You've joined the ${this.formatGameType(game.type)} game!`)
-        .addFields(
-          { name: 'Game ID', value: gameId, inline: true },
-          { name: 'Players', value: `${game.players.length}/${game.maxPlayers}`, inline: true },
-          { name: 'Status', value: this.formatStatus(game.status), inline: true },
-          { name: 'Web Interface', value: `${process.env.DOMAIN || 'http://localhost:3000'}/game/${gameId}` }
-        )
-        .setTimestamp();
-
-      await interaction.reply({ embeds: [embed] });
-
-      // Notify web users in the game
-      this.io.to(gameId).emit('game-update', game.getGameState());
-      this.io.to('lobby').emit('lobby-games', this.gameManager.getPublicGames());
-    } else {
-      await interaction.reply({ 
-        content: `❌ Failed to join game: ${result.error}`,
-        ephemeral: true 
-      });
-    }
-  }
-
-  async handleJoinDiscordGame(interaction) {
-    const gameId = interaction.options.getString('game-id');
-    
     if (!this.discordGames || !this.discordGames.has(gameId)) {
       await interaction.reply({ 
-        content: '❌ Discord game not found! Use `/list-games` to see available games.',
+        content: '❌ Game not found! Use `/list-games` to see available games.',
         ephemeral: true 
       });
       return;
@@ -464,7 +349,7 @@ class DiscordBot {
       return;
     }
 
-    // Add player to Discord game
+    // Add player to game
     const discordUser = {
       id: interaction.user.id,
       username: interaction.user.username,
@@ -477,7 +362,7 @@ class DiscordBot {
 
     const embed = new EmbedBuilder()
       .setColor(0x57F287)
-      .setTitle('✅ Joined Discord Game!')
+      .setTitle('✅ Joined Game!')
       .setDescription(`You've joined the ${this.formatGameType(game.type)} game!`)
       .addFields(
         { name: 'Game ID', value: gameId, inline: true },
@@ -496,9 +381,9 @@ class DiscordBot {
         const updatedEmbed = new EmbedBuilder()
           .setColor(0x57F287)
           .setTitle('🎯 How to Join')
-          .setDescription('Players can join this Discord game using:')
+          .setDescription('Players can join this game using:')
           .addFields(
-            { name: 'Command', value: `/join-discord-game ${gameId}`, inline: false },
+            { name: 'Command', value: `/join-game ${gameId}`, inline: false },
             { name: 'Current Players', value: `${game.players.length}/${game.maxPlayers}`, inline: false },
             { name: 'Players', value: game.players.map(p => `• ${p.username}`).join('\n'), inline: false }
           );
@@ -516,7 +401,7 @@ class DiscordBot {
         .setTitle('🚀 Ready to Start!')
         .setDescription(`The game has enough players to begin! Creator <@${game.creator.id}> can start the game.`)
         .addFields(
-          { name: 'Start Command', value: `/start-discord-game ${gameId}`, inline: false }
+          { name: 'Start Command', value: `/start-game ${gameId}`, inline: false }
         );
 
       const channel = await this.client.channels.fetch(game.channelId);
@@ -524,12 +409,12 @@ class DiscordBot {
     }
   }
 
-  async handleStartDiscordGame(interaction) {
+  async handleStartGame(interaction) {
     const gameId = interaction.options.getString('game-id');
     
     if (!this.discordGames || !this.discordGames.has(gameId)) {
       await interaction.reply({ 
-        content: '❌ Discord game not found!',
+        content: '❌ Game not found!',
         ephemeral: true 
       });
       return;
@@ -1623,26 +1508,18 @@ class DiscordBot {
 
   async handleGameStatus(interaction) {
     const userId = interaction.user.id;
-    const userGames = [];
-    
-    // Find games where user is a player
-    for (const [gameId, game] of this.gameManager.games) {
-      if (game.players.some(player => player.id === userId)) {
-        userGames.push({ id: gameId, game });
-      }
-    }
-
-    // Also check Discord games
     const discordUserGames = [];
+    
+    // Check Discord games
     if (this.discordGames) {
       for (const [gameId, game] of this.discordGames) {
         if (game.players.some(player => player.id === userId)) {
-          discordUserGames.push({ id: gameId, game, isDiscord: true });
+          discordUserGames.push({ id: gameId, game });
         }
       }
     }
 
-    if (userGames.length === 0 && discordUserGames.length === 0) {
+    if (discordUserGames.length === 0) {
       await interaction.reply({ 
         content: '📭 You are not in any active games. Use `/create-game` or `/join-game` to start playing!',
         ephemeral: true 
@@ -1654,15 +1531,6 @@ class DiscordBot {
       .setColor(0x0099FF)
       .setTitle('🎮 Your Game Status')
       .setTimestamp();
-
-    // Add web games
-    userGames.forEach(({ id, game }) => {
-      embed.addFields({
-        name: `🌐 ${this.formatGameType(game.type)}`,
-        value: `**ID:** ${id}\n**Players:** ${game.players.length}/${game.maxPlayers}\n**Status:** ${this.formatStatus(game.status)}\n**Round:** ${game.currentRound || 0}`,
-        inline: true
-      });
-    });
 
     // Add Discord games
     discordUserGames.forEach(({ id, game }) => {

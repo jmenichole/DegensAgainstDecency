@@ -51,10 +51,11 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 - Fold/Call/Raise mechanics
 
 ### 🤖 AI Integration
-- Dynamic card generation via OpenAI GPT
+- Dynamic card generation via degenscardbot.vercel.app
 - Context-aware content based on themes
 - Fallback to curated content if AI unavailable
 - Fresh content for every game session
+- Optional direct OpenAI API integration
 
 ### 🌐 Real-time Multiplayer
 - WebSocket-based real-time communication
@@ -124,7 +125,8 @@ SESSION_SECRET=your_super_secret_session_key
 PORT=3000
 NODE_ENV=development
 
-# OpenAI API Key (optional)
+# AI Card Generation (optional - defaults to degenscardbot.vercel.app)
+CARD_GENERATOR_URL=https://degenscardbot.vercel.app/api/generate
 OPENAI_API_KEY=your_openai_api_key
 ```
 
@@ -165,19 +167,22 @@ npm start
 ### Starting a Game (Discord Bot)
 Use these slash commands in any Discord server where the bot is installed:
 
-- `/create-game` - Create a new game
+- `/create-game` - Create a new Discord game
   - **type**: Choose game type (Degens Against Decency, 2 Truths and a Lie, Poker)
   - **max-players**: Set maximum players (3-7, optional)
   - **private**: Make game private (optional)
 
-- `/list-games` - View all available public games
+- `/list-games` - View all available public Discord games
 
 - `/join-game` - Join a game by ID
   - **game-id**: The game ID to join
 
+- `/start-game` - Start a game (creator only)
+  - **game-id**: The game ID to start
+
 - `/game-status` - Check your current game status
 
-**Note**: Discord bot users can play alongside web users in the same games!
+**Note**: All games are played directly in Discord for a seamless experience!
 
 ### Game Types Guide
 

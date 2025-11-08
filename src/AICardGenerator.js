@@ -1,5 +1,5 @@
 /**
- * AI Card Generator - Dynamic content generation using OpenAI
+ * AI Card Generator - Dynamic content generation
  * 
  * Copyright (c) 2024 Degens Against Decency
  * Licensed under the MIT License
@@ -10,46 +10,56 @@ const axios = require('axios');
 
 class AICardGenerator {
   constructor() {
-    this.apiKey = process.env.OPENAI_API_KEY;
-    this.baseURL = 'https://api.openai.com/v1/chat/completions';
+    this.baseURL = process.env.CARD_GENERATOR_URL || 'https://degenscardbot.vercel.app/api/generate';
+    this.apiKey = process.env.OPENAI_API_KEY; // Still support direct OpenAI as fallback
   }
 
   async generateDegensCards(count = 10, theme = 'general') {
     try {
-      const prompt = `Generate ${count} Cards Against Humanity style cards for a game called "Degens Against Decency". 
-      Create ${Math.floor(count/2)} question cards (with blank spaces marked by ___) and ${Math.ceil(count/2)} answer cards.
-      Keep them slightly edgy but not offensive or harmful. Theme: ${theme}.
-      Return as JSON array with objects having "type" (question/answer), "text", and "category" fields.`;
+      // Try using the card bot API first
+      const response = await axios.post(this.baseURL, {
+        count,
+        theme,
+        gameType: 'degens-against-decency'
+      }, {
+        timeout: 10000
+      });
 
-      const response = await this.makeAPICall(prompt);
-      return this.parseCardResponse(response, 'degens');
+      if (response.data && response.data.cards) {
+        return response.data.cards.map(card => ({
+          id: Date.now() + Math.random(),
+          type: card.type,
+          text: card.text,
+          category: card.category || 'general',
+          gameType: 'degens',
+          aiGenerated: true
+        }));
+      }
+
+      throw new Error('Invalid response from card generator');
     } catch (error) {
-      console.error('Error generating Degens cards:', error.message);
+      console.error('Error generating Degens cards from card bot:', error.message);
+      
+      // Fallback to direct OpenAI if available
+      if (this.apiKey && !this.apiKey.startsWith('sk-fake')) {
+        try {
+          return await this.generateWithOpenAI(count, theme);
+        } catch (openaiError) {
+          console.error('Error with OpenAI fallback:', openaiError.message);
+        }
+      }
+      
       return this.getFallbackDegensCards();
     }
   }
 
-  async generateTwoTruthsPrompts(count = 5, difficulty = 'medium') {
-    try {
-      const prompt = `Generate ${count} creative prompts for a "2 Truths and a Lie" game.
-      Each prompt should be a category or theme that players can use to create their statements.
-      Difficulty level: ${difficulty}. Make them engaging and fun.
-      Return as JSON array with objects having "prompt", "difficulty", and "example" fields.`;
+  async generateWithOpenAI(count, theme) {
+    const prompt = `Generate ${count} Cards Against Humanity style cards for a game called "Degens Against Decency". 
+    Create ${Math.floor(count/2)} question cards (with blank spaces marked by ___) and ${Math.ceil(count/2)} answer cards.
+    Keep them slightly edgy but not offensive or harmful. Theme: ${theme}.
+    Return as JSON array with objects having "type" (question/answer), "text", and "category" fields.`;
 
-      const response = await this.makeAPICall(prompt);
-      return this.parseTwoTruthsResponse(response);
-    } catch (error) {
-      console.error('Error generating 2 Truths prompts:', error.message);
-      return this.getFallbackTwoTruthsPrompts();
-    }
-  }
-
-  async makeAPICall(prompt) {
-    if (!this.apiKey || this.apiKey.startsWith('sk-fake')) {
-      throw new Error('No valid OpenAI API key provided');
-    }
-
-    const response = await axios.post(this.baseURL, {
+    const response = await axios.post('https://api.openai.com/v1/chat/completions', {
       model: "gpt-3.5-turbo",
       messages: [
         {
@@ -70,39 +80,41 @@ class AICardGenerator {
       }
     });
 
-    return response.data.choices[0].message.content;
+    const cards = JSON.parse(response.data.choices[0].message.content);
+    return cards.map(card => ({
+      id: Date.now() + Math.random(),
+      type: card.type,
+      text: card.text,
+      category: card.category || 'general',
+      gameType: 'degens',
+      aiGenerated: true
+    }));
   }
 
-  parseCardResponse(response, gameType) {
+  async generateTwoTruthsPrompts(count = 5, difficulty = 'medium') {
     try {
-      const cards = JSON.parse(response);
-      return cards.map(card => ({
-        id: Date.now() + Math.random(),
-        type: card.type,
-        text: card.text,
-        category: card.category || 'general',
-        gameType,
-        aiGenerated: true
-      }));
-    } catch (error) {
-      console.error('Error parsing AI response:', error.message);
-      return [];
-    }
-  }
+      const response = await axios.post(this.baseURL, {
+        count,
+        difficulty,
+        gameType: '2-truths-and-a-lie'
+      }, {
+        timeout: 10000
+      });
 
-  parseTwoTruthsResponse(response) {
-    try {
-      const prompts = JSON.parse(response);
-      return prompts.map(prompt => ({
-        id: Date.now() + Math.random(),
-        prompt: prompt.prompt,
-        difficulty: prompt.difficulty,
-        example: prompt.example,
-        aiGenerated: true
-      }));
+      if (response.data && response.data.prompts) {
+        return response.data.prompts.map(prompt => ({
+          id: Date.now() + Math.random(),
+          prompt: prompt.prompt,
+          difficulty: prompt.difficulty,
+          example: prompt.example,
+          aiGenerated: true
+        }));
+      }
+
+      throw new Error('Invalid response from card generator');
     } catch (error) {
-      console.error('Error parsing 2 Truths response:', error.message);
-      return [];
+      console.error('Error generating 2 Truths prompts:', error.message);
+      return this.getFallbackTwoTruthsPrompts();
     }
   }
 
