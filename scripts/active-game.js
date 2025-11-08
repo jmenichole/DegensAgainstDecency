@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const createRoomBtn = document.querySelector('.create-room-btn');
   if (createRoomBtn) {
     createRoomBtn.addEventListener('click', () => {
-      alert('Create Room modal - To be implemented');
+      window.location.href = 'create-room.html';
     });
   }
 

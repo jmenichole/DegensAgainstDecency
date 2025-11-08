@@ -1,0 +1,179 @@
+<!--
+  Degens Against Decency - AI Playground
+  
+  Copyright (c) 2024 Degens Against Decency
+  Licensed under the MIT License
+  See LICENSE file in the project root for full license information.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Playground - Degens Against Decency</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/ai-playground.css" />
+</head>
+<body>
+  <!-- Header/Navigation -->
+  <header class="game-nav-header">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <img src="logo.png" alt="Degens Against Decency" />
+        <span class="logo-text">Degens Against Decency</span>
+      </div>
+      <nav class="nav-tabs">
+        <a href="lobby.html" class="nav-tab">Game Lobby</a>
+        <a href="active-game.html" class="nav-tab">Active Games</a>
+        <a href="ai-playground.html" class="nav-tab active">AI Playground</a>
+      </nav>
+      <div class="nav-actions">
+        <div class="online-indicator">
+          <span class="status-dot online"></span>
+          <span class="online-count">1247 online</span>
+        </div>
+        <button class="create-room-btn">Create Room</button>
+        <div class="user-avatar">
+          <img src="https://via.placeholder.com/40x40/A020F0/ffffff?text=U" alt="User Avatar" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="playground-container">
+    <div class="playground-header">
+      <h1>AI Playground</h1>
+      <p class="subtitle">Generate custom cards using AI</p>
+    </div>
+
+    <div class="playground-content">
+      <!-- AI Generator Section -->
+      <div class="generator-section">
+        <div class="generator-card">
+          <h2>🎯 Prompt Generator</h2>
+          <p class="description">Generate creative prompt cards for your game</p>
+          
+          <div class="form-group">
+            <label for="prompt-theme">Theme/Topic:</label>
+            <input type="text" id="prompt-theme" placeholder="e.g., technology, food, relationships..." />
+          </div>
+
+          <div class="form-group">
+            <label for="prompt-style">Style:</label>
+            <select id="prompt-style">
+              <option value="funny">Funny</option>
+              <option value="dark">Dark Humor</option>
+              <option value="wholesome">Wholesome</option>
+              <option value="absurd">Absurd</option>
+              <option value="political">Political</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="prompt-count">Number of Cards:</label>
+            <input type="number" id="prompt-count" value="5" min="1" max="20" />
+          </div>
+
+          <button class="generate-btn">Generate Prompts</button>
+
+          <div class="generated-cards" id="prompt-cards">
+            <!-- Generated prompts will appear here -->
+          </div>
+        </div>
+
+        <div class="generator-card">
+          <h2>💬 Response Generator</h2>
+          <p class="description">Generate witty response cards for your game</p>
+          
+          <div class="form-group">
+            <label for="response-theme">Theme/Topic:</label>
+            <input type="text" id="response-theme" placeholder="e.g., memes, pop culture, everyday life..." />
+          </div>
+
+          <div class="form-group">
+            <label for="response-style">Style:</label>
+            <select id="response-style">
+              <option value="funny">Funny</option>
+              <option value="dark">Dark Humor</option>
+              <option value="wholesome">Wholesome</option>
+              <option value="absurd">Absurd</option>
+              <option value="political">Political</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="response-count">Number of Cards:</label>
+            <input type="number" id="response-count" value="10" min="1" max="50" />
+          </div>
+
+          <button class="generate-btn">Generate Responses</button>
+
+          <div class="generated-cards" id="response-cards">
+            <!-- Generated responses will appear here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Saved Cards Section -->
+      <div class="saved-section">
+        <h2>💾 Saved Card Packs</h2>
+        <div class="saved-packs">
+          <div class="pack-card">
+            <div class="pack-header">
+              <h3>Tech Bros & Silicon Valley</h3>
+              <span class="pack-count">45 cards</span>
+            </div>
+            <div class="pack-meta">
+              <span class="pack-date">Created: Nov 5, 2024</span>
+              <span class="pack-style">Funny</span>
+            </div>
+            <div class="pack-actions">
+              <button class="btn-secondary">View</button>
+              <button class="btn-secondary">Edit</button>
+              <button class="btn-danger">Delete</button>
+              <button class="btn-primary">Use in Game</button>
+            </div>
+          </div>
+
+          <div class="pack-card">
+            <div class="pack-header">
+              <h3>Internet Memes 2024</h3>
+              <span class="pack-count">60 cards</span>
+            </div>
+            <div class="pack-meta">
+              <span class="pack-date">Created: Nov 3, 2024</span>
+              <span class="pack-style">Absurd</span>
+            </div>
+            <div class="pack-actions">
+              <button class="btn-secondary">View</button>
+              <button class="btn-secondary">Edit</button>
+              <button class="btn-danger">Delete</button>
+              <button class="btn-primary">Use in Game</button>
+            </div>
+          </div>
+
+          <div class="pack-card">
+            <div class="pack-header">
+              <h3>Dark Comedy Special</h3>
+              <span class="pack-count">30 cards</span>
+            </div>
+            <div class="pack-meta">
+              <span class="pack-date">Created: Nov 1, 2024</span>
+              <span class="pack-style">Dark Humor</span>
+            </div>
+            <div class="pack-actions">
+              <button class="btn-secondary">View</button>
+              <button class="btn-secondary">Edit</button>
+              <button class="btn-danger">Delete</button>
+              <button class="btn-primary">Use in Game</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="scripts/ai-playground.js"></script>
+</body>
+</html>

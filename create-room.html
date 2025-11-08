@@ -1,0 +1,301 @@
+<!--
+  Degens Against Decency - Create Room
+  
+  Copyright (c) 2024 Degens Against Decency
+  Licensed under the MIT License
+  See LICENSE file in the project root for full license information.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Room - Degens Against Decency</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/create-room.css" />
+</head>
+<body>
+  <!-- Header/Navigation -->
+  <header class="game-nav-header">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <img src="logo.png" alt="Degens Against Decency" />
+        <span class="logo-text">Degens Against Decency</span>
+      </div>
+      <nav class="nav-tabs">
+        <a href="lobby.html" class="nav-tab">Game Lobby</a>
+        <a href="active-game.html" class="nav-tab">Active Games</a>
+        <a href="ai-playground.html" class="nav-tab">AI Playground</a>
+      </nav>
+      <div class="nav-actions">
+        <div class="online-indicator">
+          <span class="status-dot online"></span>
+          <span class="online-count">1247 online</span>
+        </div>
+        <button class="create-room-btn active">Create Room</button>
+        <div class="user-avatar">
+          <img src="https://via.placeholder.com/40x40/A020F0/ffffff?text=U" alt="User Avatar" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="create-room-container">
+    <div class="create-room-header">
+      <h1>🎮 Create New Game Room</h1>
+      <p class="subtitle">Set up your custom game room</p>
+    </div>
+
+    <div class="create-room-content">
+      <form id="create-room-form" class="room-form">
+        <!-- Room Name -->
+        <div class="form-section">
+          <h2>Room Details</h2>
+          
+          <div class="form-group">
+            <label for="room-name">Room Name *</label>
+            <input type="text" id="room-name" placeholder="e.g., Chaos & Laughter Central" required maxlength="50" />
+            <span class="helper-text">Choose a fun and memorable name for your room</span>
+          </div>
+
+          <div class="form-group">
+            <label for="room-description">Description (Optional)</label>
+            <textarea id="room-description" placeholder="Tell players what to expect..." rows="3" maxlength="200"></textarea>
+          </div>
+        </div>
+
+        <!-- Game Settings -->
+        <div class="form-section">
+          <h2>Game Settings</h2>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="game-type">Game Type *</label>
+              <select id="game-type" required>
+                <option value="">Select game type...</option>
+                <option value="degens-against-decency" selected>Degens Against Decency</option>
+                <option value="2-truths-and-a-lie">2 Truths and a Lie</option>
+                <option value="poker">Poker (5-Card Stud)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="game-mode">Game Mode *</label>
+              <select id="game-mode" required>
+                <option value="classic" selected>Classic</option>
+                <option value="chaos">Chaos Mode</option>
+                <option value="easy">Easy Mode</option>
+                <option value="hardcore">Hardcore</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="max-players">Max Players *</label>
+              <input type="number" id="max-players" value="6" min="3" max="10" required />
+              <span class="helper-text">3-10 players</span>
+            </div>
+
+            <div class="form-group">
+              <label for="max-rounds">Rounds *</label>
+              <input type="number" id="max-rounds" value="10" min="5" max="30" required />
+              <span class="helper-text">5-30 rounds</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="turn-time">Turn Time (seconds) *</label>
+              <input type="number" id="turn-time" value="60" min="30" max="300" step="15" required />
+              <span class="helper-text">30-300 seconds</span>
+            </div>
+
+            <div class="form-group">
+              <label for="judge-rotation">Judge Rotation *</label>
+              <select id="judge-rotation" required>
+                <option value="sequential" selected>Sequential</option>
+                <option value="random">Random</option>
+                <option value="winner">Winner picks next</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Privacy Settings -->
+        <div class="form-section">
+          <h2>Privacy & Access</h2>
+          
+          <div class="form-group">
+            <div class="toggle-group">
+              <input type="checkbox" id="private-room" />
+              <label for="private-room" class="toggle-label">
+                <span class="toggle-switch"></span>
+                <span class="toggle-text">
+                  <strong>Private Room</strong>
+                  <small>Only players with the room code can join</small>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="toggle-group">
+              <input type="checkbox" id="password-protected" />
+              <label for="password-protected" class="toggle-label">
+                <span class="toggle-switch"></span>
+                <span class="toggle-text">
+                  <strong>Password Protected</strong>
+                  <small>Require a password to join</small>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group password-field" style="display: none;">
+            <label for="room-password">Room Password</label>
+            <input type="password" id="room-password" placeholder="Enter password..." maxlength="20" />
+          </div>
+
+          <div class="form-group">
+            <div class="toggle-group">
+              <input type="checkbox" id="friends-only" />
+              <label for="friends-only" class="toggle-label">
+                <span class="toggle-switch"></span>
+                <span class="toggle-text">
+                  <strong>Friends Only</strong>
+                  <small>Only your friends can join</small>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Pack Settings -->
+        <div class="form-section">
+          <h2>Card Packs</h2>
+          
+          <div class="card-packs-selection">
+            <div class="pack-option">
+              <input type="checkbox" id="pack-default" checked />
+              <label for="pack-default" class="pack-label">
+                <span class="pack-icon">🎴</span>
+                <span class="pack-info">
+                  <strong>Default Pack</strong>
+                  <small>1,000 cards</small>
+                </span>
+              </label>
+            </div>
+
+            <div class="pack-option">
+              <input type="checkbox" id="pack-nsfw" />
+              <label for="pack-nsfw" class="pack-label">
+                <span class="pack-icon">🔞</span>
+                <span class="pack-info">
+                  <strong>NSFW Pack</strong>
+                  <small>800 cards</small>
+                </span>
+              </label>
+            </div>
+
+            <div class="pack-option">
+              <input type="checkbox" id="pack-memes" />
+              <label for="pack-memes" class="pack-label">
+                <span class="pack-icon">😂</span>
+                <span class="pack-info">
+                  <strong>Internet Memes</strong>
+                  <small>600 cards</small>
+                </span>
+              </label>
+            </div>
+
+            <div class="pack-option">
+              <input type="checkbox" id="pack-tech" />
+              <label for="pack-tech" class="pack-label">
+                <span class="pack-icon">💻</span>
+                <span class="pack-info">
+                  <strong>Tech & Silicon Valley</strong>
+                  <small>450 cards</small>
+                </span>
+              </label>
+            </div>
+
+            <div class="pack-option">
+              <input type="checkbox" id="pack-custom" />
+              <label for="pack-custom" class="pack-label">
+                <span class="pack-icon">✨</span>
+                <span class="pack-info">
+                  <strong>Custom AI Pack</strong>
+                  <small>Your saved cards</small>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Filter -->
+        <div class="form-section">
+          <h2>Content Filter</h2>
+          
+          <div class="content-filter-options">
+            <div class="filter-option">
+              <input type="checkbox" id="filter-profanity" />
+              <label for="filter-profanity">Filter Profanity</label>
+            </div>
+            
+            <div class="filter-option">
+              <input type="checkbox" id="filter-political" />
+              <label for="filter-political">Filter Political Content</label>
+            </div>
+            
+            <div class="filter-option">
+              <input type="checkbox" id="filter-religious" />
+              <label for="filter-religious">Filter Religious Content</label>
+            </div>
+            
+            <div class="filter-option">
+              <input type="checkbox" id="filter-sexual" />
+              <label for="filter-sexual">Filter Sexual Content</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="window.location.href='lobby.html'">Cancel</button>
+          <button type="submit" class="btn-create">Create Room</button>
+        </div>
+      </form>
+
+      <!-- Preview -->
+      <div class="room-preview">
+        <h3>Room Preview</h3>
+        <div class="preview-card">
+          <div class="room-header">
+            <h4 id="preview-name">Chaos & Laughter Central</h4>
+            <span class="room-code">CODE: #XXXXX</span>
+          </div>
+          <div class="room-host">
+            <img src="https://via.placeholder.com/32x32/B4FF39/000000?text=H" alt="Host" class="host-avatar" />
+            <span class="host-name">You (Host)</span>
+          </div>
+          <div class="room-info">
+            <div class="player-count">
+              <span class="player-icons">👤</span>
+              <span class="count-text" id="preview-players">1/6 players</span>
+            </div>
+            <div class="room-settings">
+              <span class="setting-badge" id="preview-mode">🎮 Classic</span>
+              <span class="setting-badge" id="preview-privacy">🌐 Public</span>
+            </div>
+          </div>
+          <button class="join-room-btn" disabled>Your Room</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="scripts/create-room.js"></script>
+</body>
+</html>
