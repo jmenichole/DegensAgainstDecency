@@ -25,6 +25,14 @@ PORT=3000
 NODE_ENV=production
 ```
 
+**Generate SESSION_SECRET:**
+```bash
+# Quick method - generates random secret
+npm run generate-secret
+# OR use: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+# OR use: openssl rand -hex 32
+```
+
 **Setup:**
 ```bash
 npm install
@@ -220,6 +228,14 @@ JUSTTHETIP_ENABLED=true
 ---
 
 ## ❓ Common Questions
+
+### Q: How do I generate a SESSION_SECRET?
+**A:** Use one of these commands:
+- `npm run generate-secret` (recommended)
+- `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+- `openssl rand -hex 32`
+
+Copy the output and add it to your `.env` file or hosting platform environment variables.
 
 ### Q: Do I need Discord to run this?
 **A:** No! The app works in guest mode without any Discord integration.

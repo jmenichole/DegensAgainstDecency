@@ -37,6 +37,28 @@ PORT=3000
 NODE_ENV=production
 ```
 
+**How to generate SESSION_SECRET:**
+
+Use one of these methods to generate a secure random secret:
+
+**Method 1: Using npm script (recommended)**
+```bash
+npm run generate-secret
+```
+This will output: `SESSION_SECRET=<random-hex-string>`
+
+**Method 2: Using Node.js directly**
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+**Method 3: Using OpenSSL**
+```bash
+openssl rand -hex 32
+```
+
+Copy the generated string and set it as your `SESSION_SECRET` in the `.env` file.
+
 ### Hosting Requirements
 **Option 1: Development/Local**
 - No additional requirements
