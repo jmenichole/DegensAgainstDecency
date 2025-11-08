@@ -1,0 +1,140 @@
+<!--
+  Degens Against Decency - Player Profile
+  
+  Copyright (c) 2024 Degens Against Decency
+  Licensed under the MIT License
+  See LICENSE file in the project root for full license information.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Player Profile - Degens Against Decency</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/profile.css" />
+</head>
+<body>
+  <!-- Header/Navigation -->
+  <header class="game-nav-header">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <img src="logo.png" alt="Degens Against Decency" />
+        <span class="logo-text">Degens Against Decency</span>
+      </div>
+      <nav class="nav-tabs">
+        <a href="lobby.html" class="nav-tab">Game Lobby</a>
+        <a href="active-game.html" class="nav-tab">Active Games</a>
+        <a href="ai-playground.html" class="nav-tab">AI Playground</a>
+      </nav>
+      <div class="nav-actions">
+        <div class="online-indicator">
+          <span class="status-dot online"></span>
+          <span class="online-count">1247 online</span>
+        </div>
+        <button class="create-room-btn">Create Room</button>
+        <div class="user-avatar">
+          <img src="https://via.placeholder.com/40x40/A020F0/ffffff?text=U" alt="User Avatar" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="profile-container">
+    <!-- Sidebar Menu -->
+    <aside class="profile-sidebar">
+      <nav class="sidebar-menu">
+        <a href="#profile" class="menu-item active">
+          <span class="menu-icon">👤</span>
+          <span class="menu-label">Profile</span>
+        </a>
+        <a href="#statistics" class="menu-item">
+          <span class="menu-icon">📊</span>
+          <span class="menu-label">Statistics</span>
+        </a>
+        <a href="#account" class="menu-item">
+          <span class="menu-icon">⚙️</span>
+          <span class="menu-label">Account</span>
+        </a>
+        <a href="#content-filter" class="menu-item">
+          <span class="menu-icon">🔒</span>
+          <span class="menu-label">Content Filter</span>
+        </a>
+        <a href="#preferences" class="menu-item">
+          <span class="menu-icon">🎨</span>
+          <span class="menu-label">Preferences</span>
+        </a>
+        <a href="#achievements" class="menu-item">
+          <span class="menu-icon">🏆</span>
+          <span class="menu-label">Achievements</span>
+        </a>
+        <a href="#game-history" class="menu-item">
+          <span class="menu-icon">📜</span>
+          <span class="menu-label">Game History</span>
+        </a>
+        <a href="#privacy" class="menu-item">
+          <span class="menu-icon">🛡️</span>
+          <span class="menu-label">Privacy</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Profile Content -->
+    <main class="profile-content">
+      <div class="profile-header">
+        <h1>Player Profile</h1>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-avatar-section">
+          <div class="avatar-container">
+            <img src="https://via.placeholder.com/120x120/A020F0/ffffff?text=CM" alt="CardMaster2025" class="profile-avatar" />
+            <div class="level-badge">12</div>
+          </div>
+          <div class="profile-info">
+            <h2 class="username">CardMaster2025</h2>
+            <div class="user-title">Card Slinger</div>
+            <div class="online-status">
+              <span class="status-dot online"></span>
+              <span>Online</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-details">
+          <div class="detail-row">
+            <label>Email:</label>
+            <span>cardmaster@example.com</span>
+          </div>
+          <div class="detail-row">
+            <label>Member Since:</label>
+            <span>January 15, 2024</span>
+          </div>
+          <div class="detail-row">
+            <label>Bio:</label>
+            <div class="bio-text">
+              Professional card slinger and chaos enthusiast. Here for the laughs and the glory. Let's see who can out-meme the memes! 🎮🔥
+            </div>
+          </div>
+        </div>
+
+        <div class="experience-section">
+          <div class="xp-header">
+            <span class="xp-label">Experience</span>
+            <span class="xp-value">750 / 1000 XP</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 75%"></div>
+          </div>
+          <div class="xp-info">
+            <span>250 XP until Level 13</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="scripts/profile.js"></script>
+</body>
+</html>

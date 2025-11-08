@@ -1,0 +1,240 @@
+<!--
+  Degens Against Decency - Active Game
+  
+  Copyright (c) 2024 Degens Against Decency
+  Licensed under the MIT License
+  See LICENSE file in the project root for full license information.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Active Game - Degens Against Decency</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/active-game.css" />
+</head>
+<body>
+  <!-- Header/Navigation -->
+  <header class="game-nav-header">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <img src="logo.png" alt="Degens Against Decency" />
+        <span class="logo-text">Degens Against Decency</span>
+      </div>
+      <nav class="nav-tabs">
+        <a href="lobby.html" class="nav-tab">Game Lobby</a>
+        <a href="active-game.html" class="nav-tab active">Active Games</a>
+        <a href="ai-playground.html" class="nav-tab">AI Playground</a>
+      </nav>
+      <div class="nav-actions">
+        <div class="online-indicator">
+          <span class="status-dot online"></span>
+          <span class="online-count">1247 online</span>
+        </div>
+        <button class="create-room-btn">Create Room</button>
+        <div class="user-avatar">
+          <img src="https://via.placeholder.com/40x40/A020F0/ffffff?text=U" alt="User Avatar" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Game Container -->
+  <div class="active-game-container">
+    <!-- Game Main Area -->
+    <main class="game-main">
+      <!-- Game Status Bar -->
+      <div class="game-status-bar">
+        <div class="round-info">
+          <span class="round-label">Round</span>
+          <span class="round-value">1/10</span>
+        </div>
+        <div class="timer-info">
+          <span class="timer-icon">⏱️</span>
+          <span class="timer-value">0:48</span>
+        </div>
+        <div class="judge-info">
+          <span class="judge-icon">👑</span>
+          <span class="judge-label">Judge: PlayerOne</span>
+        </div>
+      </div>
+
+      <!-- Players Section -->
+      <div class="players-section">
+        <div class="player-card">
+          <img src="https://via.placeholder.com/50x50/B4FF39/000000?text=P1" alt="Player 1" class="player-avatar judge" />
+          <div class="player-info">
+            <div class="player-name">PlayerOne</div>
+            <div class="player-points">245 pts</div>
+          </div>
+          <div class="judge-badge">👑</div>
+        </div>
+
+        <div class="player-card">
+          <img src="https://via.placeholder.com/50x50/A020F0/ffffff?text=P2" alt="Player 2" class="player-avatar" />
+          <div class="player-info">
+            <div class="player-name">MemeMaster</div>
+            <div class="player-points">220 pts</div>
+          </div>
+        </div>
+
+        <div class="player-card you">
+          <img src="https://via.placeholder.com/50x50/00ffff/000000?text=Y" alt="You" class="player-avatar" />
+          <div class="player-info">
+            <div class="player-name">You</div>
+            <div class="player-points">198 pts</div>
+          </div>
+        </div>
+
+        <div class="player-card">
+          <img src="https://via.placeholder.com/50x50/ff00ff/ffffff?text=P3" alt="Player 3" class="player-avatar" />
+          <div class="player-info">
+            <div class="player-name">CardNinja</div>
+            <div class="player-points">176 pts</div>
+          </div>
+        </div>
+
+        <div class="player-card">
+          <img src="https://via.placeholder.com/50x50/ffff00/000000?text=P4" alt="Player 4" class="player-avatar" />
+          <div class="player-info">
+            <div class="player-name">LaughMachine</div>
+            <div class="player-points">152 pts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prompt Card -->
+      <div class="prompt-section">
+        <div class="prompt-card">
+          <div class="prompt-label">Current Prompt</div>
+          <div class="prompt-text">
+            "When I'm feeling down, nothing cheers me up like _____ and _____."
+          </div>
+        </div>
+      </div>
+
+      <!-- Your Hand -->
+      <div class="hand-section">
+        <h3 class="section-title">Your Hand</h3>
+        <div class="cards-grid">
+          <div class="game-card selectable">
+            <div class="card-text">A tactical nuclear strike</div>
+          </div>
+          <div class="game-card selectable">
+            <div class="card-text">Unlimited breadsticks</div>
+          </div>
+          <div class="game-card selectable selected">
+            <div class="card-text">Dancing like nobody's watching</div>
+            <div class="selected-badge">1</div>
+          </div>
+          <div class="game-card selectable">
+            <div class="card-text">My collection of regrets</div>
+          </div>
+          <div class="game-card selectable selected">
+            <div class="card-text">Existential dread</div>
+            <div class="selected-badge">2</div>
+          </div>
+          <div class="game-card selectable">
+            <div class="card-text">A surprise party (that I'm not invited to)</div>
+          </div>
+          <div class="game-card selectable">
+            <div class="card-text">The healing power of memes</div>
+          </div>
+        </div>
+
+        <button class="submit-cards-btn">Submit Cards (2/2)</button>
+      </div>
+
+      <!-- Quick Reactions -->
+      <div class="reactions-panel">
+        <button class="reaction-btn">😂</button>
+        <button class="reaction-btn">🔥</button>
+        <button class="reaction-btn">💀</button>
+        <button class="reaction-btn">👏</button>
+        <button class="reaction-btn">😱</button>
+        <button class="reaction-btn">🤣</button>
+      </div>
+    </main>
+
+    <!-- Game Chat Sidebar -->
+    <aside class="game-chat-sidebar">
+      <div class="chat-section">
+        <div class="section-header">
+          <h3>Game Chat</h3>
+        </div>
+
+        <div class="chat-messages">
+          <div class="chat-message">
+            <img src="https://via.placeholder.com/28x28/B4FF39/000000?text=P1" alt="Player" class="msg-avatar" />
+            <div class="msg-content">
+              <div class="msg-header">
+                <span class="msg-author">PlayerOne</span>
+                <span class="msg-time">3:12 PM</span>
+              </div>
+              <div class="msg-text">This is going to be epic! 😄</div>
+            </div>
+          </div>
+
+          <div class="chat-message">
+            <img src="https://via.placeholder.com/28x28/A020F0/ffffff?text=P2" alt="Player" class="msg-avatar" />
+            <div class="msg-content">
+              <div class="msg-header">
+                <span class="msg-author">MemeMaster</span>
+                <span class="msg-time">3:13 PM</span>
+              </div>
+              <div class="msg-text">I have the perfect combo! 🔥</div>
+            </div>
+          </div>
+
+          <div class="chat-message system">
+            <div class="msg-content">
+              <div class="msg-text">⏱️ 45 seconds remaining</div>
+            </div>
+          </div>
+
+          <div class="chat-message">
+            <img src="https://via.placeholder.com/28x28/ff00ff/ffffff?text=P3" alt="Player" class="msg-avatar" />
+            <div class="msg-content">
+              <div class="msg-header">
+                <span class="msg-author">CardNinja</span>
+                <span class="msg-time">3:14 PM</span>
+              </div>
+              <div class="msg-text">LOL at the last round 💀</div>
+            </div>
+          </div>
+
+          <div class="chat-message">
+            <img src="https://via.placeholder.com/28x28/ffff00/000000?text=P4" alt="Player" class="msg-avatar" />
+            <div class="msg-content">
+              <div class="msg-header">
+                <span class="msg-author">LaughMachine</span>
+                <span class="msg-time">3:14 PM</span>
+              </div>
+              <div class="msg-text">Can't stop laughing 🤣</div>
+            </div>
+          </div>
+
+          <div class="chat-message">
+            <img src="https://via.placeholder.com/28x28/00ffff/000000?text=Y" alt="You" class="msg-avatar" />
+            <div class="msg-content">
+              <div class="msg-header">
+                <span class="msg-author">You</span>
+                <span class="msg-time">3:15 PM</span>
+              </div>
+              <div class="msg-text">My cards are ready!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input">
+          <input type="text" placeholder="Type a message..." />
+          <button class="send-btn">Send</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="scripts/active-game.js"></script>
+</body>
+</html>
