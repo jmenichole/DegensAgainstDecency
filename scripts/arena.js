@@ -18,6 +18,7 @@ class ArenaManager {
     await this.loadUser();
     this.setupSocket();
     this.setupEventListeners();
+    this.checkOnboarding();
   }
 
   async loadUser() {
@@ -208,6 +209,64 @@ class ArenaManager {
 
     // Redirect to game page
     window.location.href = `/game/${gameId}`;
+  }
+
+  checkOnboarding() {
+    // Check if user has completed onboarding
+    const hasCompletedOnboarding = localStorage.getItem('onboarding_completed');
+    
+    if (!hasCompletedOnboarding) {
+      this.showOnboarding();
+    }
+  }
+
+  showOnboarding() {
+    const onboardingModal = document.getElementById('onboarding-modal');
+    if (onboardingModal) {
+      onboardingModal.classList.remove('hidden');
+      onboardingModal.style.display = 'flex';
+    }
+  }
+
+  nextOnboardingStep() {
+    const steps = document.querySelectorAll('.onboarding-step');
+    let currentStep = 0;
+    
+    steps.forEach((step, index) => {
+      if (step.classList.contains('active')) {
+        currentStep = index;
+        step.classList.remove('active');
+      }
+    });
+    
+    if (currentStep < steps.length - 1) {
+      steps[currentStep + 1].classList.add('active');
+    }
+  }
+
+  prevOnboardingStep() {
+    const steps = document.querySelectorAll('.onboarding-step');
+    let currentStep = 0;
+    
+    steps.forEach((step, index) => {
+      if (step.classList.contains('active')) {
+        currentStep = index;
+        step.classList.remove('active');
+      }
+    });
+    
+    if (currentStep > 0) {
+      steps[currentStep - 1].classList.add('active');
+    }
+  }
+
+  completeOnboarding() {
+    localStorage.setItem('onboarding_completed', 'true');
+    const onboardingModal = document.getElementById('onboarding-modal');
+    if (onboardingModal) {
+      onboardingModal.classList.add('hidden');
+      onboardingModal.style.display = 'none';
+    }
   }
 }
 

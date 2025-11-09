@@ -23,18 +23,13 @@
         <span class="logo-text">Degens Against Decency</span>
       </div>
       <nav class="nav-tabs">
-        <a href="lobby.html" class="nav-tab">Game Lobby</a>
-        <a href="active-game.html" class="nav-tab">Active Games</a>
-        <a href="ai-playground.html" class="nav-tab">AI Playground</a>
+        <a href="arena.html" class="nav-tab">Game Lobby</a>
+        <a href="create-room.html" class="nav-tab active">Create Room</a>
       </nav>
       <div class="nav-actions">
-        <div class="online-indicator">
-          <span class="status-dot online"></span>
-          <span class="online-count">1247 online</span>
-        </div>
-        <button class="create-room-btn active">Create Room</button>
+        <a href="arena.html" class="secondary-button">Back to Lobby</a>
         <div class="user-avatar">
-          <img src="https://via.placeholder.com/40x40/A020F0/ffffff?text=U" alt="User Avatar" />
+          <img src="https://via.placeholder.com/40x40/A020F0/ffffff?text=U" alt="User Avatar" id="user-avatar" />
         </div>
       </div>
     </div>
@@ -73,10 +68,7 @@
             <div class="form-group">
               <label for="game-type">Game Type *</label>
               <select id="game-type" required>
-                <option value="">Select game type...</option>
                 <option value="degens-against-decency" selected>Degens Against Decency</option>
-                <option value="2-truths-and-a-lie">2 Truths and a Lie</option>
-                <option value="poker">Poker (5-Card Stud)</option>
               </select>
             </div>
 
@@ -263,7 +255,7 @@
 
         <!-- Form Actions -->
         <div class="form-actions">
-          <button type="button" class="btn-cancel" onclick="window.location.href='lobby.html'">Cancel</button>
+          <button type="button" class="btn-cancel" onclick="window.location.href='arena.html'">Cancel</button>
           <button type="submit" class="btn-create">Create Room</button>
         </div>
       </form>
