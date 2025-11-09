@@ -7,6 +7,9 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 **Looking for deployment requirements?**
 - ⚡ **[Requirements Summary](REQUIREMENTS_SUMMARY.md)** - Quick reference guide (start here!)
 - 🌐 **[Website Deployment Requirements](WEBSITE_REQUIREMENTS.md)** - Complete guide for deploying on a website (Vercel, Railway, VPS, etc.)
+- 🔷 **[Vercel Deployment Guide](DEPLOYMENT_VERCEL.md)** - Step-by-step Vercel deployment with environment variables
+- 🚂 **[Railway Deployment Guide](DEPLOYMENT_RAILWAY.md)** - Deploy to Railway (recommended for WebSocket support)
+- 🎨 **[Render Deployment Guide](DEPLOYMENT_RENDER.md)** - Deploy to Render (great free tier)
 - 🎮 **[Discord Activity Requirements](DISCORD_ACTIVITY_REQUIREMENTS.md)** - Guide for Discord Activity implementation (future enhancement)
 
 **Other Documentation:**
@@ -334,58 +337,21 @@ Quick start:
 
 ### ⚡ Vercel (Alternative Option)
 
-Vercel works great but note that WebSocket support has some limitations:
+Vercel works great but note that WebSocket support has some limitations.
 
-1. **Install Vercel CLI** (optional):
-```bash
-npm i -g vercel
-```
+**[📖 See detailed Vercel deployment guide](DEPLOYMENT_VERCEL.md)**
 
-2. **Deploy via Vercel Dashboard** (recommended):
-   - Fork/clone this repository to your GitHub account
-   - Visit [Vercel](https://vercel.com) and sign in with GitHub
-   - Click "New Project" and import this repository
-   - Configure environment variables (see below)
-   - Deploy!
+Quick start:
+1. Fork/clone this repository to your GitHub account
+2. Visit [Vercel](https://vercel.com) and sign in with GitHub
+3. Click "New Project" and import this repository
+4. Add environment variables in Vercel Dashboard → Settings → Environment Variables
+   - **Required**: `NODE_ENV=production`, `SESSION_SECRET` (generate with: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
+   - **Optional**: Discord OAuth credentials, OpenAI API key, etc.
+5. Deploy!
+6. Update Discord OAuth redirect URI to match your Vercel domain
 
-3. **Configure Environment Variables in Vercel**:
-   - Go to your project settings → Environment Variables
-   - Add the following variables:
-   
-   **Required:**
-   ```
-   NODE_ENV=production
-   SESSION_SECRET=[generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"]
-   ```
-   
-   **Optional (for Discord OAuth):**
-   ```
-   DISCORD_CLIENT_ID=your_discord_client_id
-   DISCORD_CLIENT_SECRET=your_discord_client_secret
-   DISCORD_CALLBACK_URL=https://yourdomain.vercel.app/auth/discord/callback
-   ```
-   
-   **Optional (for Discord Bot):**
-   ```
-   DISCORD_BOT_TOKEN=your_discord_bot_token
-   ```
-   
-   **Optional (for AI features):**
-   ```
-   OPENAI_API_KEY=your_openai_api_key
-   ```
-
-4. **Update Discord OAuth Redirect URI**:
-   - Go to [Discord Developer Portal](https://discord.com/developers/applications)
-   - Select your application
-   - Go to OAuth2 → General
-   - Add redirect URI: `https://yourdomain.vercel.app/auth/discord/callback`
-   - Replace `yourdomain` with your actual Vercel domain
-
-5. **Test Your Deployment**:
-   - Visit your Vercel URL
-   - The app works without Discord OAuth (guest mode)
-   - Try creating and joining games
+**Important**: Environment variables must be configured in Vercel Dashboard after initial deployment. See [DEPLOYMENT_VERCEL.md](DEPLOYMENT_VERCEL.md) for complete setup instructions.
 
 ### Other Deployment Options
 
