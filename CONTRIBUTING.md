@@ -79,8 +79,7 @@ DegensAgainstDecency/
 ├── scripts/               # Client-side JavaScript
 ├── styles/                # CSS styling
 ├── index.html             # Landing page
-├── arena.html             # Game lobby (server version)
-└── arena-demo.html        # Static demo (GitHub Pages)
+└── arena.html             # Game lobby and arena
 ```
 
 ## 📋 Coding Standards
@@ -108,11 +107,10 @@ DegensAgainstDecency/
 
 ### Manual Testing
 1. **Server Functionality**: Test with `npm start`
-2. **Static Demo**: Test arena-demo.html in a browser
-3. **Multiple Browsers**: Chrome, Firefox, Safari
-4. **Mobile Devices**: Test responsive design
-5. **Game Flow**: Play through complete games
-6. **Error Cases**: Test edge cases and errors
+2. **Multiple Browsers**: Chrome, Firefox, Safari
+3. **Mobile Devices**: Test responsive design
+4. **Game Flow**: Play through complete games
+5. **Error Cases**: Test edge cases and errors
 
 ### Automated Testing
 Currently, we don't have automated tests, but we'd love contributions in this area!
@@ -121,7 +119,7 @@ Currently, we don't have automated tests, but we'd love contributions in this ar
 
 ### Before Submitting
 - [ ] Code follows project style guidelines
-- [ ] Changes work in both server and static modes (if applicable)
+- [ ] Changes work with the server
 - [ ] Documentation is updated if needed
 - [ ] No console errors or warnings
 - [ ] Tested on at least 2 browsers

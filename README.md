@@ -13,7 +13,6 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 - 📖 [Integration Guide](INTEGRATIONS.md) - TiltCheck and JustTheTip integration details
 - 🚀 [Deployment with Integrations](DEPLOYMENT_INTEGRATIONS.md) - Deploy with optional integrations
 - 📱 [Discord Activities Analysis](DISCORD_ACTIVITIES.md) - Why Discord Activities aren't currently implemented
-- 📄 [GitHub Pages Setup](GITHUB_PAGES.md) - Static demo deployment
 
 ## 🎯 Features
 
@@ -80,10 +79,6 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 
 > **📋 For comprehensive deployment requirements, see [WEBSITE_REQUIREMENTS.md](WEBSITE_REQUIREMENTS.md)**  
 > This section provides a quick start guide. For detailed requirements, configuration options, and troubleshooting, refer to the complete requirements documentation.
-
-### Try the Demo First!
-
-Want to see what the interface looks like? Check out our [**GitHub Pages Demo**](https://jmenichole.github.io/DegensAgainstDecency/) for a static preview. Note that the demo version doesn't support real multiplayer gameplay - for that, you'll need to run the full server.
 
 ### Prerequisites
 - Node.js 16+
@@ -309,22 +304,37 @@ Set `NODE_ENV=development` to enable:
 
 ## 🚀 Deployment
 
-### GitHub Pages (Static Demo Only)
+Choose your preferred deployment platform - all support WebSockets and real-time multiplayer:
 
-For a quick static demo without backend functionality:
+### 🚂 Railway (Recommended for Free Tier)
 
-1. Fork this repository
-2. Enable GitHub Pages in Settings → Pages
-3. Select "main" branch and "/ (root)" folder
-4. Visit `https://yourusername.github.io/DegensAgainstDecency/`
+Railway offers the best free tier with always-on instances and full WebSocket support.
 
-**Note**: GitHub Pages only shows the UI demo. For real multiplayer games, deploy the full server below.
+**[📖 See detailed Railway deployment guide](DEPLOYMENT_RAILWAY.md)**
 
-See [GITHUB_PAGES.md](GITHUB_PAGES.md) for detailed instructions.
+Quick start:
+1. Visit [railway.app](https://railway.app) and sign in with GitHub
+2. Click "New Project" → "Deploy from GitHub repo"
+3. Select this repository
+4. Add environment variables (at minimum: `NODE_ENV=production`, `SESSION_SECRET`)
+5. Deploy! Your app will be live at `https://your-app.railway.app`
 
-### Quick Deploy to Vercel (Recommended for Full Features)
+### 🎨 Render (Great Free Tier)
 
-The easiest way to deploy this app is using Vercel:
+Render provides a generous free tier (with cold starts after 15min inactivity).
+
+**[📖 See detailed Render deployment guide](DEPLOYMENT_RENDER.md)**
+
+Quick start:
+1. Visit [render.com](https://render.com) and sign up with GitHub
+2. Click "New +" → "Web Service"
+3. Connect repository: `jmenichole/DegensAgainstDecency`
+4. Configure: Build `npm install`, Start `npm start`
+5. Add environment variables and deploy!
+
+### ⚡ Vercel (Alternative Option)
+
+Vercel works great but note that WebSocket support has some limitations:
 
 1. **Install Vercel CLI** (optional):
 ```bash
@@ -377,39 +387,41 @@ npm i -g vercel
    - The app works without Discord OAuth (guest mode)
    - Try creating and joining games
 
-### Alternative: Deploy to Other Platforms
+### Other Deployment Options
 
 The app also works on:
 - **Heroku**: Add Procfile with `web: node server.js`
-- **Railway**: Just connect your GitHub repo
 - **DigitalOcean App Platform**: Configure as Node.js app
-- **Render**: Use `npm start` as start command
+- **Traditional VPS**: Use PM2 process manager with nginx reverse proxy
 
-### Traditional Server Deployment
+### Environment Variables (All Platforms)
 
-For VPS or dedicated server:
-
-1. Set `NODE_ENV=production`
-2. Configure secure session secrets
-3. Set up HTTPS (required for Discord OAuth)
-4. Configure reverse proxy (nginx recommended)
-5. Set up process manager (PM2 recommended)
-
-### Environment Variables (Production)
+**Required:**
 ```env
 NODE_ENV=production
-SESSION_SECRET=secure_random_string_change_this
-DISCORD_CALLBACK_URL=https://yourdomain.com/auth/discord/callback
+SESSION_SECRET=<generate-with-crypto-randomBytes>
 ```
+
+**Optional (Discord features):**
+```env
+DISCORD_CLIENT_ID=your_discord_client_id
+DISCORD_CLIENT_SECRET=your_discord_client_secret
+DISCORD_CALLBACK_URL=https://yourdomain.com/auth/discord/callback
+DISCORD_BOT_TOKEN=your_discord_bot_token
+```
+
+**Optional (AI features):**
+```env
+OPENAI_API_KEY=your_openai_api_key
+```
+
+Generate `SESSION_SECRET` with: `npm run generate-secret`
 
 ### Important Notes for Production
 
 ⚠️ **Discord OAuth is optional** - The app works in guest mode without Discord authentication
 
-⚠️ **WebSockets on Vercel** - Note that Vercel has limitations with WebSocket connections. For best real-time performance, consider using:
-- Railway (best WebSocket support)
-- Heroku
-- Traditional VPS
+⚠️ **WebSocket Support** - Railway and Render have excellent WebSocket support. Vercel has some limitations for WebSockets.
 
 ⚠️ **Session Storage** - For production at scale, use Redis for session storage instead of in-memory sessions
 
