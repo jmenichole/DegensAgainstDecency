@@ -1,6 +1,24 @@
 # Vercel Deployment Guide
 
-This guide explains how to deploy Degens Against Decency to Vercel and properly configure environment variables.
+This guide explains how to deploy Degens Against Decency to Vercel and properly configure environment variables for **Production** deployment.
+
+## ⚠️ Important: Production vs Preview Deployments
+
+**Vercel creates two types of deployments:**
+
+1. **Production Deployment** 
+   - URL: `https://your-app.vercel.app` (your main domain)
+   - Triggered by: Commits to main/master branch (or configured production branch)
+   - Label: Shows "Production" in Deployments tab
+   - **This is your live site that users should visit**
+
+2. **Preview Deployment**
+   - URL: `https://your-app-git-branchname-team.vercel.app` (includes branch name)
+   - Triggered by: Commits to any non-production branch or pull requests
+   - Label: Shows branch name in Deployments tab
+   - **Used for testing before merging to production**
+
+**Critical**: When configuring environment variables, you must enable them for **Production** environment, not just Preview! See instructions below.
 
 ## Quick Start
 
@@ -81,20 +99,52 @@ After initial deployment, configure environment variables in Vercel:
 | `JUSTTHETIP_API_URL` | Your JustTheTip API URL | Leave empty for demo mode |
 | `JUSTTHETIP_BOT_TOKEN` | Your JustTheTip Bot Token | Leave empty for demo mode |
 
-### 4. Apply Environment Variables to All Environments
+### 4. Apply Environment Variables to Production
 
-When adding each environment variable, select which environments to apply it to:
-- ✅ **Production** (required)
-- ✅ **Preview** (recommended for testing)
-- ✅ **Development** (optional, can use local `.env` instead)
+**CRITICAL**: When adding environment variables, you must specifically enable them for the **Production** environment:
 
-### 5. Redeploy
+1. When adding each environment variable in Vercel Dashboard:
+   - ✅ **Check "Production"** - This is REQUIRED for your live site
+   - ⬜ Preview (optional - for testing pull requests)
+   - ⬜ Development (optional - can use local `.env` instead)
 
-After adding environment variables:
+2. **Common Mistake**: Only enabling Preview environment
+   - If you only enable Preview, your production deployment will NOT have the environment variables
+   - This causes the app to show the old landing page or fail to work properly
+   - **Always ensure Production is checked** for variables you want in your live site
+
+### 5. Promote to Production
+
+After adding environment variables to Production:
+
+**Option A: Redeploy Production (Recommended)**
 1. Go to **Deployments** tab
-2. Click "..." on the latest deployment
-3. Select "Redeploy"
-4. The app should now load properly with your configuration
+2. Find the deployment with "Production" label
+3. Click "..." (three dots) on that deployment
+4. Select "Redeploy"
+5. Ensure it deploys to Production (not Preview)
+
+**Option B: Promote from Git Branch**
+1. Ensure your changes are merged to your main/master branch
+2. Vercel will automatically deploy the main branch to Production
+3. If using a different branch, configure it in Settings → Git
+
+**Option C: Manual Production Deployment**
+1. Go to **Settings** → **Git**
+2. Verify your Production Branch is set (usually `main` or `master`)
+3. Push to that branch to trigger a production deployment
+4. Check that the deployment shows "Production" label (not "Preview")
+
+### 6. Verify Production Deployment
+
+After deployment:
+1. Check the **Deployments** tab
+2. Look for the deployment with **"Production"** label
+3. Click on it and verify:
+   - Status: "Ready"
+   - Environment: "Production"
+   - Domain shows your production URL
+4. Visit your production URL to confirm the app works correctly
 
 ## Important Notes
 
@@ -141,9 +191,35 @@ After adding environment variables:
 
 ## Troubleshooting
 
+### Issue: Deployed to Preview Instead of Production
+
+**Cause**: Vercel automatically creates Preview deployments for non-main branches, and you might be viewing the Preview URL instead of the Production URL.
+
+**Solutions**:
+1. **Check which URL you're visiting**:
+   - Production URL: `https://your-app.vercel.app` (your primary domain)
+   - Preview URL: `https://your-app-git-branchname-yourteam.vercel.app` (includes branch name)
+   
+2. **Ensure environment variables are enabled for Production**:
+   - Go to Settings → Environment Variables
+   - For each variable, verify "Production" is checked
+   - If not, edit the variable and enable Production
+   - Redeploy after making changes
+
+3. **Force a Production deployment**:
+   - Merge your changes to the main/master branch
+   - Or go to Settings → Git and set your Production Branch
+   - Push to that branch to trigger production deployment
+   - Verify the deployment has "Production" label in Deployments tab
+
+4. **Promote a Preview deployment to Production**:
+   - Go to Deployments tab
+   - Find the working Preview deployment
+   - Click "..." → "Promote to Production"
+
 ### Issue: Old Landing Page Still Shows
 
-**Cause**: Environment variables not configured or deployment not redeployed after adding them.
+**Cause**: Environment variables not configured for Production or deployment not redeployed after adding them.
 
 **Solution**:
 1. Verify all required environment variables are set in Vercel Dashboard
