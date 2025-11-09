@@ -13,7 +13,6 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 - 📖 [Integration Guide](INTEGRATIONS.md) - TiltCheck and JustTheTip integration details
 - 🚀 [Deployment with Integrations](DEPLOYMENT_INTEGRATIONS.md) - Deploy with optional integrations
 - 📱 [Discord Activities Analysis](DISCORD_ACTIVITIES.md) - Why Discord Activities aren't currently implemented
-- 📄 [GitHub Pages Setup](GITHUB_PAGES.md) - Static demo deployment
 
 ## 🎯 Features
 
@@ -80,10 +79,6 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 
 > **📋 For comprehensive deployment requirements, see [WEBSITE_REQUIREMENTS.md](WEBSITE_REQUIREMENTS.md)**  
 > This section provides a quick start guide. For detailed requirements, configuration options, and troubleshooting, refer to the complete requirements documentation.
-
-### Try the Demo First!
-
-Want to see what the interface looks like? Check out our [**GitHub Pages Demo**](https://jmenichole.github.io/DegensAgainstDecency/) for a static preview. Note that the demo version doesn't support real multiplayer gameplay - for that, you'll need to run the full server.
 
 ### Prerequisites
 - Node.js 16+
@@ -309,20 +304,7 @@ Set `NODE_ENV=development` to enable:
 
 ## 🚀 Deployment
 
-### GitHub Pages (Static Demo Only)
-
-For a quick static demo without backend functionality:
-
-1. Fork this repository
-2. Enable GitHub Pages in Settings → Pages
-3. Select "main" branch and "/ (root)" folder
-4. Visit `https://yourusername.github.io/DegensAgainstDecency/`
-
-**Note**: GitHub Pages only shows the UI demo. For real multiplayer games, deploy the full server below.
-
-See [GITHUB_PAGES.md](GITHUB_PAGES.md) for detailed instructions.
-
-### Quick Deploy to Vercel (Recommended for Full Features)
+### Quick Deploy to Vercel (Recommended)
 
 The easiest way to deploy this app is using Vercel:
 
