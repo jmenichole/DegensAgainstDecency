@@ -147,6 +147,12 @@ class GameManager {
       return { success: false, error: 'Game not found' };
     }
 
+    // If trying to start game with less than 3 players, add bots
+    if (action.type === 'start-game' && game.players.length < 3 && this.demoBot) {
+      console.log(`🤖 Game ${gameId} starting with ${game.players.length} players, adding bots to reach minimum of 3`);
+      this.demoBot.addDemoBots(gameId);
+    }
+
     const result = game.handleAction(userId, action);
     
     // Notify integration manager of game actions

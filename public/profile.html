@@ -11,8 +11,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Player Profile - Degens Against Decency</title>
-  <link rel="stylesheet" href="styles/main.css" />
-  <link rel="stylesheet" href="styles/profile.css" />
+  <link rel="stylesheet" href="/styles/main.css" />
+  <link rel="stylesheet" href="/styles/profile.css" />
 </head>
 <body>
   <!-- Header/Navigation -->
@@ -23,18 +23,13 @@
         <span class="logo-text">Degens Against Decency</span>
       </div>
       <nav class="nav-tabs">
-        <a href="lobby.html" class="nav-tab">Game Lobby</a>
-        <a href="active-game.html" class="nav-tab">Active Games</a>
-        <a href="ai-playground.html" class="nav-tab">AI Playground</a>
+        <a href="arena.html" class="nav-tab">Game Lobby</a>
+        <a href="profile.html" class="nav-tab active">Profile</a>
       </nav>
       <div class="nav-actions">
-        <div class="online-indicator">
-          <span class="status-dot online"></span>
-          <span class="online-count">1247 online</span>
-        </div>
-        <button class="create-room-btn">Create Room</button>
+        <a href="arena.html" class="secondary-button">Back to Lobby</a>
         <div class="user-avatar">
-          <img src="https://via.placeholder.com/40x40/A020F0/ffffff?text=U" alt="User Avatar" />
+          <img src="https://via.placeholder.com/40x40/A020F0/ffffff?text=U" alt="User Avatar" id="user-avatar" />
         </div>
       </div>
     </div>
@@ -135,6 +130,6 @@
     </main>
   </div>
 
-  <script src="scripts/profile.js"></script>
+  <script src="/scripts/profile.js"></script>
 </body>
 </html>

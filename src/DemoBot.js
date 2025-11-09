@@ -69,6 +69,13 @@ class DemoBot {
 
     // Emit game update
     this.io.to(gameId).emit('game-update', game.getGameState());
+    
+    // Only start automated actions in development mode
+    if (process.env.NODE_ENV === 'development') {
+      setTimeout(() => {
+        this.startAutomatedActions(gameId);
+      }, 3000);
+    }
   }
 
   startAutomatedActions(gameId) {

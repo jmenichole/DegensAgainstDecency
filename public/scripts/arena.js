@@ -18,6 +18,7 @@ class ArenaManager {
     await this.loadUser();
     this.setupSocket();
     this.setupEventListeners();
+    this.checkOnboarding();
   }
 
   async loadUser() {
@@ -27,30 +28,12 @@ class ArenaManager {
         this.user = await response.json();
         this.updateUserDisplay();
       } else {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('Failed to load user:', errorData);
-        alert(`Authentication error: ${errorData.message || errorData.error || 'Failed to authenticate. Please try again.'}`);
-        // Still allow guest access in production
-        if (response.status === 401 || response.status === 403) {
-          // Try to proceed as guest
-          this.user = {
-            id: `guest-${Date.now()}`,
-            username: 'Guest',
-            discriminator: '0000',
-            isGuest: true
-          };
-          this.updateUserDisplay();
-        } else {
-          window.location.href = '/';
-        }
+        // Redirect to login if not authenticated
+        window.location.href = '/';
       }
     } catch (error) {
       console.error('Failed to load user:', error);
-      alert(`Network error: Unable to connect to server. Please check your connection and try again.`);
-      // Redirect to home page after showing error
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 2000);
+      window.location.href = '/';
     }
   }
 
@@ -178,12 +161,6 @@ class ArenaManager {
       isPrivate: formData.get('isPrivate') === 'on'
     };
 
-    // Validate game type is selected
-    if (!gameData.gameType) {
-      alert('Please select a game type');
-      return;
-    }
-
     try {
       const response = await fetch('/api/games', {
         method: 'POST',
@@ -212,12 +189,12 @@ class ArenaManager {
         // Redirect to the new game
         window.location.href = `/game/${game.id}`;
       } else {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        alert(`Failed to create game: ${errorData.message || errorData.error || 'Please try again'}`);
+        const error = await response.text();
+        alert(`Failed to create game: ${error}`);
       }
     } catch (error) {
       console.error('Failed to create game:', error);
-      alert('Network error: Unable to create game. Please check your connection and try again.');
+      alert('Failed to create game. Please try again.');
     }
   }
 
@@ -232,6 +209,64 @@ class ArenaManager {
 
     // Redirect to game page
     window.location.href = `/game/${gameId}`;
+  }
+
+  checkOnboarding() {
+    // Check if user has completed onboarding
+    const hasCompletedOnboarding = localStorage.getItem('onboarding_completed');
+    
+    if (!hasCompletedOnboarding) {
+      this.showOnboarding();
+    }
+  }
+
+  showOnboarding() {
+    const onboardingModal = document.getElementById('onboarding-modal');
+    if (onboardingModal) {
+      onboardingModal.classList.remove('hidden');
+      onboardingModal.style.display = 'flex';
+    }
+  }
+
+  nextOnboardingStep() {
+    const steps = document.querySelectorAll('.onboarding-step');
+    let currentStep = 0;
+    
+    steps.forEach((step, index) => {
+      if (step.classList.contains('active')) {
+        currentStep = index;
+        step.classList.remove('active');
+      }
+    });
+    
+    if (currentStep < steps.length - 1) {
+      steps[currentStep + 1].classList.add('active');
+    }
+  }
+
+  prevOnboardingStep() {
+    const steps = document.querySelectorAll('.onboarding-step');
+    let currentStep = 0;
+    
+    steps.forEach((step, index) => {
+      if (step.classList.contains('active')) {
+        currentStep = index;
+        step.classList.remove('active');
+      }
+    });
+    
+    if (currentStep > 0) {
+      steps[currentStep - 1].classList.add('active');
+    }
+  }
+
+  completeOnboarding() {
+    localStorage.setItem('onboarding_completed', 'true');
+    const onboardingModal = document.getElementById('onboarding-modal');
+    if (onboardingModal) {
+      onboardingModal.classList.add('hidden');
+      onboardingModal.style.display = 'none';
+    }
   }
 }
 

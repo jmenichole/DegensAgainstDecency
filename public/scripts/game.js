@@ -33,25 +33,16 @@ class GameManager {
         this.user = await response.json();
         this.updateUserDisplay();
       } else {
-        const errorData = await response.json().catch(() => ({ error: 'Authentication failed' }));
-        console.error('Failed to load user:', errorData);
-        alert(`Authentication error: ${errorData.message || errorData.error || 'Please login to continue'}`);
         window.location.href = '/';
       }
     } catch (error) {
       console.error('Failed to load user:', error);
-      alert('Network error: Unable to connect to server. Please check your connection.');
       window.location.href = '/';
     }
   }
 
   setupSocket() {
-    this.socket = io({
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: 5
-    });
+    this.socket = io();
 
     this.socket.on('connect', () => {
       console.log('Connected to server');
@@ -68,41 +59,11 @@ class GameManager {
     });
 
     this.socket.on('error', (error) => {
-      console.error('Game error:', error);
-      alert(`Game error: ${error || 'An unexpected error occurred'}`);
+      alert(`Error: ${error}`);
     });
 
-    this.socket.on('connect_error', (error) => {
-      console.error('Connection error:', error);
-      alert('Connection error: Unable to connect to game server. Please check your connection and try again.');
-    });
-
-    this.socket.on('disconnect', (reason) => {
-      console.log('Disconnected from server:', reason);
-      if (reason === 'io server disconnect') {
-        // Server disconnected, try to reconnect manually
-        this.socket.connect();
-      }
-      // Show user-friendly message
-      const statusElement = document.getElementById('connection-status');
-      if (statusElement) {
-        statusElement.textContent = 'Disconnected. Attempting to reconnect...';
-        statusElement.style.color = 'orange';
-      }
-    });
-
-    this.socket.on('reconnect', (attemptNumber) => {
-      console.log('Reconnected after', attemptNumber, 'attempts');
-      const statusElement = document.getElementById('connection-status');
-      if (statusElement) {
-        statusElement.textContent = 'Connected';
-        statusElement.style.color = 'green';
-      }
-    });
-
-    this.socket.on('reconnect_failed', () => {
-      console.error('Failed to reconnect');
-      alert('Failed to reconnect to server. Please refresh the page to continue.');
+    this.socket.on('disconnect', () => {
+      console.log('Disconnected from server');
     });
   }
 
@@ -285,37 +246,6 @@ class BaseGameRenderer {
     gameContent.innerHTML = '';
     gameActions.innerHTML = '';
   }
-
-  addDemoIndicator(gameState) {
-    // Check if this is a demo game (has demo bots)
-    const hasDemoBots = gameState.players.some(p => p.username.startsWith('DemoBot_'));
-    
-    if (hasDemoBots) {
-      const gameContent = document.getElementById('game-content');
-      const demoIndicator = `
-        <div class="demo-indicator" style="
-          background: linear-gradient(135deg, #ff6b35, #f7931e);
-          color: white;
-          padding: 10px 20px;
-          border-radius: 8px;
-          margin-bottom: 20px;
-          text-align: center;
-          font-weight: bold;
-          box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
-          animation: pulse 2s infinite;
-        ">
-          🎮 LIVE DEMO MODE - Watch AI bots play automatically!
-        </div>
-        <style>
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-          }
-        </style>
-      `;
-      gameContent.innerHTML = demoIndicator + gameContent.innerHTML;
-    }
-  }
 }
 
 // Degens Against Decency renderer
@@ -346,9 +276,6 @@ class DegensGameRenderer extends BaseGameRenderer {
           </button>
         `;
       }
-      
-      // Add demo indicator
-      this.addDemoIndicator(gameState);
       return;
     }
 
@@ -370,9 +297,6 @@ class DegensGameRenderer extends BaseGameRenderer {
     } else {
       this.renderPlayerView(gameState);
     }
-    
-    // Add demo indicator for playing state
-    this.addDemoIndicator(gameState);
   }
 
   renderCardCzarView(gameState) {
@@ -464,9 +388,6 @@ class TwoTruthsGameRenderer extends BaseGameRenderer {
           </button>
         `;
       }
-      
-      // Add demo indicator
-      this.addDemoIndicator(gameState);
       return;
     }
 
@@ -487,9 +408,6 @@ class TwoTruthsGameRenderer extends BaseGameRenderer {
     } else {
       this.renderOtherPlayerView(gameState);
     }
-    
-    // Add demo indicator for playing state
-    this.addDemoIndicator(gameState);
   }
 
   renderCurrentPlayerView(gameState) {
@@ -618,9 +536,6 @@ class PokerGameRenderer extends BaseGameRenderer {
           </button>
         `;
       }
-      
-      // Add demo indicator
-      this.addDemoIndicator(gameState);
       return;
     }
 
@@ -675,9 +590,6 @@ class PokerGameRenderer extends BaseGameRenderer {
         </div>
       `;
     }
-    
-    // Add demo indicator for playing state
-    this.addDemoIndicator(gameState);
   }
 
   getSuitSymbol(suit) {
