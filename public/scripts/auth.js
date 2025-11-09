@@ -24,24 +24,7 @@ class AuthManager {
         this.user = await response.json();
         this.showUserInfo();
       } else {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Auth check failed:', errorData);
         this.showLoginPrompt();
-        
-        // Show error message if present
-        if (errorData.message) {
-          const errorMsg = document.createElement('div');
-          errorMsg.className = 'error-message';
-          errorMsg.textContent = errorData.message;
-          errorMsg.style.color = 'red';
-          errorMsg.style.padding = '10px';
-          errorMsg.style.margin = '10px 0';
-          
-          const loginPrompt = document.getElementById('login-prompt');
-          if (loginPrompt) {
-            loginPrompt.prepend(errorMsg);
-          }
-        }
       }
     } catch (error) {
       console.error('Auth check failed:', error);

@@ -6,18 +6,6 @@
  * See LICENSE file in the project root for full license information.
  */
 
-:root {
-  /* Import the same brand colors */
-  --brand-green: #00ff41;
-  --brand-teal: #00ffff;
-  --brand-pink: #ff00ff;
-  --brand-yellow: #ffff00;
-  --brand-dark: #1a1a2e;
-  --brand-navy: #2d2d4a;
-  --brand-white: #ffffff;
-  --text-light: #b8b8b8;
-}
-
 .game-container {
   max-width: 1600px;
   margin: 0 auto;
@@ -35,21 +23,18 @@
 
 .game-header {
   grid-area: header;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 15px;
   padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid rgba(0, 255, 65, 0.2);
-  backdrop-filter: blur(10px);
+  border: 1px solid rgba(180, 255, 57, 0.2);
+  box-shadow: 0 0 20px rgba(180, 255, 57, 0.1);
 }
 
 .game-info h1 {
-  background: linear-gradient(45deg, var(--brand-teal), var(--brand-green));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--brand-green);
   margin-bottom: 5px;
   font-size: 1.5rem;
 }
@@ -72,21 +57,20 @@
   height: 40px;
   border-radius: 50%;
   border: 2px solid var(--brand-green);
-}
-  border: 2px solid #ff00ff;
+  box-shadow: 0 0 15px rgba(180, 255, 57, 0.4);
 }
 
 .players-panel {
   grid-area: players;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 15px;
   padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(180, 255, 57, 0.2);
   height: fit-content;
 }
 
 .players-panel h3 {
-  color: #00ffff;
+  color: var(--brand-green);
   margin-bottom: 15px;
   text-align: center;
 }
@@ -98,8 +82,8 @@
 }
 
 .player-item {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(180, 255, 57, 0.2);
   border-radius: 8px;
   padding: 12px;
   display: flex;
@@ -108,8 +92,9 @@
 }
 
 .player-item.current-player {
-  border-color: #ff00ff;
-  background: rgba(255, 0, 255, 0.1);
+  border-color: var(--brand-green);
+  background: rgba(180, 255, 57, 0.1);
+  box-shadow: 0 0 15px rgba(180, 255, 57, 0.2);
 }
 
 .player-item img {
@@ -125,16 +110,16 @@
 
 .player-score {
   margin-left: auto;
-  color: #00ffff;
+  color: var(--brand-green);
   font-weight: 600;
 }
 
 .game-area {
   grid-area: game-area;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 15px;
   padding: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(180, 255, 57, 0.2);
   min-height: 400px;
   display: flex;
   flex-direction: column;
@@ -151,10 +136,10 @@
 
 .game-controls {
   grid-area: game-controls;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 15px;
   padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(180, 255, 57, 0.2);
 }
 
 .game-actions {
@@ -166,10 +151,10 @@
 
 .chat-panel {
   grid-area: chat;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 15px;
   padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(180, 255, 57, 0.2);
   display: flex;
   flex-direction: column;
   height: fit-content;
@@ -177,7 +162,7 @@
 }
 
 .chat-panel h3 {
-  color: #00ffff;
+  color: var(--brand-green);
   margin-bottom: 15px;
   text-align: center;
 }
@@ -200,7 +185,7 @@
 }
 
 .chat-message .sender {
-  color: #ff00ff;
+  color: var(--brand-green);
   font-weight: 600;
   margin-bottom: 3px;
 }
@@ -226,15 +211,16 @@
 
 .chat-input input:focus {
   outline: none;
-  border-color: #ff00ff;
+  border-color: var(--brand-green);
+  box-shadow: 0 0 10px rgba(180, 255, 57, 0.3);
 }
 
 /* Game-specific content styles */
 
 /* Degens Against Decency */
 .degens-question {
-  background: rgba(255, 0, 255, 0.1);
-  border: 2px solid #ff00ff;
+  background: rgba(180, 255, 57, 0.05);
+  border: 2px solid var(--brand-green);
   border-radius: 15px;
   padding: 30px;
   margin-bottom: 30px;
@@ -242,6 +228,7 @@
   font-weight: 600;
   color: #fff;
   text-align: center;
+  box-shadow: 0 0 20px rgba(180, 255, 57, 0.2);
 }
 
 .player-hand {
@@ -252,8 +239,8 @@
 }
 
 .answer-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(180, 255, 57, 0.3);
   border-radius: 12px;
   padding: 20px;
   cursor: pointer;
@@ -266,14 +253,15 @@
 }
 
 .answer-card:hover {
-  border-color: #00ffff;
+  border-color: var(--brand-green);
   transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+  box-shadow: 0 5px 15px rgba(180, 255, 57, 0.3);
 }
 
 .answer-card.selected {
-  border-color: #ff00ff;
-  background: rgba(255, 0, 255, 0.1);
+  border-color: var(--brand-green);
+  background: rgba(180, 255, 57, 0.1);
+  box-shadow: 0 0 20px rgba(180, 255, 57, 0.4);
 }
 
 .submissions-area {
@@ -284,8 +272,8 @@
 }
 
 .submission-card {
-  background: rgba(0, 255, 255, 0.05);
-  border: 2px solid #00ffff;
+  background: rgba(180, 255, 57, 0.03);
+  border: 2px solid var(--brand-green);
   border-radius: 12px;
   padding: 20px;
   cursor: pointer;
@@ -299,23 +287,26 @@
 }
 
 .submission-card:hover {
-  border-color: #ff00ff;
-  background: rgba(255, 0, 255, 0.1);
+  border-color: var(--brand-purple);
+  background: rgba(160, 32, 240, 0.05);
+  box-shadow: 0 0 20px rgba(160, 32, 240, 0.3);
 }
 
 .submission-card.winner {
-  border-color: #ffff00;
+  border-color: var(--brand-yellow);
   background: rgba(255, 255, 0, 0.1);
+  box-shadow: 0 0 25px rgba(255, 255, 0, 0.5);
 }
 
 /* 2 Truths and a Lie */
 .truths-lie-prompt {
-  background: rgba(0, 255, 255, 0.1);
-  border: 2px solid #00ffff;
+  background: rgba(0, 255, 255, 0.05);
+  border: 2px solid var(--brand-teal);
   border-radius: 15px;
   padding: 30px;
   margin-bottom: 30px;
   text-align: center;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
 }
 
 .statements-area {
@@ -326,8 +317,8 @@
 }
 
 .statement-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(0, 255, 255, 0.3);
   border-radius: 12px;
   padding: 20px;
   cursor: pointer;
@@ -338,25 +329,28 @@
 }
 
 .statement-item:hover {
-  border-color: #00ffff;
+  border-color: var(--brand-teal);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
 }
 
 .statement-item.selected {
-  border-color: #ff00ff;
-  background: rgba(255, 0, 255, 0.1);
+  border-color: var(--brand-green);
+  background: rgba(180, 255, 57, 0.1);
+  box-shadow: 0 0 20px rgba(180, 255, 57, 0.3);
 }
 
 .statement-number {
-  background: #ff00ff;
-  color: white;
+  background: var(--brand-teal);
+  color: var(--brand-dark);
   border-radius: 50%;
   width: 30px;
   height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: 700;
   flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
 
 /* Poker */
