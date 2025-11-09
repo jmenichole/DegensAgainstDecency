@@ -15,6 +15,7 @@ Railway is an excellent platform for deploying the Degens Against Decency game a
    - Select "Deploy from GitHub repo"
    - Choose this repository: `jmenichole/DegensAgainstDecency`
    - Railway will automatically detect it's a Node.js app
+   - The repository includes `.nvmrc` and `nixpacks.toml` to ensure Node.js 18+ is used
 
 3. **Configure Environment Variables**
    - Go to your project → Variables tab
@@ -114,6 +115,7 @@ WebSocket support is fully included at all tiers.
 - Check logs in Railway dashboard
 - Verify all required environment variables are set
 - Ensure `SESSION_SECRET` is properly generated
+- If you see `ReferenceError: ReadableStream is not defined`, ensure Railway is using Node.js 18+ (configured via `.nvmrc` and `nixpacks.toml`)
 
 ### WebSocket Connection Failed
 - Railway fully supports WebSockets, no special configuration needed
