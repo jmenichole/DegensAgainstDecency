@@ -323,12 +323,36 @@ io.on('connection', (socket) => {
     socket.emit('lobby-games', gameManager.getPublicGames());
   });
 
+  socket.on('request-lobby-update', () => {
+    if (socket.userId) {
+      socket.emit('lobby-games', gameManager.getPublicGames());
+    }
+  });
+
   socket.on('join-game', (gameId) => {
     const result = gameManager.joinGame(gameId, socket.userId, socket);
     if (result.success) {
       socket.join(gameId);
       socket.gameId = gameId;
+      socket.isSpectator = false;
       io.to(gameId).emit('game-update', result.game);
+      // Update lobby when player joins
+      io.to('lobby').emit('lobby-games', gameManager.getPublicGames());
+    } else {
+      socket.emit('error', result.error);
+    }
+  });
+
+  socket.on('spectate-game', (gameId) => {
+    const result = gameManager.spectateGame(gameId, socket.userId, socket);
+    if (result.success) {
+      socket.join(gameId);
+      socket.gameId = gameId;
+      socket.isSpectator = true;
+      socket.emit('game-update', result.game);
+      socket.emit('spectator-mode', true);
+      // Update lobby when spectator joins
+      io.to('lobby').emit('lobby-games', gameManager.getPublicGames());
     } else {
       socket.emit('error', result.error);
     }
@@ -336,21 +360,35 @@ io.on('connection', (socket) => {
 
   socket.on('leave-game', () => {
     if (socket.gameId) {
-      gameManager.leaveGame(socket.gameId, socket.userId);
+      if (socket.isSpectator) {
+        gameManager.leaveSpectator(socket.gameId, socket.userId);
+      } else {
+        gameManager.leaveGame(socket.gameId, socket.userId);
+      }
       socket.leave(socket.gameId);
-      io.to(socket.gameId).emit('game-update', gameManager.getGame(socket.gameId));
+      const game = gameManager.getGame(socket.gameId);
+      if (game) {
+        io.to(socket.gameId).emit('game-update', game.getGameState());
+      }
+      // Update lobby when player/spectator leaves
+      io.to('lobby').emit('lobby-games', gameManager.getPublicGames());
       socket.gameId = null;
+      socket.isSpectator = false;
     }
   });
 
   socket.on('game-action', (data) => {
-    if (socket.gameId) {
+    if (socket.gameId && !socket.isSpectator) {
       const result = gameManager.handleGameAction(socket.gameId, socket.userId, data);
       if (result.success) {
         io.to(socket.gameId).emit('game-update', result.game);
+        // Update lobby when game status changes
+        io.to('lobby').emit('lobby-games', gameManager.getPublicGames());
       } else {
         socket.emit('error', result.error);
       }
+    } else if (socket.isSpectator) {
+      socket.emit('error', 'Spectators cannot perform game actions');
     }
   });
 
@@ -368,8 +406,17 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
     if (socket.gameId) {
-      gameManager.leaveGame(socket.gameId, socket.userId);
-      io.to(socket.gameId).emit('game-update', gameManager.getGame(socket.gameId));
+      if (socket.isSpectator) {
+        gameManager.leaveSpectator(socket.gameId, socket.userId);
+      } else {
+        gameManager.leaveGame(socket.gameId, socket.userId);
+      }
+      const game = gameManager.getGame(socket.gameId);
+      if (game) {
+        io.to(socket.gameId).emit('game-update', game.getGameState());
+      }
+      // Update lobby when player/spectator disconnects
+      io.to('lobby').emit('lobby-games', gameManager.getPublicGames());
     }
   });
 });

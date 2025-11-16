@@ -13,6 +13,7 @@ class GameManager {
     this.gameId = null;
     this.gameState = null;
     this.gameRenderer = null;
+    this.isSpectator = false;
     this.init();
   }
 
@@ -20,6 +21,10 @@ class GameManager {
     // Get game ID from URL
     const pathParts = window.location.pathname.split('/');
     this.gameId = pathParts[pathParts.length - 1];
+    
+    // Check if spectator mode
+    const urlParams = new URLSearchParams(window.location.search);
+    this.isSpectator = urlParams.get('spectate') === 'true';
 
     await this.loadUser();
     this.setupSocket();
@@ -46,12 +51,22 @@ class GameManager {
 
     this.socket.on('connect', () => {
       console.log('Connected to server');
-      this.socket.emit('join-game', this.gameId);
+      if (this.isSpectator) {
+        this.socket.emit('spectate-game', this.gameId);
+      } else {
+        this.socket.emit('join-game', this.gameId);
+      }
     });
 
     this.socket.on('game-update', (gameState) => {
       this.gameState = gameState;
       this.updateGameDisplay();
+    });
+
+    this.socket.on('spectator-mode', (enabled) => {
+      if (enabled) {
+        this.showSpectatorBadge();
+      }
     });
 
     this.socket.on('chat-message', (message) => {
@@ -65,6 +80,27 @@ class GameManager {
     this.socket.on('disconnect', () => {
       console.log('Disconnected from server');
     });
+  }
+
+  showSpectatorBadge() {
+    const gameInfo = document.querySelector('.game-info');
+    if (gameInfo && !document.querySelector('.spectator-mode-badge')) {
+      const badge = document.createElement('div');
+      badge.className = 'spectator-mode-badge';
+      badge.textContent = 'Spectator Mode';
+      gameInfo.appendChild(badge);
+    }
+    
+    // Disable game actions for spectators
+    const gameActions = document.getElementById('game-actions');
+    if (gameActions) {
+      const note = document.createElement('p');
+      note.style.color = 'var(--brand-teal)';
+      note.style.textAlign = 'center';
+      note.style.marginTop = '10px';
+      note.textContent = '👁️ You are watching this game as a spectator';
+      gameActions.appendChild(note);
+    }
   }
 
   setupEventListeners() {

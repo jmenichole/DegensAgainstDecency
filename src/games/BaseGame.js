@@ -13,8 +13,10 @@ class BaseGame {
     this.isPrivate = isPrivate;
     this.maxPlayers = Math.min(maxPlayers, 7); // Enforce maximum of 7 players
     this.players = [creator];
+    this.spectators = []; // Add spectator support
     this.status = 'waiting'; // waiting, playing, finished
     this.createdAt = new Date();
+    this.startTime = null; // Track when game started
     this.currentRound = 0;
     this.scores = new Map();
   }
@@ -85,10 +87,36 @@ class BaseGame {
     }
 
     this.status = 'playing';
+    this.startTime = new Date(); // Record start time
     this.currentRound = 1;
     this.initializeGame();
     
     return { success: true };
+  }
+
+  addSpectator(userId, socket) {
+    // Check if already a player or spectator
+    if (this.players.find(p => p.id === userId)) {
+      return { success: false, error: 'Already a player in this game' };
+    }
+    
+    if (this.spectators.find(s => s.id === userId)) {
+      return { success: false, error: 'Already spectating this game' };
+    }
+
+    const spectator = {
+      id: userId,
+      username: userId.startsWith('guest-') ? `Guest_${userId.slice(-6)}` : `Spectator_${userId.slice(-4)}`,
+      socketId: socket ? socket.id : null,
+      joinedAt: new Date()
+    };
+
+    this.spectators.push(spectator);
+    return { success: true };
+  }
+
+  removeSpectator(userId) {
+    this.spectators = this.spectators.filter(s => s.id !== userId);
   }
 
   // Override in subclasses
@@ -102,9 +130,12 @@ class BaseGame {
       isPrivate: this.isPrivate,
       maxPlayers: this.maxPlayers,
       players: this.players.map(p => ({ id: p.id, username: p.username || 'Player' })),
+      spectators: this.spectators.map(s => ({ id: s.id, username: s.username || 'Spectator' })),
       status: this.status,
       currentRound: this.currentRound,
-      scores: Object.fromEntries(this.scores)
+      scores: Object.fromEntries(this.scores),
+      startTime: this.startTime,
+      createdAt: this.createdAt
     };
   }
 }

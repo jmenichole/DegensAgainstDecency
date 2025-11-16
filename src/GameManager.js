@@ -89,11 +89,45 @@ class GameManager {
           creator: game.creator.username,
           currentPlayers: game.players.length,
           maxPlayers: game.maxPlayers,
-          status: game.status
+          status: game.status,
+          startTime: game.startTime,
+          spectatorCount: game.spectators ? game.spectators.length : 0
         });
       }
     }
     return publicGames;
+  }
+
+  spectateGame(gameId, userId, socket) {
+    const game = this.games.get(gameId);
+    if (!game) {
+      return { success: false, error: 'Game not found' };
+    }
+
+    // Only allow spectating games that are in progress
+    if (game.status !== 'playing') {
+      return { success: false, error: 'Can only spectate games in progress' };
+    }
+
+    const result = game.addSpectator(userId, socket);
+    if (result.success) {
+      // Update lobby with current games
+      this.io.to('lobby').emit('lobby-games', this.getPublicGames());
+      
+      return { success: true, game: game.getGameState(), isSpectator: true };
+    }
+
+    return result;
+  }
+
+  leaveSpectator(gameId, userId) {
+    const game = this.games.get(gameId);
+    if (!game) return;
+
+    game.removeSpectator(userId);
+    
+    // Update lobby
+    this.io.to('lobby').emit('lobby-games', this.getPublicGames());
   }
 
   joinGame(gameId, userId, socket) {

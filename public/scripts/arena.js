@@ -11,6 +11,8 @@ class ArenaManager {
     this.socket = null;
     this.user = null;
     this.games = [];
+    this.autoRefreshInterval = null;
+    this.lastUpdateTime = Date.now();
     this.init();
   }
 
@@ -19,6 +21,7 @@ class ArenaManager {
     this.setupSocket();
     this.setupEventListeners();
     this.checkOnboarding();
+    this.startAutoRefresh();
   }
 
   async loadUser() {
@@ -47,7 +50,9 @@ class ArenaManager {
 
     this.socket.on('lobby-games', (games) => {
       this.games = games;
+      this.lastUpdateTime = Date.now();
       this.renderGames();
+      this.showRefreshIndicator();
     });
 
     this.socket.on('game-created', (game) => {
@@ -120,17 +125,34 @@ class ArenaManager {
       return;
     }
 
-    gamesList.innerHTML = this.games.map(game => `
-      <div class="game-item ${game.status} ${game.currentPlayers >= game.maxPlayers ? 'full' : ''}" 
-           data-game-id="${game.id}" onclick="arenaManager.joinGame('${game.id}')">
-        <div class="game-type">${this.formatGameType(game.type)}</div>
-        <div class="game-players">${game.currentPlayers}/${game.maxPlayers} players</div>
-        <div class="game-meta">
-          <span>Created by ${game.creator}</span>
-          <span class="game-status ${game.status}">${this.formatStatus(game.status)}</span>
+    gamesList.innerHTML = this.games.map(game => {
+      const isLive = game.status === 'playing';
+      const isFull = game.currentPlayers >= game.maxPlayers;
+      const canJoin = !isFull && game.status === 'waiting';
+      const canSpectate = isLive;
+      
+      return `
+        <div class="game-item ${game.status} ${isFull ? 'full' : ''} ${isLive ? 'live' : ''}" 
+             data-game-id="${game.id}">
+          ${isLive ? '<div class="live-badge">🔴 LIVE</div>' : ''}
+          <div class="game-type">${this.formatGameType(game.type)}</div>
+          <div class="game-players">
+            <span class="player-status-badge ${isLive ? 'in-game' : 'active'}">
+              ${game.currentPlayers}/${game.maxPlayers} players
+            </span>
+            ${game.startTime ? `<span class="game-timer">${this.getGameDuration(game.startTime)}</span>` : ''}
+          </div>
+          <div class="game-meta">
+            <span>Created by ${game.creator}</span>
+            <span class="game-status ${game.status}">${this.formatStatus(game.status)}</span>
+          </div>
+          <div class="game-actions-row" onclick="event.stopPropagation()">
+            ${canJoin ? `<button class="game-action-btn" onclick="arenaManager.joinGame('${game.id}')">Join Game</button>` : ''}
+            ${canSpectate ? `<button class="game-action-btn spectate" onclick="arenaManager.spectateGame('${game.id}')">Watch Live</button>` : ''}
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   formatGameType(type) {
@@ -209,6 +231,60 @@ class ArenaManager {
 
     // Redirect to game page
     window.location.href = `/game/${gameId}`;
+  }
+
+  spectateGame(gameId) {
+    const game = this.games.find(g => g.id === gameId);
+    if (!game) return;
+
+    if (game.status !== 'playing') {
+      alert('This game is not currently in progress.');
+      return;
+    }
+
+    // Redirect to game page with spectator flag
+    window.location.href = `/game/${gameId}?spectate=true`;
+  }
+
+  getGameDuration(startTime) {
+    if (!startTime) return '';
+    
+    const now = Date.now();
+    const duration = Math.floor((now - new Date(startTime).getTime()) / 1000);
+    
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
+    
+    if (minutes > 0) {
+      return `${minutes}m ${seconds}s`;
+    }
+    return `${seconds}s`;
+  }
+
+  startAutoRefresh() {
+    // Auto-refresh game list every 5 seconds
+    this.autoRefreshInterval = setInterval(() => {
+      if (this.socket && this.socket.connected) {
+        this.socket.emit('request-lobby-update');
+      }
+    }, 5000);
+  }
+
+  showRefreshIndicator() {
+    // Show a brief indicator that the list was updated
+    let indicator = document.getElementById('auto-refresh-indicator');
+    if (!indicator) {
+      indicator = document.createElement('div');
+      indicator.id = 'auto-refresh-indicator';
+      indicator.className = 'auto-refresh-indicator';
+      indicator.innerHTML = '<div class="spinner"></div><span>Updated</span>';
+      document.body.appendChild(indicator);
+    }
+    
+    indicator.classList.add('show');
+    setTimeout(() => {
+      indicator.classList.remove('show');
+    }, 2000);
   }
 
   checkOnboarding() {
