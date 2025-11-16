@@ -122,8 +122,17 @@ class ArenaManager {
     
     if (this.games.length === 0) {
       gamesList.innerHTML = '<div class="loading">No active games. Create one to get started!</div>';
+      this.updateLobbyStats(0, 0);
       return;
     }
+
+    // Calculate statistics
+    let totalPlayers = 0;
+    this.games.forEach(game => {
+      totalPlayers += game.currentPlayers;
+    });
+
+    this.updateLobbyStats(this.games.length, totalPlayers);
 
     gamesList.innerHTML = this.games.map(game => {
       const isLive = game.status === 'playing';
@@ -153,6 +162,19 @@ class ArenaManager {
         </div>
       `;
     }).join('');
+  }
+
+  updateLobbyStats(activeGames, playersOnline) {
+    const activeGamesCount = document.getElementById('active-games-count');
+    const playersOnlineCount = document.getElementById('players-online-count');
+    
+    if (activeGamesCount) {
+      activeGamesCount.textContent = activeGames;
+    }
+    
+    if (playersOnlineCount) {
+      playersOnlineCount.textContent = playersOnline;
+    }
   }
 
   formatGameType(type) {

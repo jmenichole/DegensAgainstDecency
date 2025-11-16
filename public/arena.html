@@ -32,7 +32,19 @@
 
     <div class="lobby">
       <div class="games-section">
-        <h2>🕹️ Available Games</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <h2>🕹️ Available Games</h2>
+          <div id="lobby-stats" class="lobby-stats">
+            <span class="stat-item">
+              <span class="stat-label">Active Games:</span>
+              <span id="active-games-count" class="stat-value">0</span>
+            </span>
+            <span class="stat-item">
+              <span class="stat-label">Players Online:</span>
+              <span id="players-online-count" class="stat-value">0</span>
+            </span>
+          </div>
+        </div>
         <div id="games-list" class="game-list">
           <div class="loading">Loading games...</div>
         </div>
