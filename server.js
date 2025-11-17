@@ -288,6 +288,17 @@ app.get('/api/integrations/justthetip/balance/:userId', async (req, res) => {
   }
 });
 
+// AI Gateway statistics endpoint
+app.get('/api/ai-gateway/stats', (req, res) => {
+  try {
+    const stats = aiCardGenerator.getAIGatewayStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('AI Gateway stats error:', error);
+    res.status(500).json({ error: 'Failed to retrieve AI Gateway statistics', message: error.message });
+  }
+});
+
 // Serve different pages
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

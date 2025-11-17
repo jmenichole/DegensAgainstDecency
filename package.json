@@ -32,6 +32,8 @@
     "build": "echo 'No build step required for this application'",
     "vercel-build": "echo 'Vercel build complete'",
     "test": "echo 'No tests configured yet'",
+    "test:ai-gateway": "node test-ai-gateway.js",
+    "test:validation": "node test-validation.js",
     "generate-secret": "node -e \"console.log('SESSION_SECRET=' + require('crypto').randomBytes(32).toString('hex'))\""
   },
   "dependencies": {
