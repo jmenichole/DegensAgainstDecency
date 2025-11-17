@@ -83,6 +83,30 @@ After initial deployment, configure environment variables in Vercel:
 | `OPENAI_API_KEY` | Your OpenAI API Key | For AI-generated cards (app has fallback) |
 | `CARD_GENERATOR_URL` | `https://degenscardbot.vercel.app/api/generate` | Custom card generator API (optional) |
 
+#### Vercel AI Gateway (Optional - Recommended for Production)
+
+**NEW**: Multi-provider AI support with automatic failover and cost tracking. See [VERCEL_AI_GATEWAY.md](VERCEL_AI_GATEWAY.md) for details.
+
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `USE_AI_GATEWAY` | `true` or `false` | Enable AI Gateway for multi-provider support |
+| `AI_GATEWAY_URL` | `https://gateway.ai.cloudflare.com/v1` | AI Gateway endpoint URL |
+| `ANTHROPIC_API_KEY` | Your Anthropic API Key | For Claude models (optional) |
+| `GOOGLE_AI_KEY` | Your Google AI API Key | For Gemini models (optional) |
+| `XAI_API_KEY` | Your xAI API Key | For Grok models (optional) |
+| `AI_GATEWAY_DEFAULT_PROVIDER` | `openai` | Primary AI provider to use |
+| `AI_GATEWAY_DEFAULT_MODEL` | `gpt-3.5-turbo` | Primary model to use |
+| `AI_GATEWAY_FALLBACK_ENABLED` | `true` | Enable automatic provider fallback |
+| `AI_GATEWAY_COST_LIMIT_DAILY` | `10.00` | Daily cost limit in USD |
+| `AI_GATEWAY_COST_LIMIT_REQUEST` | `0.10` | Per-request cost limit in USD |
+
+**Benefits of AI Gateway:**
+- 🔄 Automatic failover if one provider is down
+- 💰 Real-time cost tracking and limits
+- ⚡ Load balancing across multiple providers
+- 📊 Usage analytics at `/api/ai-gateway/stats`
+- 🚀 No vendor lock-in - switch providers anytime
+
 #### TiltCheck Integration (Optional)
 
 | Variable | Value | Description |

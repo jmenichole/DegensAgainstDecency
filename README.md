@@ -13,6 +13,8 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 - 🎮 **[Discord Activity Requirements](DISCORD_ACTIVITY_REQUIREMENTS.md)** - Guide for Discord Activity implementation (future enhancement)
 
 **Other Documentation:**
+- 🤖 **[Vercel AI Gateway Guide](VERCEL_AI_GATEWAY.md)** - Multi-provider AI integration with automatic failover
+- 📝 **[AI Gateway Examples](AI_GATEWAY_EXAMPLES.md)** - Ready-to-use configurations for different scenarios
 - 📖 [Integration Guide](INTEGRATIONS.md) - TiltCheck and JustTheTip integration details
 - 🚀 [Deployment with Integrations](DEPLOYMENT_INTEGRATIONS.md) - Deploy with optional integrations
 - 📱 [Discord Activities Analysis](DISCORD_ACTIVITIES.md) - Why Discord Activities aren't currently implemented
@@ -53,11 +55,13 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 - Fold/Call/Raise mechanics
 
 ### 🤖 AI Integration
-- Dynamic card generation via degenscardbot.vercel.app
-- Context-aware content based on themes
-- Fallback to curated content if AI unavailable
-- Fresh content for every game session
-- Optional direct OpenAI API integration
+- **Multi-Provider Support**: Unified interface to OpenAI, Anthropic, Google, and xAI models
+- **Automatic Failover**: Seamless provider switching if one is unavailable
+- **Cost Tracking**: Real-time monitoring and configurable spending limits
+- **Dynamic Card Generation**: AI-powered card creation via multiple providers
+- **Context-Aware Content**: Theme-based generation for personalized experiences
+- **Intelligent Fallback**: Curated content available if all AI providers are down
+- See [Vercel AI Gateway Integration](VERCEL_AI_GATEWAY.md) for details
 
 ### 🌐 Real-time Multiplayer
 - WebSocket-based real-time communication
