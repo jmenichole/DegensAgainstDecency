@@ -72,6 +72,10 @@
           <span class="menu-icon">🛡️</span>
           <span class="menu-label">Privacy</span>
         </a>
+        <a href="#integrations" class="menu-item">
+          <span class="menu-icon">🔌</span>
+          <span class="menu-label">Integrations</span>
+        </a>
       </nav>
     </aside>
 
@@ -125,6 +129,184 @@
           <div class="xp-info">
             <span>250 XP until Level 13</span>
           </div>
+        </div>
+      </div>
+
+      <!-- Integrations Section (Hidden by default) -->
+      <div id="integrations-section" class="profile-section hidden">
+        <h2>🔌 Integrations</h2>
+        <p class="section-description">
+          Connect external services to enhance your gaming experience. 
+          <a href="/INTEGRATIONS.md" target="_blank" class="doc-link">View Integration Documentation →</a>
+        </p>
+
+        <!-- Integration Health Status -->
+        <div class="integration-health-card">
+          <h3>Integration Status</h3>
+          <div id="integration-health-status" class="health-status-grid">
+            <div class="loading">Loading integration status...</div>
+          </div>
+        </div>
+
+        <!-- TiltCheck Integration -->
+        <div class="integration-card">
+          <div class="integration-header">
+            <div class="integration-icon">🎯</div>
+            <div>
+              <h3>TiltCheck</h3>
+              <p class="integration-subtitle">Player Behavior Monitoring</p>
+            </div>
+            <div class="integration-status" id="tiltcheck-status">
+              <span class="status-badge disabled">Disabled</span>
+            </div>
+          </div>
+          <div class="integration-description">
+            TiltCheck monitors your gaming behavior to help promote responsible gaming. 
+            It detects tilt patterns and provides recommendations for healthy gameplay.
+          </div>
+          
+          <div id="tiltcheck-content" class="integration-content">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-label">Session Duration</div>
+                <div class="stat-value" id="tiltcheck-session">--</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Total Actions</div>
+                <div class="stat-value" id="tiltcheck-actions">--</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Win Rate</div>
+                <div class="stat-value" id="tiltcheck-winrate">--</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Alerts</div>
+                <div class="stat-value" id="tiltcheck-alerts">--</div>
+              </div>
+            </div>
+            <div id="tiltcheck-alerts-list" class="alerts-list"></div>
+          </div>
+
+          <div class="integration-actions">
+            <a href="https://tiltcheck.it.com" target="_blank" class="secondary-button">
+              Learn More
+            </a>
+            <a href="https://github.com/jmenichole/TiltCheck" target="_blank" class="secondary-button">
+              GitHub
+            </a>
+          </div>
+        </div>
+
+        <!-- JustTheTip Integration -->
+        <div class="integration-card">
+          <div class="integration-header">
+            <div class="integration-icon">💎</div>
+            <div>
+              <h3>JustTheTip</h3>
+              <p class="integration-subtitle">Cryptocurrency Tipping</p>
+            </div>
+            <div class="integration-status" id="justthetip-status">
+              <span class="status-badge disabled">Disabled</span>
+            </div>
+          </div>
+          <div class="integration-description">
+            Tip other players with cryptocurrency using Solana smart contracts. 
+            Non-custodial and secure - you maintain full control of your wallet.
+          </div>
+
+          <div id="justthetip-content" class="integration-content">
+            <!-- Wallet Registration -->
+            <div id="wallet-registration" class="wallet-section">
+              <h4>Register Your Wallet</h4>
+              <p>Connect your Solana wallet to enable tipping functionality.</p>
+              <form id="wallet-registration-form">
+                <div class="form-group">
+                  <label for="wallet-address">Solana Wallet Address</label>
+                  <input 
+                    type="text" 
+                    id="wallet-address" 
+                    placeholder="Enter your Solana wallet address" 
+                    pattern="[1-9A-HJ-NP-Za-km-z]{32,44}"
+                    title="Valid Solana address (32-44 characters)"
+                  />
+                </div>
+                <button type="submit" class="cta-button">Register Wallet</button>
+              </form>
+            </div>
+
+            <!-- Wallet Info (shown after registration) -->
+            <div id="wallet-info" class="wallet-section hidden">
+              <h4>Your Wallet</h4>
+              <div class="wallet-address-display">
+                <span class="label">Address:</span>
+                <span id="registered-wallet-address" class="wallet-address">--</span>
+              </div>
+              
+              <div class="balance-section">
+                <h4>Balance</h4>
+                <div id="wallet-balance" class="balance-grid">
+                  <div class="loading">Loading balance...</div>
+                </div>
+                <button id="refresh-balance-btn" class="secondary-button">Refresh Balance</button>
+              </div>
+
+              <div class="tip-stats">
+                <h4>Tip Statistics</h4>
+                <div class="stats-grid">
+                  <div class="stat-card">
+                    <div class="stat-label">Tips Sent</div>
+                    <div class="stat-value" id="tips-sent">--</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Tips Received</div>
+                    <div class="stat-value" id="tips-received">--</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Amount Sent</div>
+                    <div class="stat-value" id="amount-sent">--</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Amount Received</div>
+                    <div class="stat-value" id="amount-received">--</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="integration-actions">
+            <a href="https://jmenichole.github.io/Justthetip/" target="_blank" class="secondary-button">
+              Documentation
+            </a>
+            <a href="https://github.com/jmenichole/Justthetip" target="_blank" class="secondary-button">
+              GitHub
+            </a>
+          </div>
+        </div>
+
+        <!-- Integration Setup Guide -->
+        <div class="integration-guide">
+          <h3>📖 Integration Setup</h3>
+          <p>To enable these integrations, configure the following environment variables:</p>
+          
+          <div class="code-section">
+            <h4>TiltCheck</h4>
+            <pre><code>TILTCHECK_ENABLED=true
+TILTCHECK_API_KEY=your_api_key_here
+TILTCHECK_API_URL=https://api.tiltcheck.it.com</code></pre>
+          </div>
+
+          <div class="code-section">
+            <h4>JustTheTip</h4>
+            <pre><code>JUSTTHETIP_ENABLED=true
+JUSTTHETIP_API_URL=https://api.justthetip.io
+JUSTTHETIP_BOT_TOKEN=your_bot_token_here</code></pre>
+          </div>
+
+          <p class="note">
+            <strong>Note:</strong> Both integrations work in demo mode for development. 
+            Set <code>NODE_ENV=development</code> to test without API keys.
+          </p>
         </div>
       </div>
     </main>
