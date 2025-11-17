@@ -2,6 +2,17 @@
 
 This document describes the backend integrations available for Degens Against Decency.
 
+## Quick Navigation
+
+- [Overview](#overview)
+- [TiltCheck Integration](#tiltcheck-integration)
+- [JustTheTip Integration](#justthetip-integration)
+- [Client-Side Integration](#client-side-integration)
+- [Profile Page Access](#profile-page-access)
+- [API Endpoints Reference](#api-endpoints)
+- [Deployment](#deployment)
+- [Troubleshooting](#troubleshooting)
+
 ## Overview
 
 The game arena supports two optional integrations:
@@ -98,6 +109,17 @@ TiltCheck works in demo mode without an API key:
 - Set `TILTCHECK_ENABLED=true`
 - Leave `TILTCHECK_API_KEY` empty
 - Local tilt detection will work without external API calls
+
+## Profile Page Access
+
+Access TiltCheck statistics and management through the **Profile Page**:
+
+1. Navigate to your profile from the arena: Click **Profile** button
+2. In the profile sidebar, click **🔌 Integrations**
+3. View TiltCheck status and statistics
+4. Monitor active alerts and recommendations
+
+**Direct Link**: `/profile.html#integrations`
 
 ## JustTheTip Integration
 
@@ -217,6 +239,24 @@ JustTheTip works in demo mode without an API:
 - Set `JUSTTHETIP_ENABLED=true`
 - Leave `JUSTTHETIP_BOT_TOKEN` empty
 - Returns mock data for testing
+
+### Profile Page Access
+
+Manage your JustTheTip wallet and tipping through the **Profile Page**:
+
+1. Navigate to your profile from the arena: Click **Profile** button
+2. In the profile sidebar, click **🔌 Integrations**
+3. Scroll to the JustTheTip section
+4. Register your Solana wallet address
+5. View balance and tip statistics
+
+**Direct Link**: `/profile.html#integrations`
+
+**Features Available**:
+- Wallet registration
+- Balance checking (SOL, USDC, LTC)
+- Tip statistics (sent/received)
+- Transaction history
 
 ## Client-Side Integration
 
