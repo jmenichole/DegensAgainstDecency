@@ -16,7 +16,6 @@ class GameManager {
     this.io = io;
     this.games = new Map();
     this.discordBot = null; // Will be set by server.js
-    this.demoBot = null; // Will be set by server.js
     this.gameTypes = {
       'degens-against-decency': DegensAgainstDecencyGame,
       '2-truths-and-a-lie': TwoTruthsAndALieGame,
@@ -26,10 +25,6 @@ class GameManager {
 
   setDiscordBot(discordBot) {
     this.discordBot = discordBot;
-  }
-
-  setDemoBot(demoBot) {
-    this.demoBot = demoBot;
   }
 
   setIntegrationManager(integrationManager) {
@@ -53,14 +48,6 @@ class GameManager {
     // Notify lobby of new public game
     if (!isPrivate) {
       this.io.to('lobby').emit('lobby-games', this.getPublicGames());
-    }
-
-    // Start demo mode in development environment
-    if (process.env.NODE_ENV === 'development' && this.demoBot) {
-      console.log(`🎮 Starting demo mode for new game ${gameId}`);
-      setTimeout(() => {
-        this.demoBot.startDemo(gameId);
-      }, 2000); // Small delay to allow creator to join
     }
 
     return {
@@ -179,12 +166,6 @@ class GameManager {
     const game = this.games.get(gameId);
     if (!game) {
       return { success: false, error: 'Game not found' };
-    }
-
-    // If trying to start game with less than 3 players, add bots
-    if (action.type === 'start-game' && game.players.length < 3 && this.demoBot) {
-      console.log(`🤖 Game ${gameId} starting with ${game.players.length} players, adding bots to reach minimum of 3`);
-      this.demoBot.addDemoBots(gameId);
     }
 
     const result = game.handleAction(userId, action);

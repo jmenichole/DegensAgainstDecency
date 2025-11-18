@@ -25,19 +25,16 @@ const PORT = process.env.PORT || 3000;
 const GameManager = require('./src/GameManager');
 const AICardGenerator = require('./src/AICardGenerator');
 const DiscordBot = require('./src/DiscordBot');
-const DemoBot = require('./src/DemoBot');
 const IntegrationManager = require('./src/integrations/IntegrationManager');
 
 // Initialize game systems
 const gameManager = new GameManager(io);
 const aiCardGenerator = new AICardGenerator();
 const discordBot = new DiscordBot(gameManager, io);
-const demoBot = new DemoBot(gameManager, io);
 const integrationManager = new IntegrationManager();
 
 // Connect bots to game manager
 gameManager.setDiscordBot(discordBot);
-gameManager.setDemoBot(demoBot);
 gameManager.setIntegrationManager(integrationManager);
 
 // Session configuration
@@ -113,15 +110,6 @@ app.get('/api/user', (req, res) => {
   try {
     if (req.isAuthenticated()) {
       res.json(req.user);
-    } else if (process.env.NODE_ENV === 'development') {
-      // Demo mode for development
-      res.json({
-        id: 'demo-user-123',
-        username: 'DemoPlayer',
-        discriminator: '0001',
-        avatar: null,
-        email: 'demo@example.com'
-      });
     } else {
       // For non-authenticated users, create a guest user
       const guestId = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
@@ -177,21 +165,13 @@ app.post('/api/games', (req, res) => {
     
     // If not authenticated, create a guest user
     if (!user) {
-      if (process.env.NODE_ENV === 'development') {
-        user = {
-          id: 'demo-user-123',
-          username: 'DemoPlayer',
-          discriminator: '0001'
-        };
-      } else {
-        const guestId = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
-        user = {
-          id: guestId,
-          username: `Guest_${guestId.slice(-6)}`,
-          discriminator: '0000',
-          isGuest: true
-        };
-      }
+      const guestId = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+      user = {
+        id: guestId,
+        username: `Guest_${guestId.slice(-6)}`,
+        discriminator: '0000',
+        isGuest: true
+      };
     }
     
     const { gameType, isPrivate, maxPlayers } = req.body;
