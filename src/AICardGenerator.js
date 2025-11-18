@@ -13,6 +13,7 @@ class AICardGenerator {
   constructor() {
     this.baseURL = process.env.CARD_GENERATOR_URL || 'https://degenscardbot.vercel.app/api/generate';
     this.apiKey = process.env.OPENAI_API_KEY; // Still support direct OpenAI as fallback
+    this.autonomaApiKey = process.env.AUTONOMA_API_KEY; // Autonoma API key for card generation service
     
     // Initialize AI Gateway
     this.aiGateway = new VercelAIGateway();
@@ -20,6 +21,8 @@ class AICardGenerator {
     
     if (this.useGateway) {
       console.log('🎮 AICardGenerator: Using Vercel AI Gateway for multi-provider support');
+    } else if (this.autonomaApiKey) {
+      console.log('🎮 AICardGenerator: Using Autonoma API for card generation');
     } else {
       console.log('🎮 AICardGenerator: Using legacy card generation (AI Gateway disabled)');
     }
@@ -44,13 +47,23 @@ class AICardGenerator {
     
     // Legacy method 1: Try using the card bot API first
     try {
+      const requestConfig = {
+        timeout: 10000
+      };
+      
+      // Add Autonoma API key to headers if available
+      if (this.autonomaApiKey) {
+        requestConfig.headers = {
+          'Authorization': `Bearer ${this.autonomaApiKey}`,
+          'X-API-Key': this.autonomaApiKey
+        };
+      }
+      
       const response = await axios.post(this.baseURL, {
         count,
         theme,
         gameType: 'degens-against-decency'
-      }, {
-        timeout: 10000
-      });
+      }, requestConfig);
 
       if (response.data && response.data.cards) {
         return response.data.cards.map(card => ({
@@ -198,13 +211,23 @@ Important: Ensure the JSON is properly formatted and parseable.`;
     
     // Legacy method: Try card bot API
     try {
+      const requestConfig = {
+        timeout: 10000
+      };
+      
+      // Add Autonoma API key to headers if available
+      if (this.autonomaApiKey) {
+        requestConfig.headers = {
+          'Authorization': `Bearer ${this.autonomaApiKey}`,
+          'X-API-Key': this.autonomaApiKey
+        };
+      }
+      
       const response = await axios.post(this.baseURL, {
         count,
         difficulty,
         gameType: '2-truths-and-a-lie'
-      }, {
-        timeout: 10000
-      });
+      }, requestConfig);
 
       if (response.data && response.data.prompts) {
         return response.data.prompts.map(prompt => ({
