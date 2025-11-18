@@ -37,6 +37,11 @@ const integrationManager = new IntegrationManager();
 gameManager.setDiscordBot(discordBot);
 gameManager.setIntegrationManager(integrationManager);
 
+// In-memory storage for user profiles and onboarding status
+// In production, this should be in a database
+const userProfiles = new Map();
+const onboardingStatus = new Map();
+
 // Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'fallback_secret_key',
@@ -79,7 +84,19 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
   app.get('/auth/discord', passport.authenticate('discord'));
   app.get('/auth/discord/callback', 
     passport.authenticate('discord', { failureRedirect: '/?error=auth_failed' }),
-    (req, res) => res.redirect('/arena')
+    (req, res) => {
+      // Check if user has completed onboarding
+      const userId = req.user.id;
+      const hasCompletedOnboarding = onboardingStatus.get(userId);
+      
+      if (!hasCompletedOnboarding) {
+        // New user, redirect to onboarding
+        res.redirect('/onboarding');
+      } else {
+        // Existing user, go to arena
+        res.redirect('/arena');
+      }
+    }
   );
 } else {
   // Fallback routes for development without Discord
@@ -127,6 +144,74 @@ app.get('/api/user', (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve user information', message: error.message });
   }
 });
+
+// Onboarding status endpoint
+app.get('/api/user/onboarding-status', (req, res) => {
+  try {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+    
+    const userId = req.user.id;
+    const completed = onboardingStatus.get(userId) || false;
+    
+    res.json({ completed });
+  } catch (error) {
+    console.error('Error fetching onboarding status:', error);
+    res.status(500).json({ error: 'Failed to retrieve onboarding status', message: error.message });
+  }
+});
+
+// Save onboarding data
+app.post('/api/user/onboarding', (req, res) => {
+  try {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+    
+    const userId = req.user.id;
+    const profileData = req.body;
+    
+    // Save user profile
+    userProfiles.set(userId, {
+      ...profileData,
+      userId,
+      createdAt: new Date().toISOString()
+    });
+    
+    // Mark onboarding as completed
+    onboardingStatus.set(userId, true);
+    
+    console.log(`✅ User ${userId} completed onboarding`);
+    
+    res.json({ success: true, message: 'Onboarding completed successfully' });
+  } catch (error) {
+    console.error('Error saving onboarding data:', error);
+    res.status(500).json({ error: 'Failed to save onboarding data', message: error.message });
+  }
+});
+
+// Get user profile
+app.get('/api/user/profile', (req, res) => {
+  try {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+    
+    const userId = req.user.id;
+    const profile = userProfiles.get(userId);
+    
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+    
+    res.json(profile);
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ error: 'Failed to retrieve profile', message: error.message });
+  }
+});
+
 
 app.get('/api/games', (req, res) => {
   try {

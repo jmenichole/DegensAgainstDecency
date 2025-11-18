@@ -1,0 +1,483 @@
+<!--
+  Degens Against Decency - Onboarding
+  
+  Copyright (c) 2024 Degens Against Decency
+  Licensed under the MIT License
+  See LICENSE file in the project root for full license information.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome - Degens Against Decency</title>
+  <link rel="stylesheet" href="/styles/main.css" />
+  <style>
+    .onboarding-container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+
+    .onboarding-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .onboarding-header h1 {
+      font-size: 2.5em;
+      color: #a020f0;
+      margin-bottom: 10px;
+    }
+
+    .onboarding-header p {
+      font-size: 1.2em;
+      color: #aaa;
+    }
+
+    .onboarding-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .onboarding-steps::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: #333;
+      z-index: 0;
+    }
+
+    .step-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      flex: 1;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #333;
+      color: #aaa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-bottom: 10px;
+      border: 2px solid #333;
+    }
+
+    .step-indicator.active .step-number {
+      background: #a020f0;
+      color: white;
+      border-color: #a020f0;
+    }
+
+    .step-indicator.completed .step-number {
+      background: #0f0;
+      color: black;
+      border-color: #0f0;
+    }
+
+    .step-label {
+      font-size: 0.9em;
+      color: #aaa;
+      text-align: center;
+    }
+
+    .step-indicator.active .step-label {
+      color: #a020f0;
+      font-weight: bold;
+    }
+
+    .onboarding-form {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 30px;
+      margin-bottom: 20px;
+    }
+
+    .form-step {
+      display: none;
+    }
+
+    .form-step.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #a020f0;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid #333;
+      border-radius: 5px;
+      color: white;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #a020f0;
+    }
+
+    .form-group small {
+      display: block;
+      margin-top: 5px;
+      color: #888;
+      font-size: 0.9em;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .checkbox-item:hover {
+      background: rgba(160, 32, 240, 0.1);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: auto;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .checkbox-item label {
+      margin: 0;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #a020f0;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #8010d0;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(160, 32, 240, 0.4);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #aaa;
+      border: 1px solid #333;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .preference-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+
+    .preference-card {
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid transparent;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .preference-card:hover {
+      background: rgba(160, 32, 240, 0.1);
+      border-color: #a020f0;
+    }
+
+    .preference-card.selected {
+      background: rgba(160, 32, 240, 0.2);
+      border-color: #a020f0;
+    }
+
+    .preference-card .icon {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .preference-card input[type="checkbox"] {
+      display: none;
+    }
+
+    .error-message {
+      color: #ff4444;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="onboarding-container">
+    <div class="onboarding-header">
+      <img src="logo.png" alt="Degens Against Decency" style="width: 100px; margin-bottom: 20px;">
+      <h1>Welcome to the Arena! 🎮</h1>
+      <p>Let's set up your gaming profile</p>
+    </div>
+
+    <div class="onboarding-steps">
+      <div class="step-indicator active" data-step="1">
+        <div class="step-number">1</div>
+        <div class="step-label">Profile</div>
+      </div>
+      <div class="step-indicator" data-step="2">
+        <div class="step-number">2</div>
+        <div class="step-label">Preferences</div>
+      </div>
+      <div class="step-indicator" data-step="3">
+        <div class="step-number">3</div>
+        <div class="step-label">Settings</div>
+      </div>
+    </div>
+
+    <form id="onboarding-form" class="onboarding-form">
+      <!-- Step 1: Basic Profile -->
+      <div class="form-step active" data-step="1">
+        <h2>Your Gaming Profile</h2>
+        <p style="color: #aaa; margin-bottom: 20px;">Tell us a bit about yourself</p>
+
+        <div class="form-group">
+          <label for="displayName">Display Name</label>
+          <input type="text" id="displayName" name="displayName" placeholder="Enter your gaming name" required>
+          <small>This is how other players will see you in games</small>
+        </div>
+
+        <div class="form-group">
+          <label for="bio">Bio (Optional)</label>
+          <textarea id="bio" name="bio" rows="3" placeholder="Tell others about yourself..."></textarea>
+          <small>Share your gaming personality or favorite memes</small>
+        </div>
+
+        <div class="form-group">
+          <label>Gaming Experience</label>
+          <div class="preference-grid">
+            <label class="preference-card">
+              <input type="radio" name="experience" value="newbie" required>
+              <div class="icon">🐣</div>
+              <div>Newbie</div>
+            </label>
+            <label class="preference-card">
+              <input type="radio" name="experience" value="casual" required>
+              <div class="icon">🎮</div>
+              <div>Casual</div>
+            </label>
+            <label class="preference-card">
+              <input type="radio" name="experience" value="veteran" required>
+              <div class="icon">🏆</div>
+              <div>Veteran</div>
+            </label>
+            <label class="preference-card">
+              <input type="radio" name="experience" value="degen" required>
+              <div class="icon">💀</div>
+              <div>Full Degen</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Game Preferences -->
+      <div class="form-step" data-step="2">
+        <h2>Game Preferences</h2>
+        <p style="color: #aaa; margin-bottom: 20px;">Customize your gaming experience</p>
+
+        <div class="form-group">
+          <label>Favorite Game Modes (Select all that apply)</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" name="gameModes" value="degens">
+              <span>
+                <strong>🃏 Degens Against Decency</strong>
+                <br><small style="color: #888;">Classic card game with AI-generated content</small>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="gameModes" value="truths">
+              <span>
+                <strong>🎭 2 Truths and a Lie</strong>
+                <br><small style="color: #888;">Deception and wit combined</small>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="gameModes" value="poker">
+              <span>
+                <strong>🎰 Poker</strong>
+                <br><small style="color: #888;">Classic 5-card stud</small>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="preferredPlayerCount">Preferred Player Count</label>
+          <select id="preferredPlayerCount" name="preferredPlayerCount">
+            <option value="3-4">Small (3-4 players)</option>
+            <option value="5-6" selected>Medium (5-6 players)</option>
+            <option value="7-8">Large (7-8 players)</option>
+            <option value="any">Any size works!</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Playstyle Preferences</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" name="playstyle" value="competitive">
+              <span>🏆 Competitive - I play to win!</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="playstyle" value="casual">
+              <span>😎 Casual - Here for fun and laughs</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="playstyle" value="social">
+              <span>💬 Social - Love meeting new players</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="playstyle" value="chaos">
+              <span>🔥 Chaos Agent - Maximum mischief</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Settings -->
+      <div class="form-step" data-step="3">
+        <h2>Content & Privacy Settings</h2>
+        <p style="color: #aaa; margin-bottom: 20px;">Configure your comfort level and privacy</p>
+
+        <div class="form-group">
+          <label for="contentFilter">Content Filter Level</label>
+          <select id="contentFilter" name="contentFilter">
+            <option value="none">🔓 None - Bring on the chaos!</option>
+            <option value="mild" selected>⚠️ Mild - Filter extreme content</option>
+            <option value="moderate">🛡️ Moderate - Keep it relatively clean</option>
+            <option value="strict">🔒 Strict - Family-friendly only</option>
+          </select>
+          <small>You can change this anytime in your profile settings</small>
+        </div>
+
+        <div class="form-group">
+          <label>Privacy Settings</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" name="privacy" value="publicProfile" checked>
+              <span>
+                <strong>📊 Public Profile</strong>
+                <br><small style="color: #888;">Let others see your stats and achievements</small>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="privacy" value="allowFriendRequests" checked>
+              <span>
+                <strong>👥 Allow Friend Requests</strong>
+                <br><small style="color: #888;">Let players add you as a friend</small>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="privacy" value="showOnlineStatus" checked>
+              <span>
+                <strong>🟢 Show Online Status</strong>
+                <br><small style="color: #888;">Display when you're active</small>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Notifications</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" name="notifications" value="gameInvites" checked>
+              <span>🎮 Game Invitations</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="notifications" value="friendActivity" checked>
+              <span>👥 Friend Activity</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="notifications" value="achievements">
+              <span>🏆 Achievement Updates</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="error-message" id="error-message"></div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="prev-btn" style="display: none;">← Previous</button>
+        <button type="button" class="btn btn-primary" id="next-btn">Next →</button>
+        <button type="submit" class="btn btn-primary" id="submit-btn" style="display: none;">Complete Setup 🚀</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="/scripts/onboarding.js"></script>
+</body>
+</html>
