@@ -101,10 +101,8 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
 } else {
   // Fallback routes for development without Discord
   app.get('/auth/discord', (req, res) => {
-    res.status(501).json({ 
-      error: 'Discord authentication not configured', 
-      message: 'Discord OAuth is not set up. You can still use the app as a guest user by visiting /arena directly.' 
-    });
+    // Redirect to index page with error parameter for user-friendly display
+    res.redirect('/?error=discord_not_configured');
   });
   app.get('/auth/discord/callback', (req, res) => {
     res.redirect('/arena');

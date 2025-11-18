@@ -12,8 +12,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Degens Against Decency - The Ultimate Party Game Platform</title>
   <link rel="stylesheet" href="/styles/main.css" />
+  <style>
+    /* Error notification banner styles */
+    .error-banner {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      z-index: 10000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      animation: slideDown 0.3s ease-out;
+    }
+    
+    .error-banner.show {
+      display: block;
+    }
+    
+    @keyframes slideDown {
+      from {
+        transform: translateY(-100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+    
+    .error-banner .error-content {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+    
+    .error-banner .error-message {
+      flex: 1;
+      font-size: 1em;
+      line-height: 1.5;
+    }
+    
+    .error-banner .error-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .error-banner .close-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: background 0.2s;
+    }
+    
+    .error-banner .close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .error-banner .guest-link {
+      color: #fff;
+      text-decoration: underline;
+      font-weight: bold;
+    }
+    
+    .error-banner .guest-link:hover {
+      color: #f0f0f0;
+    }
+  </style>
 </head>
 <body>
+  <!-- Error notification banner -->
+  <div id="error-banner" class="error-banner">
+    <div class="error-content">
+      <div class="error-message">
+        <div class="error-title">ℹ️ Discord Authentication Not Available</div>
+        <div>Discord OAuth is not configured on this server. You can still play by <a href="/arena" class="guest-link">continuing as a guest</a>!</div>
+      </div>
+      <button class="close-btn" onclick="document.getElementById('error-banner').classList.remove('show')">Got it</button>
+    </div>
+  </div>
+
   <!-- Navigation -->
   <nav class="navbar">
     <div class="nav-container">
@@ -196,6 +282,30 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    // Check for error parameter in URL and show banner if present
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const error = urlParams.get('error');
+      
+      if (error === 'discord_not_configured') {
+        const banner = document.getElementById('error-banner');
+        if (banner) {
+          banner.classList.add('show');
+          
+          // Auto-hide after 10 seconds
+          setTimeout(function() {
+            banner.classList.remove('show');
+          }, 10000);
+        }
+        
+        // Clean up URL without reloading page
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    });
+  </script>
 
 </body>
 </html>
