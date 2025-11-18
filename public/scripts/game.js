@@ -179,6 +179,16 @@ class GameManager {
     gameRound.textContent = `Round ${this.gameState.currentRound || 1}`;
     gameStatus.textContent = this.formatStatus(this.gameState.status);
 
+    // Check if game just finished and show feedback survey
+    if (this.gameState.status === 'finished' && this.user && !this.isSpectator) {
+      // Show feedback survey after a short delay
+      setTimeout(() => {
+        if (window.feedbackSurvey) {
+          window.feedbackSurvey.show(this.gameId, this.user.id);
+        }
+      }, 2000);
+    }
+
     // Update players list
     this.updatePlayersList();
 

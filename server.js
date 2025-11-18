@@ -299,6 +299,39 @@ app.get('/api/ai-gateway/stats', (req, res) => {
   }
 });
 
+// Feedback submission endpoint
+app.post('/api/feedback', (req, res) => {
+  try {
+    const feedback = req.body;
+    
+    // Validate feedback data
+    if (!feedback.gameId || !feedback.userId) {
+      return res.status(400).json({ error: 'Missing required fields (gameId, userId)' });
+    }
+    
+    // Log feedback (in production, this would be saved to a database)
+    console.log('📋 Feedback received:', {
+      gameId: feedback.gameId,
+      userId: feedback.userId,
+      timestamp: feedback.timestamp,
+      ratings: feedback.ratings,
+      hasComment: !!feedback.comment
+    });
+    
+    // In a real implementation, save to database:
+    // await feedbackRepository.save(feedback);
+    
+    res.json({ 
+      success: true, 
+      message: 'Feedback received successfully',
+      feedbackId: `fb-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
+    });
+  } catch (error) {
+    console.error('Error processing feedback:', error);
+    res.status(500).json({ error: 'Failed to process feedback', message: error.message });
+  }
+});
+
 // Serve different pages
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

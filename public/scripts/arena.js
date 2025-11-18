@@ -12,6 +12,7 @@ class ArenaManager {
     this.user = null;
     this.games = [];
     this.autoRefreshInterval = null;
+    this.timerUpdateInterval = null;
     this.lastUpdateTime = Date.now();
     this.init();
   }
@@ -290,6 +291,27 @@ class ArenaManager {
         this.socket.emit('request-lobby-update');
       }
     }, 5000);
+    
+    // Update timers every second for smooth display
+    this.timerUpdateInterval = setInterval(() => {
+      this.updateTimers();
+    }, 1000);
+  }
+  
+  updateTimers() {
+    // Update all visible game timers without re-rendering the entire list
+    const gameItems = document.querySelectorAll('.game-item');
+    gameItems.forEach(item => {
+      const gameId = item.dataset.gameId;
+      const game = this.games.find(g => g.id === gameId);
+      
+      if (game && game.startTime) {
+        const timerElement = item.querySelector('.game-timer');
+        if (timerElement) {
+          timerElement.textContent = this.getGameDuration(game.startTime);
+        }
+      }
+    });
   }
 
   showRefreshIndicator() {
@@ -366,9 +388,28 @@ class ArenaManager {
       onboardingModal.style.display = 'none';
     }
   }
+  
+  cleanup() {
+    // Clean up intervals when leaving the page
+    if (this.autoRefreshInterval) {
+      clearInterval(this.autoRefreshInterval);
+      this.autoRefreshInterval = null;
+    }
+    if (this.timerUpdateInterval) {
+      clearInterval(this.timerUpdateInterval);
+      this.timerUpdateInterval = null;
+    }
+  }
 }
 
 // Initialize arena manager when page loads
 document.addEventListener('DOMContentLoaded', () => {
   window.arenaManager = new ArenaManager();
+  
+  // Clean up intervals when navigating away
+  window.addEventListener('beforeunload', () => {
+    if (window.arenaManager) {
+      window.arenaManager.cleanup();
+    }
+  });
 });
