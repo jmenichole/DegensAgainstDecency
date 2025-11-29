@@ -23,7 +23,31 @@ This document describes the database schema required for the Degens Against Dece
 5. Copy the Supabase callback URL and add it to your Discord application's OAuth2 Redirect URIs:
    - `https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback`
 
-### 3. Create Database Tables
+### 3. Configure Supabase Redirect URLs (CRITICAL)
+
+**⚠️ This step is essential for Discord login to work correctly!**
+
+After Discord authenticates the user, Supabase needs to redirect back to your application. You must configure the correct redirect URLs in Supabase:
+
+1. Go to **Authentication > URL Configuration** in your Supabase dashboard
+2. Set the **Site URL** to your application's base URL:
+   - Local development: `http://localhost:3000`
+   - Railway: `https://your-app.up.railway.app`
+   - Render: `https://your-app.onrender.com`
+   - Other hosting: Your application's domain
+3. Add your callback URL to **Redirect URLs**:
+   - Add: `{YOUR_SITE_URL}/auth/callback`
+   - Example: `http://localhost:3000/auth/callback`
+   - Example: `https://your-app.up.railway.app/auth/callback`
+
+**When changing deployment platforms** (e.g., from Vercel to Railway):
+1. Update the **Site URL** to your new domain
+2. Update the **Redirect URLs** to include your new callback URL
+3. Optionally remove old URLs that are no longer in use
+
+**Common Issue**: If Discord login works but redirects to a wrong URL (like an old Vercel deployment), it means the Site URL or Redirect URLs in Supabase are still pointing to the old deployment. Update them to your current domain.
+
+### 4. Create Database Tables
 
 Run the following SQL in your Supabase SQL Editor (SQL Editor in the dashboard):
 
@@ -141,7 +165,7 @@ CREATE TRIGGER update_games_updated_at
     EXECUTE FUNCTION update_updated_at_column();
 ```
 
-### 4. Configure Environment Variables
+### 5. Configure Environment Variables
 
 Add the following to your `.env` file:
 
@@ -181,3 +205,57 @@ If Supabase is not configured, the application falls back to:
 - Guest mode for unauthenticated users
 
 This ensures the application works in development without Supabase setup.
+
+## Troubleshooting
+
+### Discord Login Redirects to Wrong URL
+
+**Problem**: Discord login works (authentication succeeds) but redirects to a wrong URL (e.g., old Vercel deployment, deleted domain).
+
+**Cause**: The redirect URLs in Supabase are still pointing to the old deployment.
+
+**Solution**:
+1. Go to your Supabase Dashboard
+2. Navigate to **Authentication > URL Configuration**
+3. Update the **Site URL** to your current application URL
+4. Update **Redirect URLs** to include `{YOUR_CURRENT_URL}/auth/callback`
+5. Remove any old/deleted URLs from the Redirect URLs list
+
+### Discord Login Fails with "Invalid redirect_uri"
+
+**Problem**: Discord shows an error about invalid redirect URI.
+
+**Cause**: The callback URL in Discord Developer Portal doesn't match what Supabase is using.
+
+**Solution**:
+1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
+2. Select your application
+3. Navigate to OAuth2 > General
+4. In "Redirects", add: `https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback`
+5. Save changes
+
+### Authentication Works Locally but Not in Production
+
+**Problem**: Discord login works on localhost but fails in production.
+
+**Solution**:
+1. Add your production URL to Supabase's **Redirect URLs**:
+   - Example: `https://your-app.up.railway.app/auth/callback`
+2. Make sure **Site URL** is set to your production URL
+3. Verify your production environment has the correct `SUPABASE_URL` and `SUPABASE_ANON_KEY`
+
+### Switching Deployment Platforms
+
+When moving from one hosting platform to another (e.g., Vercel → Railway):
+
+1. **Update Supabase Settings**:
+   - Site URL: Your new domain
+   - Redirect URLs: Add new callback URL, remove old ones
+
+2. **Update Environment Variables** in your new platform:
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+
+3. **Update Discord Developer Portal** (if using passport-discord fallback):
+   - Add new callback URL to OAuth2 Redirects
