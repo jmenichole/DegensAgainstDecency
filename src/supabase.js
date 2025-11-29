@@ -62,7 +62,9 @@ function getSupabase() {
  * @returns {import('@supabase/supabase-js').SupabaseClient|null}
  */
 function getSupabaseAdmin() {
-  return supabaseAdmin || supabase;
+  // Only return admin client if service role key was provided
+  // This ensures admin operations fail explicitly rather than silently using anon key
+  return supabaseAdmin;
 }
 
 /**

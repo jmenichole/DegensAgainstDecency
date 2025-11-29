@@ -47,6 +47,12 @@ gameManager.setIntegrationManager(integrationManager);
 const userProfiles = new Map();
 const onboardingStatus = new Map();
 
+// Helper function to extract username from Supabase user metadata
+function extractUsername(user) {
+  const metadata = user.user_metadata || {};
+  return metadata.full_name || metadata.name || (user.email ? user.email.split('@')[0] : 'User');
+}
+
 // Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'fallback_secret_key',
@@ -122,7 +128,7 @@ if (supabaseEnabled) {
       req.session.supabaseSession = sessionData.session;
       req.session.user = {
         id: sessionData.user.id,
-        username: sessionData.user.user_metadata?.full_name || sessionData.user.user_metadata?.name || sessionData.user.email?.split('@')[0] || 'User',
+        username: extractUsername(sessionData.user),
         discriminator: '0000',
         avatar: sessionData.user.user_metadata?.avatar_url || null,
         email: sessionData.user.email,
@@ -146,7 +152,8 @@ if (supabaseEnabled) {
 
   // Legacy callback route for backward compatibility
   app.get('/auth/discord/callback', (req, res) => {
-    res.redirect('/auth/callback' + (req.query.code ? `?code=${req.query.code}` : ''));
+    const codeParam = req.query.code ? `?code=${encodeURIComponent(req.query.code)}` : '';
+    res.redirect('/auth/callback' + codeParam);
   });
 } else if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
   // Fallback to passport-discord if Supabase is not configured
