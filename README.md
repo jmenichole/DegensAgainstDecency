@@ -313,6 +313,30 @@ Set `NODE_ENV=development` to enable:
 
 Choose your preferred deployment platform - all support WebSockets and real-time multiplayer:
 
+### 🛫 Fly.io (Recommended for Discord Bot)
+
+Fly.io provides excellent always-on hosting with great WebSocket support, perfect for running the Discord bot.
+
+Quick start:
+1. Install Fly CLI: `curl -L https://fly.io/install.sh | sh`
+2. Login: `flyctl auth login`
+3. Deploy: `flyctl launch` (follow prompts)
+4. **Set Discord Bot Token** (REQUIRED for bot to come online):
+   ```bash
+   flyctl secrets set DISCORD_BOT_TOKEN=your_bot_token_here
+   flyctl secrets set SESSION_SECRET=$(openssl rand -hex 32)
+   flyctl secrets set NODE_ENV=production
+   ```
+5. For Supabase integration (optional):
+   ```bash
+   flyctl secrets set SUPABASE_URL=your_supabase_url
+   flyctl secrets set SUPABASE_ANON_KEY=your_anon_key
+   flyctl secrets set SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   ```
+6. Redeploy: `flyctl deploy`
+
+**Important**: The Discord bot will only come online if `DISCORD_BOT_TOKEN` is set. Get your token from the [Discord Developer Portal](https://discord.com/developers/applications) → Your Application → Bot → Token.
+
 ### 🚂 Railway (Recommended for Free Tier)
 
 Railway offers the best free tier with always-on instances and full WebSocket support.

@@ -16,6 +16,9 @@ const DiscordStrategy = require('passport-discord');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
+// Import Supabase client
+const supabase = require('./src/supabase');
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
@@ -27,6 +30,9 @@ const AICardGenerator = require('./src/AICardGenerator');
 const DiscordBot = require('./src/DiscordBot');
 const IntegrationManager = require('./src/integrations/IntegrationManager');
 
+// Initialize Supabase
+const supabaseEnabled = supabase.initSupabase();
+
 // Initialize game systems
 const gameManager = new GameManager(io);
 const aiCardGenerator = new AICardGenerator();
@@ -37,8 +43,7 @@ const integrationManager = new IntegrationManager();
 gameManager.setDiscordBot(discordBot);
 gameManager.setIntegrationManager(integrationManager);
 
-// In-memory storage for user profiles and onboarding status
-// In production, this should be in a database
+// In-memory storage for user profiles and onboarding status (fallback when Supabase is not configured)
 const userProfiles = new Map();
 const onboardingStatus = new Map();
 
@@ -79,15 +84,84 @@ app.use(passport.session());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Authentication routes - only if Discord is configured
-if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
+// Authentication routes - Supabase OAuth takes priority if configured
+if (supabaseEnabled) {
+  // Supabase Discord OAuth routes
+  app.get('/auth/discord', async (req, res) => {
+    try {
+      const redirectTo = `${req.protocol}://${req.get('host')}/auth/callback`;
+      const authData = await supabase.getDiscordAuthUrl(redirectTo);
+      
+      if (authData && authData.url) {
+        res.redirect(authData.url);
+      } else {
+        res.redirect('/?error=auth_failed');
+      }
+    } catch (error) {
+      console.error('Error initiating Discord auth:', error);
+      res.redirect('/?error=auth_failed');
+    }
+  });
+
+  // Supabase OAuth callback
+  app.get('/auth/callback', async (req, res) => {
+    try {
+      const code = req.query.code;
+      
+      if (!code) {
+        return res.redirect('/?error=no_code');
+      }
+
+      const sessionData = await supabase.exchangeCodeForSession(code);
+      
+      if (!sessionData || !sessionData.session) {
+        return res.redirect('/?error=auth_failed');
+      }
+
+      // Store session in express session
+      req.session.supabaseSession = sessionData.session;
+      req.session.user = {
+        id: sessionData.user.id,
+        username: sessionData.user.user_metadata?.full_name || sessionData.user.user_metadata?.name || sessionData.user.email?.split('@')[0] || 'User',
+        discriminator: '0000',
+        avatar: sessionData.user.user_metadata?.avatar_url || null,
+        email: sessionData.user.email,
+        provider: 'discord',
+        providerUserId: sessionData.user.user_metadata?.provider_id || sessionData.user.id
+      };
+
+      // Check if user has completed onboarding
+      const hasCompletedOnboarding = await supabase.getOnboardingStatus(sessionData.user.id);
+      
+      if (!hasCompletedOnboarding) {
+        res.redirect('/onboarding');
+      } else {
+        res.redirect('/arena');
+      }
+    } catch (error) {
+      console.error('Error in OAuth callback:', error);
+      res.redirect('/?error=auth_failed');
+    }
+  });
+
+  // Legacy callback route for backward compatibility
+  app.get('/auth/discord/callback', (req, res) => {
+    res.redirect('/auth/callback' + (req.query.code ? `?code=${req.query.code}` : ''));
+  });
+} else if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
+  // Fallback to passport-discord if Supabase is not configured
   app.get('/auth/discord', passport.authenticate('discord'));
   app.get('/auth/discord/callback', 
     passport.authenticate('discord', { failureRedirect: '/?error=auth_failed' }),
-    (req, res) => {
+    async (req, res) => {
       // Check if user has completed onboarding
       const userId = req.user.id;
-      const hasCompletedOnboarding = onboardingStatus.get(userId);
+      let hasCompletedOnboarding = onboardingStatus.get(userId);
+      
+      // Also check Supabase if available
+      if (supabaseEnabled) {
+        hasCompletedOnboarding = await supabase.getOnboardingStatus(userId);
+      }
       
       if (!hasCompletedOnboarding) {
         // New user, redirect to onboarding
@@ -109,50 +183,102 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
   });
 }
 
-app.get('/auth/logout', (req, res) => {
+app.get('/auth/logout', async (req, res) => {
   try {
-    req.logout(() => {
-      res.redirect('/');
-    });
+    // Sign out from Supabase if session exists
+    if (req.session.supabaseSession) {
+      await supabase.signOut(req.session.supabaseSession.access_token);
+      delete req.session.supabaseSession;
+      delete req.session.user;
+    }
+    
+    // Also logout from passport if authenticated
+    if (req.isAuthenticated && req.isAuthenticated()) {
+      req.logout(() => {
+        res.redirect('/');
+      });
+    } else {
+      req.session.destroy(() => {
+        res.redirect('/');
+      });
+    }
   } catch (error) {
     console.error('Error logging out:', error);
-    res.status(500).json({ error: 'Failed to logout', message: error.message });
+    res.redirect('/');
   }
 });
 
 // API routes
-app.get('/api/user', (req, res) => {
+app.get('/api/user', async (req, res) => {
   try {
-    if (req.isAuthenticated()) {
-      res.json(req.user);
-    } else {
-      // For non-authenticated users, create a guest user
-      const guestId = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
-      res.json({
-        id: guestId,
-        username: `Guest_${guestId.slice(-6)}`,
-        discriminator: '0000',
-        avatar: null,
-        email: null,
-        isGuest: true
-      });
+    // Check Supabase session first
+    if (req.session.user && req.session.supabaseSession) {
+      // Verify the session is still valid
+      const user = await supabase.getUserFromToken(req.session.supabaseSession.access_token);
+      if (user) {
+        return res.json(req.session.user);
+      } else {
+        // Session expired, clear it
+        delete req.session.supabaseSession;
+        delete req.session.user;
+      }
     }
+    
+    // Check passport authentication
+    if (req.isAuthenticated && req.isAuthenticated()) {
+      return res.json(req.user);
+    }
+    
+    // For non-authenticated users, create a guest user
+    const guestId = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+    res.json({
+      id: guestId,
+      username: `Guest_${guestId.slice(-6)}`,
+      discriminator: '0000',
+      avatar: null,
+      email: null,
+      isGuest: true
+    });
   } catch (error) {
     console.error('Error fetching user:', error);
     res.status(500).json({ error: 'Failed to retrieve user information', message: error.message });
   }
 });
 
+// Helper function to check if user is authenticated (either Supabase or Passport)
+function isAuthenticated(req) {
+  return (req.session.user && req.session.supabaseSession) || (req.isAuthenticated && req.isAuthenticated());
+}
+
+// Helper function to get current user
+function getCurrentUser(req) {
+  if (req.session.user) {
+    return req.session.user;
+  }
+  if (req.user) {
+    return req.user;
+  }
+  return null;
+}
+
 // Onboarding status endpoint
-app.get('/api/user/onboarding-status', (req, res) => {
+app.get('/api/user/onboarding-status', async (req, res) => {
   try {
-    if (!req.isAuthenticated()) {
+    if (!isAuthenticated(req)) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
     
-    const userId = req.user.id;
-    const completed = onboardingStatus.get(userId) || false;
+    const user = getCurrentUser(req);
+    const userId = user.id;
     
+    // Try Supabase first
+    if (supabaseEnabled) {
+      const completed = await supabase.getOnboardingStatus(userId);
+      return res.json({ completed });
+    }
+    
+    // Fallback to in-memory
+    const completed = onboardingStatus.get(userId) || false;
     res.json({ completed });
   } catch (error) {
     console.error('Error fetching onboarding status:', error);
@@ -161,16 +287,38 @@ app.get('/api/user/onboarding-status', (req, res) => {
 });
 
 // Save onboarding data
-app.post('/api/user/onboarding', (req, res) => {
+app.post('/api/user/onboarding', async (req, res) => {
   try {
-    if (!req.isAuthenticated()) {
+    if (!isAuthenticated(req)) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
     
-    const userId = req.user.id;
+    const user = getCurrentUser(req);
+    const userId = user.id;
     const profileData = req.body;
     
-    // Save user profile
+    // Try to save to Supabase first
+    if (supabaseEnabled) {
+      const savedProfile = await supabase.upsertUserProfile(userId, {
+        display_name: profileData.displayName,
+        bio: profileData.bio,
+        experience: profileData.experience,
+        game_modes: profileData.gameModes,
+        preferred_player_count: profileData.preferredPlayerCount,
+        playstyle: profileData.playstyle,
+        content_filter: profileData.contentFilter,
+        privacy_settings: profileData.privacy,
+        notifications: profileData.notifications,
+        onboarding_completed: true
+      });
+      
+      if (savedProfile) {
+        console.log(`✅ User ${userId} completed onboarding (Supabase)`);
+        return res.json({ success: true, message: 'Onboarding completed successfully' });
+      }
+    }
+    
+    // Fallback to in-memory storage
     userProfiles.set(userId, {
       ...profileData,
       userId,
@@ -180,7 +328,7 @@ app.post('/api/user/onboarding', (req, res) => {
     // Mark onboarding as completed
     onboardingStatus.set(userId, true);
     
-    console.log(`✅ User ${userId} completed onboarding`);
+    console.log(`✅ User ${userId} completed onboarding (in-memory)`);
     
     res.json({ success: true, message: 'Onboarding completed successfully' });
   } catch (error) {
@@ -190,13 +338,24 @@ app.post('/api/user/onboarding', (req, res) => {
 });
 
 // Get user profile
-app.get('/api/user/profile', (req, res) => {
+app.get('/api/user/profile', async (req, res) => {
   try {
-    if (!req.isAuthenticated()) {
+    if (!isAuthenticated(req)) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
     
-    const userId = req.user.id;
+    const user = getCurrentUser(req);
+    const userId = user.id;
+    
+    // Try Supabase first
+    if (supabaseEnabled) {
+      const profile = await supabase.getUserProfile(userId);
+      if (profile) {
+        return res.json(profile);
+      }
+    }
+    
+    // Fallback to in-memory
     const profile = userProfiles.get(userId);
     
     if (!profile) {
@@ -207,6 +366,52 @@ app.get('/api/user/profile', (req, res) => {
   } catch (error) {
     console.error('Error fetching user profile:', error);
     res.status(500).json({ error: 'Failed to retrieve profile', message: error.message });
+  }
+});
+
+// Update user profile
+app.put('/api/user/profile', async (req, res) => {
+  try {
+    if (!isAuthenticated(req)) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+    
+    const user = getCurrentUser(req);
+    const userId = user.id;
+    const profileData = req.body;
+    
+    // Try to save to Supabase first
+    if (supabaseEnabled) {
+      const savedProfile = await supabase.upsertUserProfile(userId, {
+        display_name: profileData.displayName,
+        bio: profileData.bio,
+        experience: profileData.experience,
+        game_modes: profileData.gameModes,
+        preferred_player_count: profileData.preferredPlayerCount,
+        playstyle: profileData.playstyle,
+        content_filter: profileData.contentFilter,
+        privacy_settings: profileData.privacy,
+        notifications: profileData.notifications
+      });
+      
+      if (savedProfile) {
+        return res.json({ success: true, profile: savedProfile });
+      }
+    }
+    
+    // Fallback to in-memory storage
+    const existingProfile = userProfiles.get(userId) || {};
+    userProfiles.set(userId, {
+      ...existingProfile,
+      ...profileData,
+      userId,
+      updatedAt: new Date().toISOString()
+    });
+    
+    res.json({ success: true, profile: userProfiles.get(userId) });
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ error: 'Failed to update profile', message: error.message });
   }
 });
 
@@ -231,7 +436,7 @@ app.get('/api/games/:gameId', (req, res) => {
     }
     
     // Allow access to private games via invite link
-    if (game.isPrivate && !isInvite && !req.isAuthenticated() && process.env.NODE_ENV !== 'development') {
+    if (game.isPrivate && !isInvite && !isAuthenticated(req) && process.env.NODE_ENV !== 'development') {
       return res.status(401).json({ error: 'Not authorized to view this private game', message: 'This is a private game. Use an invite link to join.' });
     }
     
@@ -244,7 +449,7 @@ app.get('/api/games/:gameId', (req, res) => {
 
 app.post('/api/games', (req, res) => {
   try {
-    let user = req.user;
+    let user = getCurrentUser(req);
     
     // If not authenticated, create a guest user
     if (!user) {
@@ -413,7 +618,7 @@ app.get('/game/:gameId', (req, res) => {
   if (game && game.isPrivate && isInvite) {
     // Allow access to private game via invite link
     res.sendFile(path.join(__dirname, 'public', 'game.html'));
-  } else if (!req.isAuthenticated() && process.env.NODE_ENV !== 'development') {
+  } else if (!isAuthenticated(req) && process.env.NODE_ENV !== 'development') {
     return res.redirect('/');
   } else {
     res.sendFile(path.join(__dirname, 'public', 'game.html'));
