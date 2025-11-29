@@ -621,15 +621,15 @@ app.get('/game/:gameId', (req, res) => {
   const game = gameManager.getGame(req.params.gameId);
   const isInvite = req.query.invite === 'true';
   
-  // Allow access to private games via invite link, or if authenticated/dev mode
-  if (game && game.isPrivate && isInvite) {
-    // Allow access to private game via invite link
-    res.sendFile(path.join(__dirname, 'public', 'game.html'));
-  } else if (!isAuthenticated(req) && process.env.NODE_ENV !== 'development') {
+  // Allow access to all games - guest users can play public games
+  // Private games require invite link
+  if (game && game.isPrivate && !isInvite) {
+    // Private game without invite - redirect to home
     return res.redirect('/');
-  } else {
-    res.sendFile(path.join(__dirname, 'public', 'game.html'));
   }
+  
+  // Allow access to the game page (game existence is checked client-side)
+  res.sendFile(path.join(__dirname, 'public', 'game.html'));
 });
 
 // WebSocket connection handling
